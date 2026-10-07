@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { motion } from 'motion/react';
 import { INITIAL_ORDERS } from './data/mockData';
 import { Order, TicketTierId, OrderStatus } from './types';
 import { Header } from './components/common/Header';
@@ -20,19 +21,81 @@ import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { FloatingActions } from './components/common/FloatingActions';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
+import { decodeTicketToken, loadMyTickets, saveMyTicket } from './lib/ticketLink';
 
-// Le sélecteur de vues n'est visible que si l'URL contient ?demo
+// Le sélecteur de vues n'est visible que si l'URL contient ?demo (mode démo : commandes d'exemple, rien n'est enregistré)
 const SHOW_DEMO_NAV = new URLSearchParams(window.location.search).has('demo');
+
+// Lien d'invitations reçu du client : ?billet=…
+const TICKET_TOKEN = new URLSearchParams(window.location.search).get('billet');
+
+const ORDERS_KEY = 'gala-orders-v1';
+const MY_ORDERS_KEY = 'gala-my-orders-v1';
+
+const loadOrders = (): Order[] => {
+  if (SHOW_DEMO_NAV) return INITIAL_ORDERS;
+  try {
+    const raw = JSON.parse(localStorage.getItem(ORDERS_KEY) ?? '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+};
+
+const loadMyOrderIds = (): string[] => {
+  try {
+    const raw = JSON.parse(localStorage.getItem(MY_ORDERS_KEY) ?? '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+};
+
+type Viewed = { kind: 'local' | 'unlocked'; id: string } | null;
 
 export default function App() {
   // Current active view
-  const [activeView, setActiveView] = useState<ActiveView>('vitrine');
+  const [activeView, setActiveView] = useState<ActiveView>(TICKET_TOKEN ? 'tickets' : 'vitrine');
 
-  // Shared Orders State (initialized with mockData)
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+  // Commandes (enregistrées dans ce navigateur, sauf en mode démo)
+  const [orders, setOrders] = useState<Order[]>(loadOrders);
+  const [myOrderIds, setMyOrderIds] = useState<string[]>(loadMyOrderIds);
+
+  // Invitations débloquées par un lien sur cet appareil
+  const [unlockedTokens, setUnlockedTokens] = useState<string[]>(() => {
+    if (TICKET_TOKEN && decodeTicketToken(TICKET_TOKEN)) saveMyTicket(TICKET_TOKEN);
+    return loadMyTickets();
+  });
+  const unlocked = useMemo(
+    () => unlockedTokens.map(decodeTicketToken).filter((o): o is Order => o !== null),
+    [unlockedTokens]
+  );
+  const linkError = !!TICKET_TOKEN && !decodeTicketToken(TICKET_TOKEN);
+
+  useEffect(() => {
+    if (SHOW_DEMO_NAV) return;
+    try {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    } catch {
+      // stockage indisponible
+    }
+  }, [orders]);
+
+  useEffect(() => {
+    if (SHOW_DEMO_NAV) return;
+    try {
+      localStorage.setItem(MY_ORDERS_KEY, JSON.stringify(myOrderIds));
+    } catch {
+      // stockage indisponible
+    }
+  }, [myOrderIds]);
 
   // Selected Order for the Ticket View
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  // Commande affichée sur la page « Mes billets »
+  const [viewed, setViewed] = useState<Viewed>(() => {
+    const d = TICKET_TOKEN ? decodeTicketToken(TICKET_TOKEN) : null;
+    return d ? { kind: 'unlocked', id: d.id } : null;
+  });
 
   // Pre-selected ticket tier for reservation flow
   const [selectedTierId, setSelectedTierId] = useState<TicketTierId>('standard');
@@ -61,7 +124,13 @@ export default function App() {
   // When a new order is completed in reservation flow
   const handleOrderCreated = (newOrder: Order) => {
     setOrders((prev) => [newOrder, ...prev]);
-    setSelectedOrderId(newOrder.id);
+    setMyOrderIds((prev) => [newOrder.id, ...prev]);
+    setViewed({ kind: 'local', id: newOrder.id });
+  };
+
+  // Commande ajoutée par l'admin (message WhatsApp collé ou saisie à la main)
+  const handleAddOrder = (order: Order) => {
+    setOrders((prev) => [order, ...prev]);
   };
 
   // Update order status (from admin or ticket page toggle)
@@ -79,13 +148,23 @@ export default function App() {
 
   // Navigate to ticket view for specific order
   const handleViewTicket = (orderId: string) => {
-    setSelectedOrderId(orderId);
+    setViewed({ kind: 'local', id: orderId });
     setActiveView('tickets');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Get current order object for Ticket View
-  const currentTicketOrder = orders.find((o) => o.id === selectedOrderId) ?? null;
+  // Commande affichée + liste « Mes billets » de cet appareil
+  const currentTicketOrder: Order | null =
+    viewed?.kind === 'unlocked'
+      ? unlocked.find((o) => o.id === viewed.id) ?? null
+      : viewed?.kind === 'local'
+      ? orders.find((o) => o.id === viewed.id) ?? null
+      : null;
+
+  const savedOrders: Order[] = [
+    ...unlocked,
+    ...orders.filter((o) => myOrderIds.includes(o.id) && !unlocked.some((u) => u.id === o.id)),
+  ];
 
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
@@ -100,6 +179,12 @@ export default function App() {
 
       {/* Main Content Router */}
       <main>
+        <motion.div
+          key={activeView}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
         {/* ================= 1. SITE VITRINE ================= */}
         {activeView === 'vitrine' && (
           <div className="space-y-4">
@@ -150,6 +235,7 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onOpenMyTickets={() => {
+                setViewed(null);
                 setActiveView('tickets');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -174,8 +260,10 @@ export default function App() {
         {activeView === 'tickets' && (
           <TicketViewPage
             order={currentTicketOrder}
-            orders={orders}
-            onFindOrder={setSelectedOrderId}
+            savedOrders={savedOrders}
+            linkError={linkError}
+            onOpenOrder={(o) => setViewed({ kind: unlocked.some((u) => u === o) ? 'unlocked' : 'local', id: o.id })}
+            onShowList={() => setViewed(null)}
             onBackToHome={() => {
               setActiveView('vitrine');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -189,6 +277,7 @@ export default function App() {
           <AdminDashboard
             orders={orders}
             onUpdateOrder={handleUpdateOrder}
+            onAddOrder={handleAddOrder}
             onBackToHome={() => {
               setActiveView('vitrine');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -196,6 +285,7 @@ export default function App() {
             onOpenOrderTickets={handleViewTicket}
           />
         )}
+        </motion.div>
       </main>
 
       {/* Floating Demo Navigation Switcher (Allows testing all pages with mockData) */}
@@ -205,11 +295,11 @@ export default function App() {
         <DevNavSwitcher
           activeView={activeView}
           onChangeView={(view) => {
-            if (view === 'tickets' && !selectedOrderId) setSelectedOrderId(orders[0]?.id ?? null);
+            if (view === 'tickets' && !viewed && orders[0]) setViewed({ kind: 'local', id: orders[0].id });
             setActiveView(view);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          selectedOrderId={selectedOrderId ?? undefined}
+          selectedOrderId={viewed?.id}
         />
       )}
     </div>

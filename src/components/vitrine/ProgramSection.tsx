@@ -1,6 +1,7 @@
 import React from 'react';
 import { useContent } from '../../content/ContentContext';
 import { SectionHeader } from '../common/SectionHeader';
+import { Reveal } from '../common/Reveal';
 
 export const ProgramSection: React.FC = () => {
   const { content, t } = useContent();
@@ -10,8 +11,8 @@ export const ProgramSection: React.FC = () => {
       <SectionHeader kicker={t('program.kicker')} title={t('program.title')} subtitle={t('program.subtitle')} />
 
       <div className="relative border-l border-[#E8C98A]/40 ml-4 sm:ml-32 md:ml-40 space-y-10 sm:space-y-12">
-        {content.program.map((item) => (
-          <div key={item.id} className="relative pl-8 sm:pl-10 group">
+        {content.program.map((item, i) => (
+          <Reveal key={item.id} delay={i * 0.08} className="relative pl-8 sm:pl-10 group">
             <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-[#E8C98A] bg-[#5A040F] group-hover:bg-[#E8C98A] group-hover:scale-125 transition-all duration-300" />
 
             <div className="sm:absolute sm:-left-36 sm:top-0 sm:text-right sm:w-28 mb-1 sm:mb-0">
@@ -25,7 +26,7 @@ export const ProgramSection: React.FC = () => {
               </h3>
               <p className="text-sm text-stone-100/90 leading-relaxed">{item.description}</p>
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>

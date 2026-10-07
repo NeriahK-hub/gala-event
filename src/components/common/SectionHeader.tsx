@@ -1,4 +1,5 @@
 import React from 'react';
+import { Reveal } from './Reveal';
 
 interface SectionHeaderProps {
   kicker: string;
@@ -7,7 +8,7 @@ interface SectionHeaderProps {
 }
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ kicker, title, subtitle }) => (
-  <div className="text-center mb-14 sm:mb-16">
+  <Reveal className="text-center mb-14 sm:mb-16">
     <div className="flex items-center justify-center gap-3 mb-4">
       <div className="h-px w-10 sm:w-12 bg-gradient-to-r from-transparent to-[#D4A857]/70" />
       <span className="text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold">{kicker}</span>
@@ -21,5 +22,5 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ kicker, title, sub
         {subtitle}
       </p>
     )}
-  </div>
+  </Reveal>
 );

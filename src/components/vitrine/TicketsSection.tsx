@@ -3,6 +3,7 @@ import { ArrowRight, Check, Crown } from 'lucide-react';
 import { TicketTierId } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { SectionHeader } from '../common/SectionHeader';
+import { Reveal } from '../common/Reveal';
 
 interface TicketsSectionProps {
   onSelectTier: (tierId: TicketTierId) => void;
@@ -16,12 +17,13 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) 
       <SectionHeader kicker={t('tickets.kicker')} title={t('tickets.title')} subtitle={t('tickets.subtitle')} />
 
       <div className={`grid grid-cols-1 gap-8 items-stretch ${content.tiers.length === 1 ? 'max-w-md mx-auto' : content.tiers.length === 2 ? 'lg:grid-cols-2 max-w-4xl mx-auto' : 'lg:grid-cols-3'}`}>
-        {content.tiers.map((tier) => {
+        {content.tiers.map((tier, tierIndex) => {
           const isVip = !!tier.highlighted;
 
           return (
-            <div
+            <Reveal
               key={tier.id}
+              delay={tierIndex * 0.1}
               className={`relative rounded-2xl flex flex-col justify-between transition-all duration-300 ${
                 isVip
                   ? 'border-2 border-[#E8C98A] bg-[#3D0309]/60 shadow-[0_0_35px_rgba(232,201,138,0.2)] lg:-translate-y-3'
@@ -91,7 +93,7 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) 
                   )}
                 </div>
               </div>
-            </div>
+            </Reveal>
           );
         })}
       </div>

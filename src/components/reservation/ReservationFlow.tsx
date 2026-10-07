@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { motion } from 'motion/react';
+import { AnimatedNumber } from '../common/Reveal';
 import confetti from 'canvas-confetti';
 import { useContent } from '../../content/ContentContext';
-import { TicketTierId, Order, IssuedTicket } from '../../types';
+import { TicketTierId, Order } from '../../types';
+import { buildOrder, encodeOrderRequest, newOrderId } from '../../lib/ticketLink';
 import {
   Check,
   Copy,
@@ -36,7 +39,6 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
 }) => {
   const { content } = useContent();
   const TICKET_TIERS = content.tiers;
-  const MOBILE_MONEY_ACCOUNTS = content.mobileMoney;
   const GALA_INFO = content.galaInfo;
 
   // Step state: 1 = Choix du billet, 2 = Formulaire, 3 = Confirmation
@@ -48,18 +50,13 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [contactPhone, setContactPhone] = useState<string>('');
-  const [payerPhone, setPayerPhone] = useState<string>('');
-  const [useSamePhone, setUseSamePhone] = useState<boolean>(true);
-  const [selectedOperatorIndex, setSelectedOperatorIndex] = useState<number>(0);
 
   // Confirmation state
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
-  const [copiedNumber, setCopiedNumber] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>('');
 
   const currentTier = TICKET_TIERS.find((t) => t.id === selectedTierId) || TICKET_TIERS[0];
   const totalAmount = currentTier.price * quantity;
-  const selectedOperator = MOBILE_MONEY_ACCOUNTS[selectedOperatorIndex];
 
   // Increment / Decrement quantity
   const handleIncrease = () => {
@@ -70,7 +67,23 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
-  // Form submission
+  // Message WhatsApp envoyé à l'équipe (contient le code de commande pour l'importer dans l'admin)
+  const buildWhatsAppUrl = (order: Order) => {
+    const message = `Bonjour, je voudrais réserver pour ${GALA_INFO.name}.
+
+• Commande : ${order.id}
+• Nom : ${order.customerName}
+• Téléphone : ${order.customerPhone}
+• Billets : ${order.quantity} × ${currentTier.name}
+• Total : ${order.totalAmount} USD
+
+Peux-tu me dire comment payer ? Merci !
+
+Code commande : ${encodeOrderRequest(order)}`;
+    return `https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+  };
+
+  // Validation du formulaire : on crée la commande puis on ouvre WhatsApp
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
@@ -78,83 +91,28 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
       return;
     }
     if (!contactPhone.trim()) {
-      setFormError('Renseigne ton numéro de contact / WhatsApp.');
+      setFormError('Renseigne ton numéro WhatsApp.');
       return;
     }
+    setFormError('');
 
-    const actualPayerPhone = useSamePhone ? contactPhone : (payerPhone || contactPhone);
-
-    // Generate new order
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const orderId = `GALA-${randomSuffix}`;
-
-    // Create tickets list
-    const generatedTickets: IssuedTicket[] = Array.from({ length: quantity }, (_, idx) => {
-      const ticketNum = `TKT-${randomSuffix}-0${idx + 1}`;
-      return {
-        ticketNumber: ticketNum,
-        ticketIndex: idx + 1,
-        totalTickets: quantity,
-        tierId: currentTier.id,
-        tierName: currentTier.name,
-        attendeeName: idx === 0 ? fullName : `Invité de ${fullName} (${idx + 1}/${quantity})`,
-        securityCode: `${currentTier.id.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}-${String.fromCharCode(65 + idx)}`,
-        qrPayload: `GALA-ROYAL-KIN-2026|${ticketNum}|${currentTier.id.toUpperCase()}|${encodeURIComponent(fullName)}|ORDER-${orderId}`,
-        scanned: false,
-      };
-    });
-
-    const newOrder: Order = {
-      id: orderId,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      customerName: fullName,
-      customerEmail: email || `${fullName.toLowerCase().replace(/\s+/g, '.')}@client.cd`,
-      customerPhone: contactPhone,
-      payerPhone: actualPayerPhone,
+    const newOrder = buildOrder({
+      id: newOrderId(),
+      name: fullName.trim(),
+      phone: contactPhone.trim(),
+      email: email.trim(),
       tierId: currentTier.id,
+      tierName: currentTier.name,
       quantity,
       unitPrice: currentTier.price,
-      totalAmount,
-      status: 'pending',
-      tickets: generatedTickets,
-    };
+    });
 
     setCreatedOrder(newOrder);
     onOrderCreated(newOrder);
     setStep(3);
 
-    // Trigger celebration confetti
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 70,
-        origin: { y: 0.5 },
-        colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#8E0A1C'],
-      });
-    } catch {
-      // ignore
-    }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard?.writeText(text);
-    setCopiedNumber(true);
-    setTimeout(() => setCopiedNumber(false), 2500);
-  };
-
-  const getWhatsAppMessageUrl = () => {
-    if (!createdOrder) return '#';
-    const message = `Bonjour, je réserve pour ${GALA_INFO.name},\n\nJe viens d'effectuer ma réservation :
-- Commande : *${createdOrder.id}*
-- Titulaire : *${createdOrder.customerName}*
-- Formule : *${createdOrder.quantity}x ${currentTier.name}*
-- Montant total : *${createdOrder.totalAmount} USD*
-- Numéro qui a envoyé le paiement : *${createdOrder.payerPhone}*
-- Opérateur : *${selectedOperator.name}*
-
-Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Merci !`;
-
-    return `https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+    // Ouvre WhatsApp tout de suite (le clic sur « Confirmer » autorise l'ouverture)
+    window.open(buildWhatsAppUrl(newOrder), '_blank', 'noopener,noreferrer');
   };
 
   const stepLabels = ['Billet', 'Coordonnées', 'Confirmation'];
@@ -194,6 +152,12 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
       </div>
 
       <div className="rounded-[2rem] border border-white/15 bg-black/25 backdrop-blur-2xl shadow-[0_30px_80px_rgba(0,0,0,0.35)] p-5 sm:p-10">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
         {/* ================= STEP 1: CHOIX DU BILLET ================= */}
         {step === 1 && (
           <div className="animate-in fade-in duration-300">
@@ -203,7 +167,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 Choisis ton billet.
               </h1>
               <p className="text-base sm:text-lg text-white/75 mt-3">
-                Une seule étape pour réserver ta place, puis tu paies par Mobile Money.
+                Tu commandes ici, puis tu finalises le paiement avec l'équipe sur WhatsApp.
               </p>
             </header>
 
@@ -258,7 +222,12 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                       </div>
 
                       {isSelected && tier.perks.length > 0 && (
-                        <ul className="mt-5 pt-5 border-t border-[#EFE5D6] space-y-2.5">
+                        <motion.ul
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                          className="mt-5 pt-5 border-t border-[#EFE5D6] space-y-2.5"
+                        >
                           {tier.perks.map((perk, i) => (
                             <li key={i} className="flex items-start gap-3 text-sm text-[#2A1014]">
                               <span className="mt-0.5 w-5 h-5 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center shrink-0">
@@ -267,15 +236,15 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                               {perk}
                             </li>
                           ))}
-                        </ul>
+                        </motion.ul>
                       )}
                     </div>
                   );
                 })}
 
                 <ul className="flex flex-wrap gap-x-6 gap-y-2 pt-3 text-sm text-white/75">
-                  <li className="inline-flex items-center gap-2"><Smartphone className="w-4 h-4 text-[#FFB43A]" /> Paiement Mobile Money</li>
-                  <li className="inline-flex items-center gap-2"><Zap className="w-4 h-4 text-[#FFB43A]" /> Billet envoyé sur WhatsApp</li>
+                  <li className="inline-flex items-center gap-2"><Smartphone className="w-4 h-4 text-[#FFB43A]" /> Paiement guidé sur WhatsApp</li>
+                  <li className="inline-flex items-center gap-2"><Zap className="w-4 h-4 text-[#FFB43A]" /> Invitations débloquées par lien</li>
                   <li className="inline-flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-[#FFB43A]" /> QR code personnel</li>
                 </ul>
               </div>
@@ -309,8 +278,8 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span aria-live="polite" className="w-9 text-center font-sans font-bold text-xl text-white tabular-nums">
-                        {quantity}
+                      <span aria-live="polite" className="w-9 text-center font-sans font-bold text-xl text-white">
+                        <AnimatedNumber value={quantity} />
                       </span>
                       <button
                         type="button"
@@ -331,8 +300,8 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     </div>
                     <div className="flex items-baseline justify-between pt-2">
                       <dt className="text-white font-semibold">Total</dt>
-                      <dd className="font-sans font-bold text-3xl tracking-tight text-white tabular-nums">
-                        {totalAmount}
+                      <dd className="font-sans font-bold text-3xl tracking-tight text-white">
+                        <AnimatedNumber value={totalAmount} />
                         <span className="text-lg ml-0.5">$</span>
                       </dd>
                     </div>
@@ -352,7 +321,12 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
             {/* Barre collée en bas sur mobile (hors du conteneur flouté, sinon « fixed » est piégé) */}
             {createPortal(
-            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-4 pt-3 pb-4 bg-[#4A030C]/85 backdrop-blur-xl border-t border-white/15">
+            <motion.div
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-4 pt-3 pb-4 bg-[#4A030C]/85 backdrop-blur-xl border-t border-white/15"
+            >
               <div className="max-w-5xl mx-auto flex items-center gap-4">
                 <div className="min-w-0">
                   <p className="text-xs text-white/70">Total • {quantity} billet{quantity > 1 ? 's' : ''}</p>
@@ -367,7 +341,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
-            </div>,
+            </motion.div>,
               document.body
             )}
           </div>
@@ -381,10 +355,10 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 Étape 2 sur 3
               </span>
               <h2 className="font-sans font-bold tracking-tight text-white text-3xl sm:text-4xl">
-                Tes coordonnées & paiement
+                Tes coordonnées
               </h2>
               <p className="text-base text-white/75 max-w-md mx-auto mt-1">
-                Informations requises pour l'émission des invitations officielles.
+                Ces infos servent à préparer ta commande. Le paiement se fait ensuite avec l'équipe sur WhatsApp.
               </p>
             </div>
 
@@ -430,7 +404,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
               {/* Contact Phone (WhatsApp) */}
               <div className="space-y-2">
                 <label className="text-sm text-white/90 font-semibold block">
-                  Numéro de Contact (WhatsApp) <span className="text-red-400">*</span>
+                  Numéro WhatsApp <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="tel"
@@ -441,63 +415,10 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
                 <span className="text-xs text-stone-400">
-                  Numéro auquel nous t'enverrons tes billets validés.
+                  L'équipe te répond sur ce numéro et t'envoie ton lien d'invitations.
                 </span>
               </div>
 
-              {/* Mobile Money Operator Selection */}
-              <div className="space-y-2">
-                <label className="text-sm text-white/90 font-semibold block">
-                  Opérateur Mobile Money Prévu
-                </label>
-                <select
-                  value={selectedOperatorIndex}
-                  onChange={(e) => setSelectedOperatorIndex(Number(e.target.value))}
-                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white text-sm focus:border-[#FFB43A] focus:outline-none"
-                >
-                  {MOBILE_MONEY_ACCOUNTS.map((op, idx) => (
-                    <option key={idx} value={idx} className="bg-[#3D030B] text-[#F9F5EC]">
-                      {op.name} ({op.number})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Payer Phone section with explicit requested note */}
-            <div className="p-5 rounded-3xl border border-white/15 bg-white/10 space-y-4">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="samePhone"
-                  checked={useSamePhone}
-                  onChange={(e) => setUseSamePhone(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#D4A857] focus:ring-[#D4A857] border-[#D4A857]/50 accent-[#D4A857]"
-                />
-                <label htmlFor="samePhone" className="text-xs text-stone-200 cursor-pointer select-none">
-                  Je paie depuis mon propre numéro de contact ({contactPhone || 'même numéro'})
-                </label>
-              </div>
-
-              {!useSamePhone && (
-                <div className="space-y-2 pt-2 border-t border-[#D4A857]/20 animate-in fade-in">
-                  <label className="text-sm text-white/90 font-semibold block">
-                    Numéro qui va envoyer l'argent (Mobile Money) <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required={!useSamePhone}
-                    placeholder="Ex: +243 89 123 4567"
-                    value={payerPhone}
-                    onChange={(e) => setPayerPhone(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white text-sm focus:border-[#FFB43A] focus:outline-none"
-                  />
-                  {/* The exact requested note */}
-                  <div className="p-3 rounded-lg bg-[#5A040F] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
-                    <Info className="inline w-4 h-4 mr-1 -mt-0.5" /> <strong>Important :</strong> Si tu paies depuis un autre numéro (ex: compte d'un proche, agent shop ou société), écris ce numéro-là afin que notre équipe puisse réconcilier ton paiement.
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Visible Order Recap */}
@@ -516,7 +437,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
               <div className="text-right">
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]/80 block">
-                  Total à transférer :
+                  Total à payer :
                 </span>
                 <span className="font-sans font-bold tracking-tight text-3xl text-white tabular-nums">
                   {totalAmount} USD
@@ -538,109 +459,82 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 type="submit"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
               >
-                <span>Confirmer ma réservation</span>
-                <Check className="w-4 h-4 stroke-[3]" />
+                <span>Continuer sur WhatsApp</span>
+                <MessageCircle className="w-5 h-5" />
               </button>
             </div>
           </form>
         )}
 
-        {/* ================= STEP 3: CONFIRMATION DE COMMANDE ================= */}
+        {/* ================= STEP 3: SUITE SUR WHATSAPP ================= */}
         {step === 3 && createdOrder && (
           <div className="space-y-8 text-center animate-in zoom-in-95 duration-400">
-            {/* Top Success Badge */}
-            <div className="w-16 h-16 rounded-full border-2 border-[#D4A857] bg-[#5A040F] flex items-center justify-center text-[#D4A857] mx-auto shadow-[0_0_25px_rgba(212,168,87,0.4)]">
-              <CheckCircle className="w-8 h-8 text-[#D4A857]" />
-            </div>
+            <motion.div
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
+              className="w-16 h-16 rounded-full bg-[#25D366] text-[#052e16] flex items-center justify-center mx-auto shadow-[0_12px_30px_rgba(37,211,102,0.35)]"
+            >
+              <MessageCircle className="w-8 h-8" />
+            </motion.div>
 
             <div>
-              <span className="text-sm text-[#FFB43A] font-semibold block mb-1">
-                Réservation Enregistrée avec Succès
-              </span>
+              <span className="text-sm text-[#FFB43A] font-semibold block mb-1">Commande enregistrée</span>
               <h2 className="font-sans font-bold tracking-tight text-white text-3xl sm:text-4xl">
-                Félicitations, {createdOrder.customerName}
+                Dernière étape : WhatsApp
               </h2>
               <p className="text-base text-white/75 max-w-md mx-auto mt-2">
-                Ta demande de réservation a bien été reçue. Il ne te reste plus qu'à effectuer ton transfert Mobile Money.
+                Envoie ta commande à l'équipe pour finaliser le paiement. Si WhatsApp ne s'est pas ouvert, utilise le bouton ci-dessous.
               </p>
             </div>
 
-            {/* ORDER CODE DISPLAY (Code de commande bien visible) */}
-            <div className="p-6 rounded-3xl bg-white text-[#2A1014] shadow-[0_18px_50px_rgba(0,0,0,0.35)] ring-2 ring-[#FFB43A] max-w-md mx-auto">
-              <span className="text-xs font-semibold text-[#8B6B70] block mb-1">
-                Ton code de commande unique
-              </span>
-              <div className="font-sans font-bold text-4xl sm:text-5xl tracking-wider text-[#D8590B] py-1">
-                {createdOrder.id}
-              </div>
-              <div className="mt-3 pt-3 border-t border-[#EFE5D6] flex items-center justify-between text-xs text-[#6B4A4F]">
-                <span>Montant exact à envoyer :</span>
-                <span className="font-bold text-[#D8590B] text-base">{createdOrder.totalAmount} USD</span>
-              </div>
+            <a
+              href={buildWhatsAppUrl(createdOrder)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#25D366] text-[#052e16] font-bold text-base shadow-[0_12px_30px_rgba(37,211,102,0.35)] hover:bg-[#20ba59] transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>Ouvrir WhatsApp</span>
+            </a>
+
+            {/* Récapitulatif */}
+            <div className="p-6 rounded-3xl bg-white text-[#2A1014] shadow-[0_18px_50px_rgba(0,0,0,0.35)] ring-2 ring-[#FFB43A] max-w-md mx-auto text-left">
+              <span className="text-xs font-semibold text-[#8B6B70] block mb-1">Ton code de commande</span>
+              <div className="font-sans font-bold text-3xl sm:text-4xl tracking-wider text-[#D8590B]">{createdOrder.id}</div>
+              <dl className="mt-3 pt-3 border-t border-[#EFE5D6] space-y-1.5 text-sm text-[#6B4A4F]">
+                <div className="flex justify-between"><dt>Billets</dt><dd className="font-semibold text-[#2A1014]">{createdOrder.quantity} × {currentTier.name}</dd></div>
+                <div className="flex justify-between"><dt>Total à payer</dt><dd className="font-bold text-[#D8590B] text-base">{createdOrder.totalAmount} USD</dd></div>
+              </dl>
             </div>
 
-            {/* MOBILE MONEY DETAILS WITH ONE-CLICK COPY */}
-            <div className="p-6 rounded-3xl border border-white/15 bg-white/10 max-w-lg mx-auto text-left space-y-4">
-              <div className="flex items-center justify-between border-b border-[#D4A857]/20 pb-3">
-                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold">
-                  Numéro Mobile Money Récepteur
-                </span>
-                <span className="text-xs text-[#E8C98A] font-medium">{selectedOperator.name}</span>
-              </div>
-
-              <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#5A040F] border border-[#D4A857]/30">
-                <div>
-                  <span className="text-xs uppercase text-[#D4A857]/80 block">Numéro Officiel</span>
-                  <span className="font-serif text-xl text-[#F9F5EC] font-bold tracking-wider">
-                    {selectedOperator.number}
+            {/* Comment ça se passe ensuite */}
+            <ol className="max-w-md mx-auto text-left space-y-4">
+              {[
+                ['Tu envoies ta commande', "Le message est déjà prêt : il suffit de l'envoyer sur WhatsApp."],
+                ["Tu paies avec l'équipe", "Elle t'indique comment payer et confirme ton paiement dans la conversation."],
+                ['Tu reçois ton lien', "Un clic dessus et tes invitations avec QR code s'affichent."],
+              ].map(([title, text], i) => (
+                <li key={i} className="flex gap-4">
+                  <span className="w-8 h-8 rounded-full bg-white/15 text-white font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                  <span>
+                    <span className="block font-semibold text-white">{title}</span>
+                    <span className="block text-sm text-white/70">{text}</span>
                   </span>
-                  <span className="text-xs text-[#E8C98A]/90 block">{selectedOperator.holder}</span>
-                </div>
+                </li>
+              ))}
+            </ol>
 
-                {/* Bouton "Copier" */}
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(selectedOperator.number)}
-                  className="px-4 py-2 rounded-full border border-[#D4A857] bg-[#D4A857]/20 text-[#E8C98A] hover:bg-[#D4A857] hover:text-[#3D030B] text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedNumber ? 'Copié !' : 'Copier'}</span>
-                </button>
-              </div>
-
-              <p className="text-xs text-stone-300 leading-relaxed">
-                {selectedOperator.instructions}
-              </p>
-            </div>
-
-            {/* ACTIONS: GROS BOUTON WHATSAPP & LIEN VERS LE BILLET */}
-            <div className="space-y-4 max-w-md mx-auto pt-2">
-              {/* Gros bouton Continuer sur WhatsApp */}
-              <a
-                href={getWhatsAppMessageUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#25D366] text-white font-bold text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(37,211,102,0.5)] hover:bg-[#20ba59] transition-all transform hover:scale-[1.02]"
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span>Continuer sur WhatsApp</span>
-              </a>
-
-              {/* Bouton voir la page de mon billet */}
-              <button
-                type="button"
-                onClick={() => onViewTicket(createdOrder.id)}
-                className="w-full py-3.5 rounded-full ring-1 ring-white/30 text-white hover:bg-white/10 text-sm font-semibold transition-colors cursor-pointer"
-              >
-                Voir mon billet (Lien personnel)
-              </button>
-            </div>
-
-            <p className="text-xs text-[#D4A857]/90 italic pt-2">
-              Dès réception de la preuve de paiement par notre conciergerie, ton billet passera automatiquement à l'état « Validé ».
-            </p>
+            <button
+              type="button"
+              onClick={onBackToHome}
+              className="w-full max-w-md mx-auto py-3.5 rounded-full ring-1 ring-white/30 text-white hover:bg-white/10 text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Retour à l'accueil
+            </button>
           </div>
         )}
+        </motion.div>
       </div>
     </div>
   );

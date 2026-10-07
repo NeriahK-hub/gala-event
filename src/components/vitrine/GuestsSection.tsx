@@ -3,6 +3,7 @@ import { Star, UserRound } from 'lucide-react';
 import { GuestArtist } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { SectionHeader } from '../common/SectionHeader';
+import { Reveal } from '../common/Reveal';
 
 export const GuestsSection: React.FC = () => {
   const { content, t } = useContent();
@@ -13,8 +14,10 @@ export const GuestsSection: React.FC = () => {
       <SectionHeader kicker={t('guests.kicker')} title={t('guests.title')} subtitle={t('guests.subtitle')} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {content.guests.map((artist) => (
-          <ArtistCard key={artist.id} artist={artist} badge={t('guests.badge')} />
+        {content.guests.map((artist, i) => (
+          <Reveal key={artist.id} delay={i * 0.08}>
+            <ArtistCard artist={artist} badge={t('guests.badge')} />
+          </Reveal>
         ))}
       </div>
     </section>

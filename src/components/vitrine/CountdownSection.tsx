@@ -1,79 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useContent } from '../../content/ContentContext';
-import { Clock } from 'lucide-react';
+import { AnimatedNumber, Reveal } from '../common/Reveal';
+
+const DAY = 86_400_000;
 
 export const CountdownSection: React.FC = () => {
   const { content, t } = useContent();
-  const targetDate = new Date(content.galaInfo.isoDate).getTime();
-
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const target = new Date(content.galaInfo.isoDate).getTime();
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const calculateTime = () => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000),
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    calculateTime();
-    const timer = setInterval(calculateTime, 1000);
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, []);
 
+  const diff = Math.max(0, target - now);
   const units = [
-    { label: t('countdown.days'), value: timeLeft.days },
-    { label: t('countdown.hours'), value: timeLeft.hours },
-    { label: t('countdown.minutes'), value: timeLeft.minutes },
-    { label: t('countdown.seconds'), value: timeLeft.seconds },
+    { label: t('countdown.days'), value: Math.floor(diff / DAY) },
+    { label: t('countdown.hours'), value: Math.floor((diff % DAY) / 3_600_000) },
+    { label: t('countdown.minutes'), value: Math.floor((diff % 3_600_000) / 60_000) },
+    { label: t('countdown.seconds'), value: Math.floor((diff % 60_000) / 1000) },
   ];
 
   return (
-    <section className="relative py-12 px-4 border-y border-[#D4A857]/20 bg-[#3D0309]/40 backdrop-blur-sm">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold mb-6">
-          <Clock className="w-3.5 h-3.5" />
-          <span>{t('countdown.kicker')}</span>
-        </div>
+    <section className="relative py-20 sm:py-28 px-4" aria-label="Compte à rebours">
+      <Reveal className="max-w-4xl mx-auto text-center">
+        <p className="text-sm font-semibold text-[#FFB43A] mb-8 sm:mb-10">{t('countdown.kicker')}</p>
 
-        {/* 4 Large Golden Digit Units */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-2xl mx-auto">
-          {units.map((unit, index) => (
-            <div
-              key={index}
-              className="p-4 sm:p-5 rounded-xl border border-[#D4A857]/30 bg-gradient-to-b from-[#7A0815]/50 to-[#3D0309]/80 shadow-[0_8px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center relative group hover:border-[#D4A857]/60 transition-colors"
-            >
-              {/* Subtle top gold highlight */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[1px] bg-[#D4A857]/60" />
-
-              <span className="font-serif tabular-nums text-4xl sm:text-5xl md:text-6xl text-gold-gradient tracking-tight">
-                {String(unit.value).padStart(2, '0')}
-              </span>
-              <span className="text-xs uppercase tracking-[0.12em] text-[#E8C98A] mt-2 font-medium">
-                {unit.label}
-              </span>
+        <div role="timer" className="grid grid-cols-4 divide-x divide-white/15">
+          {units.map((unit) => (
+            <div key={unit.label} className="px-1.5 sm:px-6">
+              <AnimatedNumber
+                value={String(unit.value).padStart(2, '0')}
+                className="font-sans font-semibold tracking-tight text-white text-[2.6rem] leading-none sm:text-7xl md:text-8xl"
+              />
+              <p className="mt-3 text-xs sm:text-base text-white/60">{unit.label}</p>
             </div>
           ))}
         </div>
 
-        <p className="font-serif italic text-base text-[#F3E5AB] mt-6">
-          {t('countdown.note')}
-        </p>
-      </div>
+        <p className="mt-10 sm:mt-12 text-base sm:text-lg text-white/80 max-w-md mx-auto text-balance">{t('countdown.note')}</p>
+      </Reveal>
     </section>
   );
 };

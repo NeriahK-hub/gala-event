@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
+import { AnimatePresence, motion } from 'motion/react';
 import { SectionHeader } from '../common/SectionHeader';
+import { Reveal } from '../common/Reveal';
 
 export const FaqSection: React.FC = () => {
   const { content, t } = useContent();
@@ -12,12 +14,13 @@ export const FaqSection: React.FC = () => {
       <SectionHeader kicker={t('faq.kicker')} title={t('faq.title')} subtitle={t('faq.subtitle')} />
 
       <div className="space-y-3">
-        {content.faq.map((item) => {
+        {content.faq.map((item, i) => {
           const isOpen = openId === item.id;
 
           return (
-            <div
+            <Reveal
               key={item.id}
+              delay={i * 0.06}
               className="rounded-2xl border border-[#E8C98A]/25 bg-[#3D0309]/35 overflow-hidden"
             >
               <button
@@ -35,12 +38,21 @@ export const FaqSection: React.FC = () => {
                 </span>
               </button>
 
-              {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-3 text-sm sm:text-base text-stone-100/90 leading-relaxed border-t border-[#E8C98A]/15">
-                  {item.answer}
-                </div>
-              )}
-            </div>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    key="answer"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 sm:px-6 pb-6 pt-3 text-sm sm:text-base text-stone-100/90 leading-relaxed border-t border-[#E8C98A]/15">{item.answer}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Reveal>
           );
         })}
       </div>

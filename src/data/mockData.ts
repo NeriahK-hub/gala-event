@@ -6,7 +6,6 @@ import {
   GalleryItem,
   FaqItem,
   PartnerSponsor,
-  MobileMoneyAccount,
   Order
 } from '../types';
 
@@ -61,7 +60,7 @@ export const TICKET_TIERS: TicketTier[] = [
     perks: [
       "Accès à la soirée gala",
       "Billet numérique avec QR code personnel",
-      "Billet envoyé sur WhatsApp après validation du paiement",
+      "Invitations débloquées par un lien, dès que ton paiement est confirmé",
     ]
   }
 ];
@@ -103,13 +102,13 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'faq-2',
-    question: 'Comment payer mon billet ?',
-    answer: "Choisis ton billet sur le site, remplis ton nom et tes coordonnées, puis envoie le montant par Mobile Money au numéro indiqué. Envoie ensuite la preuve de paiement sur WhatsApp : notre équipe valide ta commande."
+    question: 'Comment réserver et payer mon billet ?',
+    answer: "Choisis ton billet sur le site, remplis ton nom et ton numéro WhatsApp, puis envoie ta commande : WhatsApp s'ouvre avec un message déjà prêt. L'équipe t'explique comment payer et confirme ton paiement dans la conversation."
   },
   {
     id: 'faq-3',
     question: 'Comment vais-je recevoir mon billet ?',
-    answer: "Dès que ton paiement est validé par l'équipe, ton billet numérique avec QR code personnel est généré. Tu le reçois sur WhatsApp et tu peux aussi le retrouver sur ce site, dans « Mes billets »."
+    answer: "Une fois ton paiement confirmé, l'équipe t'envoie un lien sur WhatsApp. En cliquant dessus, tes invitations avec QR code s'affichent : tu peux les enregistrer ou les télécharger."
   },
   {
     id: 'faq-4',
@@ -118,23 +117,13 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'faq-5',
-    question: 'Et si je paie depuis le numéro de quelqu\'un d\'autre ?',
-    answer: "Aucun souci : le formulaire contient un champ « Numéro qui va envoyer l'argent ». Indique-y le numéro exact qui fait le transfert pour que l'équipe retrouve ton paiement."
+    question: 'Puis-je payer depuis le numéro de quelqu\'un d\'autre ?',
+    answer: "Oui, aucun souci. Dis-le simplement à l'équipe dans la conversation WhatsApp pour qu'elle retrouve ton paiement."
   },
   {
     id: 'faq-6',
-    question: 'J\'ai perdu mon billet, que faire ?',
-    answer: "Contacte-nous sur WhatsApp au +243 994 047 745 avec ton nom et le numéro utilisé pour la réservation : nous te renvoyons ton billet."
-  }
-];
-
-export const MOBILE_MONEY_ACCOUNTS: MobileMoneyAccount[] = [
-  {
-    name: 'Mobile Money',
-    operator: 'Mobile Money',
-    number: '+243 994 047 745',
-    holder: 'EMPIRE INFORMATIQUE',
-    instructions: "Envoie le montant exact au numéro ci-dessus, puis envoie la preuve de paiement sur WhatsApp."
+    question: 'J\'ai perdu mon lien d\'invitations, que faire ?',
+    answer: "Écris-nous sur WhatsApp au +243 994 047 745 avec ton nom : nous te renvoyons ton lien."
   }
 ];
 

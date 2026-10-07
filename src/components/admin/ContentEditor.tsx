@@ -7,7 +7,6 @@ import {
   GalleryItem,
   GuestArtist,
   FaqItem,
-  MobileMoneyAccount,
   PartnerSponsor,
   ProgramItem,
   SiteContent,
@@ -15,12 +14,11 @@ import {
 } from '../../types';
 import { FieldDef, ListEditor, ObjectFields, TextInput } from './fields';
 
-type SectionId = 'infos' | 'payment' | (typeof TEXT_SECTIONS)[number]['id'];
+type SectionId = 'infos' | (typeof TEXT_SECTIONS)[number]['id'];
 
 const SECTIONS: { id: SectionId; label: string }[] = [
   { id: 'infos', label: 'Infos générales' },
   ...TEXT_SECTIONS,
-  { id: 'payment', label: 'Paiement Mobile Money' },
 ];
 
 const galaFields: FieldDef<GalaInfo>[] = [
@@ -40,7 +38,7 @@ const galaFields: FieldDef<GalaInfo>[] = [
 const contactFields: FieldDef<GalaInfo>[] = [
   { key: 'organizersName', label: 'Nom de l\'organisateur' },
   { key: 'organizersBio', label: 'Présentation de l\'organisateur', type: 'textarea' },
-  { key: 'whatsappNumber', label: 'Numéro WhatsApp', hint: 'Avec l\'indicatif, ex. +243820000147' },
+  { key: 'whatsappNumber', label: 'Numéro WhatsApp de la billetterie', hint: 'Les commandes des clients arrivent sur ce numéro. Avec l\'indicatif, ex. +243 994 047 745' },
   { key: 'contactEmail', label: 'E-mail de contact' },
   { key: 'instagram', label: 'Compte Instagram' },
 ];
@@ -107,14 +105,6 @@ const sponsorFields: FieldDef<PartnerSponsor>[] = [
 const faqFields: FieldDef<FaqItem>[] = [
   { key: 'question', label: 'Question' },
   { key: 'answer', label: 'Réponse', type: 'textarea' },
-];
-
-const mobileMoneyFields: FieldDef<MobileMoneyAccount>[] = [
-  { key: 'name', label: 'Nom de l\'opérateur' },
-  { key: 'operator', label: 'Court nom (ex. M-Pesa)' },
-  { key: 'number', label: 'Numéro de réception' },
-  { key: 'holder', label: 'Titulaire du compte' },
-  { key: 'instructions', label: 'Instructions pour payer', type: 'textarea' },
 ];
 
 const newId = (prefix: string) => `${prefix}-${Date.now().toString(36)}`;
@@ -382,16 +372,6 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
             <ObjectFields item={content.galaInfo} fields={contactFields} onChange={setGala} />
           )}
 
-          {section === 'payment' && (
-            <ListEditor
-              items={content.mobileMoney}
-              onChange={(mobileMoney) => update({ mobileMoney })}
-              fields={mobileMoneyFields}
-              title={(m) => `${m.name} — ${m.number}`}
-              createItem={() => ({ name: 'Nouvel opérateur', operator: '', number: '', holder: '', instructions: '' })}
-              addLabel="Ajouter un opérateur"
-            />
-          )}
         </div>
       </div>
     </div>

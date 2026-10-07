@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from './EmpireLogo';
@@ -50,7 +51,11 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#6A0511]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
+    <motion.header
+      initial={{ y: -24, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 bg-[#6A0511]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         <button
           onClick={() => handleNavClick('hero')}
@@ -113,8 +118,16 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         </div>
       </div>
 
+      <AnimatePresence>
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#5A040F]/98 border-b border-[#E8C98A]/25 px-6 py-6 space-y-2 animate-in slide-in-from-top-4 duration-300">
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="lg:hidden overflow-hidden bg-[#5A040F]/98 border-b border-[#E8C98A]/25 px-6 space-y-2"
+        >
+          <div className="py-6 space-y-2">
           {navLinks.map((link) => (
             <button
               key={link.id}
@@ -135,8 +148,10 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
               {t('nav.ctaMobile')}
             </button>
           </div>
-        </div>
+          </div>
+        </motion.div>
       )}
-    </header>
+      </AnimatePresence>
+    </motion.header>
   );
 };

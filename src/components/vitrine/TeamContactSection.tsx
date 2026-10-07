@@ -2,6 +2,7 @@ import React from 'react';
 import { Instagram, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
+import { Reveal } from '../common/Reveal';
 
 export const TeamContactSection: React.FC = () => {
   const { content, t } = useContent();
@@ -12,7 +13,7 @@ export const TeamContactSection: React.FC = () => {
 
   return (
     <section id="contact" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto scroll-mt-20">
-      <div className="relative p-8 sm:p-12 rounded-3xl border border-[#E8C98A]/30 bg-[#3D0309]/45 text-center">
+      <Reveal className="relative p-8 sm:p-12 rounded-3xl border border-[#E8C98A]/30 bg-[#3D0309]/45 text-center">
         <div className="flex justify-center mb-6">
           <EmpireLogo size={112} />
         </div>
@@ -68,7 +69,7 @@ export const TeamContactSection: React.FC = () => {
             <span>{t('contact.cities')}</span>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 };

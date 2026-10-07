@@ -1,10 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { motion } from 'motion/react';
 import {
   ArrowLeft,
   CheckCircle2,
   Clock,
   DollarSign,
+  Check,
+  Copy,
   Download,
+  ExternalLink,
+  Link2,
+  Plus,
   FileEdit,
   LayoutDashboard,
   ListOrdered,
@@ -13,7 +19,6 @@ import {
   ScanLine,
   Search,
   Ticket,
-  X,
   XCircle,
 } from 'lucide-react';
 import { Order, OrderStatus } from '../../types';
@@ -21,10 +26,14 @@ import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { ContentEditor } from './ContentEditor';
+import { Modal } from './Modal';
+import { AddOrderModal } from './AddOrderModal';
+import { buildTicketLink } from '../../lib/ticketLink';
 
 interface AdminDashboardProps {
   orders: Order[];
   onUpdateOrder: (updatedOrder: Order) => void;
+  onAddOrder: (order: Order) => void;
   onBackToHome: () => void;
   onOpenOrderTickets: (orderId: string) => void;
 }
@@ -59,6 +68,7 @@ const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   orders,
   onUpdateOrder,
+  onAddOrder,
   onBackToHome,
   onOpenOrderTickets,
 }) => {
@@ -73,6 +83,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [validatingOrder, setValidatingOrder] = useState<Order | null>(null);
   const [smsReference, setSmsReference] = useState('');
   const [isValidationSuccess, setIsValidationSuccess] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [rejectingOrder, setRejectingOrder] = useState<Order | null>(null);
 
   const notify = (message: string) => setToast(message);
@@ -116,7 +128,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const openValidate = (order: Order) => {
     setValidatingOrder(order);
-    setSmsReference(`MPESA-${Math.floor(10000000 + Math.random() * 90000000)}`);
+    setSmsReference('');
     setIsValidationSuccess(false);
   };
 
@@ -126,9 +138,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const updated: Order = {
       ...validatingOrder,
       status: 'validated',
-      paymentReference: smsReference,
+      paymentReference: smsReference.trim() || undefined,
       validatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      tickets: validatingOrder.tickets.map((t) => ({ ...t, qrPayload: `${t.qrPayload}|REF-${smsReference}` })),
     };
     onUpdateOrder(updated);
     setValidatingOrder(updated);
@@ -143,8 +154,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const whatsAppUrl = (order: Order) => {
-    const message = `Bonjour ${order.customerName},\n\nExcellente nouvelle ! Ta réservation pour ${content.galaInfo.name} est désormais *VALIDÉE* :\n- Commande : *${order.id}*\n- Formule : *${order.quantity}x ${order.tierId.toUpperCase()}*\n- Réf. SMS : *${order.paymentReference || 'CONFIRMÉ'}*\n\nTu peux dès à présent consulter et télécharger tes invitations avec QR code personnel sur le portail officiel.\n\nNous avons hâte de t'accueillir le ${content.galaInfo.dateText} !`;
+    const message = `Bonjour ${order.customerName},\n\nTon paiement est bien confirmé. Voici ton lien pour accéder à tes ${order.quantity > 1 ? `${order.quantity} invitations` : 'invitation'} avec QR code :\n\n${buildTicketLink(order)}\n\nPrésente le QR code à l'entrée le ${content.galaInfo.dateText}. À très bientôt !`;
     return `https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+  };
+
+  const copyLink = async (order: Order) => {
+    try {
+      await navigator.clipboard.writeText(buildTicketLink(order));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      notify('Copie impossible : sélectionne le lien et copie-le à la main');
+    }
   };
 
   const exportCsv = () => {
@@ -242,7 +263,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         </header>
 
-        <main className="p-4 sm:p-8 max-w-6xl">
+        <motion.main
+          key={tab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="p-4 sm:p-8 max-w-6xl"
+        >
           {/* ============ VUE D'ENSEMBLE ============ */}
           {tab === 'overview' && (
             <div className="space-y-8">
@@ -360,16 +387,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   ))}
                 </div>
 
-                <button
-                  onClick={exportCsv}
-                  className="lg:ml-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
-                >
-                  <Download className="w-4 h-4" /> Exporter en CSV
-                </button>
+                <div className="lg:ml-auto flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setShowAdd(true)}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" /> Ajouter une commande
+                  </button>
+                  <button
+                    onClick={exportCsv}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" /> Exporter en CSV
+                  </button>
+                </div>
               </div>
 
               {filteredOrders.length === 0 ? (
-                <div className={`${panel} p-10 text-center text-stone-400`}>Aucune commande ne correspond à ta recherche.</div>
+                orders.length === 0 ? (
+                  <div className={`${panel} p-10 text-center`}>
+                    <p className="font-serif text-2xl text-[#F9F5EC] mb-2">Aucune commande pour le moment</p>
+                    <p className="text-sm text-stone-300 max-w-md mx-auto mb-6">
+                      Quand un client commande, son message arrive sur ton WhatsApp. Colle-le ici pour créer la commande, valide le paiement, puis envoie-lui son lien d'invitations.
+                    </p>
+                    <button
+                      onClick={() => setShowAdd(true)}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold cursor-pointer hover:brightness-110"
+                    >
+                      <Plus className="w-4 h-4" /> Ajouter une commande
+                    </button>
+                  </div>
+                ) : (
+                  <div className={`${panel} p-10 text-center text-stone-400`}>Aucune commande ne correspond à ta recherche.</div>
+                )
               ) : (
                 <ul className="space-y-3">
                   {filteredOrders.map((order) => (
@@ -413,19 +463,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         )}
                         {order.status === 'validated' && (
                           <>
-                            <a
-                              href={whatsAppUrl(order)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#25D366]/15 text-[#4ade80] text-sm font-semibold hover:bg-[#25D366]/25"
+                            <button
+                              onClick={() => {
+                                setValidatingOrder(order);
+                                setIsValidationSuccess(true);
+                              }}
+                              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#25D366]/15 text-[#4ade80] text-sm font-semibold hover:bg-[#25D366]/25 cursor-pointer"
                             >
-                              <MessageCircle className="w-4 h-4" /> WhatsApp
-                            </a>
+                              <Link2 className="w-4 h-4" /> Lien client
+                            </button>
                             <button
                               onClick={() => onOpenOrderTickets(order.id)}
                               className="px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
                             >
-                              Voir les billets
+                              Aperçu
                             </button>
                           </>
                         )}
@@ -440,69 +491,108 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {tab === 'scanner' && <ScannerPanel orders={orders} onUpdateOrder={onUpdateOrder} />}
 
           {tab === 'content' && <ContentEditor onViewSite={onBackToHome} notify={notify} />}
-        </main>
+        </motion.main>
       </div>
 
-      {/* Fenêtre de validation */}
+      {/* Fenêtre de validation + lien d'invitations */}
       {validatingOrder && (
-        <Modal onClose={() => setValidatingOrder(null)} title={`Commande ${validatingOrder.id}`} kicker="Validation du paiement">
+        <Modal
+          onClose={() => setValidatingOrder(null)}
+          title={`Commande ${validatingOrder.id}`}
+          kicker={isValidationSuccess ? "Lien d'invitations" : 'Confirmer le paiement'}
+        >
           {!isValidationSuccess ? (
             <form onSubmit={confirmValidation} className="space-y-5">
               <dl className="rounded-xl bg-black/30 p-4 text-sm space-y-2">
-                <Row k="Titulaire" v={validatingOrder.customerName} />
-                <Row k="Montant attendu" v={`${validatingOrder.totalAmount} USD`} strong />
-                <Row k="Numéro payeur" v={validatingOrder.payerPhone} mono />
+                <Row k="Client" v={validatingOrder.customerName} />
+                <Row k="Téléphone" v={validatingOrder.customerPhone} mono />
+                <Row k="Billets" v={`${validatingOrder.quantity} × ${tierName(validatingOrder.tierId)}`} />
+                <Row k="Montant à encaisser" v={`${validatingOrder.totalAmount} USD`} strong />
               </dl>
+              <p className="text-sm text-stone-300 leading-relaxed">
+                Valide seulement une fois le paiement reçu et confirmé avec le client. Un lien d'invitations sera alors généré.
+              </p>
               <label className="block">
-                <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Référence du SMS de paiement *</span>
+                <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Référence du paiement (facultatif)</span>
                 <input
-                  required
                   value={smsReference}
                   onChange={(e) => setSmsReference(e.target.value)}
-                  placeholder="Ex. MPESA-88492021"
+                  placeholder="Ex. code du SMS de confirmation"
                   className="w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm font-mono text-[#F9F5EC] focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
                 />
-                <span className="block text-xs text-stone-400 mt-1">Le code qui figure sur le SMS de confirmation reçu.</span>
               </label>
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
+                className="w-full py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
               >
-                Confirmer la validation
+                Paiement reçu : générer le lien
               </button>
             </form>
           ) : (
-            <div className="space-y-5 text-center">
-              <div className="w-14 h-14 rounded-full bg-emerald-400 text-emerald-950 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="font-serif text-xl text-[#F9F5EC]">Paiement validé</h3>
-                <p className="text-sm text-stone-300 mt-1">
-                  Les billets de <strong>{validatingOrder.customerName}</strong> sont générés.
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-full bg-emerald-400 text-emerald-950 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-6 h-6" />
+                </span>
+                <p className="text-sm text-stone-200">
+                  Paiement validé pour <strong className="text-white">{validatingOrder.customerName}</strong>. Envoie-lui ce lien : en cliquant dessus, ses {validatingOrder.quantity > 1 ? `${validatingOrder.quantity} invitations` : 'invitation'} s'affichent.
                 </p>
               </div>
+
+              <div>
+                <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Lien du client</span>
+                <div className="flex gap-2">
+                  <input
+                    readOnly
+                    value={buildTicketLink(validatingOrder)}
+                    onFocus={(e) => e.currentTarget.select()}
+                    aria-label="Lien d'invitations du client"
+                    className="min-w-0 flex-1 px-3 py-2.5 rounded-lg border border-white/15 bg-black/30 text-xs font-mono text-stone-200 truncate"
+                  />
+                  <button
+                    onClick={() => copyLink(validatingOrder)}
+                    className="shrink-0 inline-flex items-center gap-2 px-3.5 rounded-lg border border-white/20 text-sm text-white hover:bg-white/10 cursor-pointer"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+                    {copied ? 'Copié' : 'Copier'}
+                  </button>
+                </div>
+              </div>
+
               <a
                 href={whatsAppUrl(validatingOrder)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold text-sm hover:bg-[#20ba59]"
               >
-                <MessageCircle className="w-5 h-5" /> Envoyer le billet sur WhatsApp
+                <MessageCircle className="w-5 h-5" /> Envoyer le lien sur WhatsApp
               </a>
-              <button
-                onClick={() => {
-                  const id = validatingOrder.id;
-                  setValidatingOrder(null);
-                  onOpenOrderTickets(id);
-                }}
-                className="w-full py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+              <a
+                href={buildTicketLink(validatingOrder)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10"
               >
-                Voir les billets émis
-              </button>
+                <ExternalLink className="w-4 h-4" /> Voir comme le client
+              </a>
             </div>
           )}
         </Modal>
+      )}
+
+      {showAdd && (
+        <AddOrderModal
+          tiers={content.tiers}
+          existingIds={orders.map((o) => o.id)}
+          onClose={() => setShowAdd(false)}
+          onAdd={(order) => {
+            onAddOrder(order);
+            setShowAdd(false);
+            setStatusFilter('all');
+            setTab('orders');
+            notify(`Commande ${order.id} ajoutée`);
+          }}
+        />
       )}
 
       {/* Confirmation de refus */}
@@ -563,28 +653,3 @@ const Row: React.FC<{ k: string; v: string; strong?: boolean; mono?: boolean }> 
     <dd className={`text-right ${strong ? 'font-bold text-[#F3E5AB]' : 'text-stone-100'} ${mono ? 'font-mono' : ''}`}>{v}</dd>
   </div>
 );
-
-const Modal: React.FC<{ title: string; kicker: string; onClose: () => void; children: React.ReactNode }> = ({ title, kicker, onClose, children }) => {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  return (
-    <div role="dialog" aria-modal="true" onClick={onClose} className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl border border-[#E8C98A]/40 bg-[#140708] p-6 sm:p-7 shadow-2xl">
-        <div className="flex items-start justify-between gap-3 mb-5">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold">{kicker}</p>
-            <h2 className="font-serif text-2xl text-[#F9F5EC]">{title}</h2>
-          </div>
-          <button onClick={onClose} aria-label="Fermer" className="p-1.5 rounded-full text-stone-400 hover:text-white hover:bg-white/10 cursor-pointer">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-};

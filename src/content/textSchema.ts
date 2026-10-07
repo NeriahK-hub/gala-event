@@ -65,7 +65,7 @@ export const TEXT_FIELDS: TextField[] = [
   f('about.kicker', 'about', 'Petit titre', 'Le gala'),
   f('about.title', 'about', 'Titre', 'Un anniversaire, une grande soirée'),
   f('about.p1', 'about', 'Paragraphe 1 (mis en avant)', 'Empire Informatique célèbre son anniversaire à Kinshasa avec une conférence et une grande soirée gala.', true),
-  f('about.p2', 'about', 'Paragraphe 2', 'Pour participer à la soirée gala, un seul billet : 10 $. Tu paies par Mobile Money, tu envoies ta preuve de paiement sur WhatsApp et tu reçois ton billet avec QR code.', true),
+  f('about.p2', 'about', 'Paragraphe 2', 'Pour participer à la soirée gala, un seul billet : 10 $. Tu commandes en ligne, tu finalises le paiement avec l\'équipe sur WhatsApp, puis tu reçois ton lien d\'invitations avec QR code.', true),
   f('about.p3', 'about', 'Paragraphe 3', 'Organisée en partenariat avec l\'Université de Kinshasa, la soirée se vit en tenue élégante : sors ton plus beau look.', true),
 
   // Programme
@@ -82,7 +82,7 @@ export const TEXT_FIELDS: TextField[] = [
   // Billets
   f('tickets.kicker', 'tickets', 'Petit titre', 'Billetterie officielle'),
   f('tickets.title', 'tickets', 'Titre', 'Réserve ton billet'),
-  f('tickets.subtitle', 'tickets', 'Sous-titre', 'Un seul billet à 10 $ pour la soirée gala. Tu paies par Mobile Money et tu reçois ton billet sur WhatsApp.', true),
+  f('tickets.subtitle', 'tickets', 'Sous-titre', 'Un seul billet à 10 $ pour la soirée gala. Tu commandes ici, tu paies avec l\'équipe sur WhatsApp, et tes invitations s\'ouvrent grâce à un lien.', true),
   f('tickets.perksLabel', 'tickets', 'Titre de la liste d\'avantages', 'Ce qui est inclus'),
   f('tickets.cta', 'tickets', 'Bouton de chaque billet', 'Réserver ce billet'),
   f('tickets.remaining', 'tickets', 'Mention places restantes (après le nombre)', 'places restantes'),

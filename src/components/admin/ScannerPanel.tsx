@@ -32,12 +32,17 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
   const runScan = (raw: string) => {
     const q = raw.trim().toLowerCase();
     if (!q) return;
-    const found = allTickets.find(
-      ({ ticket }) =>
-        ticket.ticketNumber.toLowerCase() === q ||
-        ticket.securityCode.toLowerCase() === q ||
-        ticket.qrPayload.toLowerCase().includes(q)
-    );
+    // Le QR code contient « numéro|code de sécurité » : on lit chaque morceau
+    const parts = q.split(/[|\s]+/).filter(Boolean);
+    const found = allTickets.find(({ ticket }) => {
+      const num = ticket.ticketNumber.toLowerCase();
+      const code = ticket.securityCode.toLowerCase();
+      const hasNum = parts.includes(num);
+      const hasCode = parts.includes(code);
+      // Si le QR donne les deux, ils doivent correspondre au même billet (anti-falsification)
+      if (hasNum && parts.some((p) => /^[a-z]{3,5}-\d{4}-[a-z]$/.test(p))) return hasCode;
+      return hasNum || hasCode || ticket.qrPayload.toLowerCase() === q;
+    });
 
     if (!found) {
       setOutcome({ kind: 'unknown', code: raw.trim() });
@@ -73,7 +78,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
           <h2 className="font-serif text-2xl text-[#F9F5EC]">Contrôle d'entrée</h2>
         </div>
         <p className="text-sm text-stone-300 mb-6">
-          Saisis le numéro du billet (ex. TKT-0147-01) ou son code de sécurité. Un billet valide est marqué « scanné » tout de suite.
+          Scanne le QR code, ou saisis le numéro du billet (ex. TKT-0001-01) ou son code de sécurité. Un billet valide est marqué « scanné » tout de suite.
         </p>
 
         <form
@@ -89,7 +94,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
               value={code}
               onChange={(e) => setCode(e.target.value)}
               autoFocus
-              placeholder="TKT-0147-01 ou VIP-7789-A"
+              placeholder="TKT-0001-01 ou GALA-1001-A"
               aria-label="Numéro ou code du billet"
               className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/15 bg-black/30 text-base font-mono text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
             />

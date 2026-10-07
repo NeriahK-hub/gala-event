@@ -8,7 +8,6 @@ import {
   GALLERY_ITEMS,
   FAQ_ITEMS,
   PARTNERS_SPONSORS,
-  MOBILE_MONEY_ACCOUNTS,
 } from '../data/mockData';
 import { DEFAULT_TEXTS } from './textSchema';
 
@@ -23,7 +22,6 @@ export const createDefaultContent = (): SiteContent => ({
   gallery: structuredClone(GALLERY_ITEMS),
   faq: structuredClone(FAQ_ITEMS),
   sponsors: structuredClone(PARTNERS_SPONSORS),
-  mobileMoney: structuredClone(MOBILE_MONEY_ACCOUNTS),
 });
 
 // Fusionne un contenu sauvegardé avec les valeurs par défaut (les nouveaux champs restent présents)

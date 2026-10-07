@@ -7,19 +7,22 @@ import {
   Download,
   Info,
   MessageCircle,
-  Search,
+  Ticket,
   Share2,
 } from 'lucide-react';
 import { IssuedTicket, Order, OrderStatus } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { QRCodeSvg } from './QRCodeSvg';
+import { Reveal } from '../common/Reveal';
 
 interface TicketViewPageProps {
-  /** Commande à afficher ; null = formulaire de recherche « Retrouver mon billet » */
+  /** Commande à afficher ; null = liste « Mes billets » */
   order: Order | null;
-  orders: Order[];
+  savedOrders: Order[];
+  linkError: boolean;
   onBackToHome: () => void;
-  onFindOrder: (orderId: string) => void;
+  onOpenOrder: (order: Order) => void;
+  onShowList: () => void;
   onUpdateOrderStatus?: (orderId: string, status: OrderStatus) => void;
 }
 
@@ -28,42 +31,29 @@ const digits = (v: string) => v.replace(/[^0-9]/g, '');
 
 export const TicketViewPage: React.FC<TicketViewPageProps> = ({
   order,
-  orders,
+  savedOrders,
+  linkError,
   onBackToHome,
-  onFindOrder,
+  onOpenOrder,
+  onShowList,
   onUpdateOrderStatus,
 }) => {
   if (!order) {
-    return <LookupForm orders={orders} onBackToHome={onBackToHome} onFindOrder={onFindOrder} />;
+    return <MyTickets savedOrders={savedOrders} linkError={linkError} onBackToHome={onBackToHome} onOpenOrder={onOpenOrder} />;
   }
-  return <ReservationDetails order={order} onBackToHome={onBackToHome} onUpdateOrderStatus={onUpdateOrderStatus} />;
+  return (
+    <ReservationDetails order={order} onBack={savedOrders.length > 1 ? onShowList : onBackToHome} onUpdateOrderStatus={onUpdateOrderStatus} />
+  );
 };
 
-/* ---------- Retrouver mon billet ---------- */
-const LookupForm: React.FC<{
-  orders: Order[];
+/* ---------- Mes billets ---------- */
+const MyTickets: React.FC<{
+  savedOrders: Order[];
+  linkError: boolean;
   onBackToHome: () => void;
-  onFindOrder: (id: string) => void;
-}> = ({ orders, onBackToHome, onFindOrder }) => {
+  onOpenOrder: (o: Order) => void;
+}> = ({ savedOrders, linkError, onBackToHome, onOpenOrder }) => {
   const { content } = useContent();
-  const [code, setCode] = useState('');
-  const [phone, setPhone] = useState('');
-  const [error, setError] = useState('');
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const found = orders.find(
-      (o) =>
-        o.id.toLowerCase() === code.trim().toLowerCase() &&
-        (digits(o.customerPhone) === digits(phone) || digits(o.payerPhone) === digits(phone))
-    );
-    if (!found) {
-      setError('Aucune commande ne correspond. Vérifie ton code et ton numéro, ou contacte-nous sur WhatsApp.');
-      return;
-    }
-    setError('');
-    onFindOrder(found.id);
-  };
 
   return (
     <div className="min-h-screen pt-28 pb-24 px-4">
@@ -71,57 +61,61 @@ const LookupForm: React.FC<{
         <button onClick={onBackToHome} className="inline-flex items-center gap-2 text-sm text-[#FFD9A0] hover:text-white mb-6 cursor-pointer">
           <ArrowLeft className="w-4 h-4" /> Retour au site
         </button>
-        <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center mb-4">
-            <Search className="w-6 h-6" />
+
+        <h1 className="font-sans font-bold tracking-tight text-white text-4xl mb-2">Mes billets</h1>
+
+        {linkError && (
+          <div role="alert" className="mb-4 flex gap-3 rounded-2xl bg-white text-[#2A1014] p-4">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <p className="text-sm">
+              Ce lien est incomplet ou invalide. Demande à l'équipe de te renvoyer ton lien d'invitations sur WhatsApp.
+            </p>
           </div>
-          <h1 className="font-serif text-3xl font-semibold mb-1">Retrouver mon billet</h1>
-          <p className="text-sm text-[#6B4A4F] mb-6">Entre ton code de commande et le numéro utilisé pour réserver.</p>
+        )}
 
-          <form onSubmit={submit} className="space-y-4">
-            <label className="block">
-              <span className="block text-xs font-semibold text-[#6B4A4F] mb-1.5">Code de commande</span>
-              <input
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-                placeholder="GALA-0001"
-                className="w-full px-4 py-3 rounded-xl border border-[#E7DCCB] bg-white font-mono focus:border-[#D8590B] focus:outline-none focus:ring-2 focus:ring-[#F2761B]/20"
-              />
-            </label>
-            <label className="block">
-              <span className="block text-xs font-semibold text-[#6B4A4F] mb-1.5">Numéro de téléphone</span>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                type="tel"
-                placeholder="+243 …"
-                className="w-full px-4 py-3 rounded-xl border border-[#E7DCCB] bg-white focus:border-[#D8590B] focus:outline-none focus:ring-2 focus:ring-[#F2761B]/20"
-              />
-            </label>
-            {error && (
-              <p role="alert" className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
-            <button type="submit" className="w-full py-3.5 rounded-full bg-[#2A1014] text-white font-bold hover:bg-black cursor-pointer">
-              Voir mon billet
-            </button>
-          </form>
-
-          <a
-            href={`https://wa.me/${digits(content.galaInfo.whatsappNumber)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 text-sm text-[#2A1014] underline underline-offset-4"
-          >
-            <MessageCircle className="w-4 h-4" /> Un souci ? Écris-nous sur WhatsApp
-          </a>
-          {isDemo() && (
-            <p className="mt-4 text-xs text-[#8B6B70]">Démo : essaie GALA-0001 avec le numéro +243 81 000 0001.</p>
-          )}
-        </div>
+        {savedOrders.length === 0 ? (
+          <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center mb-4">
+              <Ticket className="w-6 h-6" />
+            </div>
+            <h2 className="font-serif text-2xl font-semibold mb-2">Tes invitations arrivent par lien</h2>
+            <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
+              Une fois ton paiement confirmé, l'équipe t'envoie un lien sur WhatsApp. Ouvre-le : tes invitations avec QR code s'affichent ici, prêtes à être présentées à l'entrée.
+            </p>
+            <a
+              href={`https://wa.me/${digits(content.galaInfo.whatsappNumber)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
+            >
+              <MessageCircle className="w-5 h-5" /> Écrire à l'équipe
+            </a>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {savedOrders.map((o) => (
+              <li key={o.id}>
+                <button
+                  onClick={() => onOpenOrder(o)}
+                  className="w-full text-left rounded-2xl bg-[#FBF8F2] text-[#2A1014] p-4 shadow-xl flex items-center gap-4 hover:ring-2 hover:ring-[#FFB43A] transition cursor-pointer"
+                >
+                  <span className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${o.status === 'validated' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                    {o.status === 'validated' ? <CheckCircle2 className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold truncate">{o.customerName}</span>
+                    <span className="block text-xs text-[#8B6B70]">
+                      {o.id} · {o.quantity} billet{o.quantity > 1 ? 's' : ''}
+                    </span>
+                  </span>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${o.status === 'validated' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                    {o.status === 'validated' ? 'Débloqué' : 'En attente'}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
@@ -130,9 +124,9 @@ const LookupForm: React.FC<{
 /* ---------- Détails de la réservation ---------- */
 const ReservationDetails: React.FC<{
   order: Order;
-  onBackToHome: () => void;
+  onBack: () => void;
   onUpdateOrderStatus?: (orderId: string, status: OrderStatus) => void;
-}> = ({ order, onBackToHome, onUpdateOrderStatus }) => {
+}> = ({ order, onBack, onUpdateOrderStatus }) => {
   const { content } = useContent();
   const info = content.galaInfo;
   const [index, setIndex] = useState(0);
@@ -167,8 +161,8 @@ const ReservationDetails: React.FC<{
         {/* Barre du haut */}
         <div className="flex items-center gap-3 mb-5 print:hidden">
           <button
-            onClick={onBackToHome}
-            aria-label="Retour au site"
+            onClick={onBack}
+            aria-label="Retour"
             className="p-2 -ml-2 rounded-full text-white hover:bg-white/10 cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -202,7 +196,7 @@ const ReservationDetails: React.FC<{
             </span>
             <h2 className="font-serif text-2xl font-semibold mb-2">Ton billet arrive bientôt</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
-              Notre équipe vérifie ton paiement Mobile Money. Dès qu'il est validé, ton QR code apparaît sur cette page et tu reçois ton billet sur WhatsApp.
+              Continue la conversation WhatsApp avec l'équipe pour finaliser le paiement. Dès qu'il est confirmé, tu reçois un lien : en cliquant dessus, tes invitations avec QR code s'affichent.
             </p>
             <dl className="rounded-2xl bg-white border border-[#EFE5D6] p-4 text-sm text-left space-y-2 mb-5">
               <Row k="Commande" v={order.id} mono />
@@ -267,7 +261,7 @@ const ReservationDetails: React.FC<{
             )}
 
             {/* Carte événement */}
-            <div className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] p-4 flex items-start justify-between gap-3 shadow-xl">
+            <Reveal immediate delay={0.05} className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] p-4 flex items-start justify-between gap-3 shadow-xl">
               <div className="min-w-0">
                 <h2 className="font-semibold text-base leading-snug">{info.name}</h2>
                 <p className="text-xs text-[#8B6B70] mt-0.5">{info.dateText}</p>
@@ -279,11 +273,11 @@ const ReservationDetails: React.FC<{
               >
                 <Share2 className="w-5 h-5" />
               </button>
-            </div>
+            </Reveal>
             {shared && <p role="status" className="text-xs text-[#FFD9A0] text-center">Texte copié, tu peux le coller où tu veux.</p>}
 
             {/* Détails */}
-            <div className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] shadow-xl overflow-hidden">
+            <Reveal immediate delay={0.15} className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] shadow-xl overflow-hidden">
               <dl className="grid grid-cols-2 gap-x-4 gap-y-4 p-4">
                 <Cell k="Titulaire" v={ticket.attendeeName} />
                 <Cell k="Billet" v={ticket.tierName} />
@@ -299,10 +293,10 @@ const ReservationDetails: React.FC<{
                 <span className="text-[#6B4A4F]">Total de la commande</span>
                 <span className="font-bold text-[#D8590B] tabular-nums">{order.totalAmount.toFixed(2)} USD</span>
               </div>
-            </div>
+            </Reveal>
 
             {/* QR code */}
-            <div className="rounded-2xl bg-white text-[#2A1014] p-5 shadow-xl text-center">
+            <Reveal immediate delay={0.28} className="rounded-2xl bg-white text-[#2A1014] p-5 shadow-xl text-center">
               <div className="relative inline-block">
                 <QRCodeSvg value={ticket.qrPayload} size={220} dimmed={ticket.scanned} />
                 {ticket.scanned && (
@@ -314,7 +308,7 @@ const ReservationDetails: React.FC<{
               <p className="mt-3 text-xs text-[#8B6B70]">
                 Code de sécurité : <span className="font-mono font-semibold text-[#2A1014]">{ticket.securityCode}</span>
               </p>
-            </div>
+            </Reveal>
 
             <p className="flex gap-2 text-xs text-white/90 leading-relaxed px-1">
               <Info className="w-4 h-4 shrink-0 mt-0.5 text-[#FFD9A0]" />

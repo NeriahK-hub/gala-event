@@ -28,7 +28,15 @@ Depuis le pied de page, ouvre **Accès équipe & contrôle**, puis l'onglet **Co
 
 Les modifications sont enregistrées dans le navigateur. Utilise **Exporter** / **Importer** pour les sauvegarder ou les copier sur un autre appareil.
 
+## Fonctionnement de la billetterie
+
+1. Le client choisit son billet puis envoie sa commande : WhatsApp s'ouvre vers le numéro défini dans l'admin (Contenu du site → Équipe & contact), avec un message déjà prêt.
+2. L'équipe échange avec le client et confirme le paiement.
+3. Dans l'admin (Commandes → Ajouter une commande), colle le message du client, puis clique sur **Valider** : un **lien d'invitations** est généré.
+4. Envoie ce lien au client (bouton WhatsApp) : en cliquant dessus, ses invitations avec QR code s'affichent.
+5. À l'entrée, l'onglet **Contrôle d'entrée** vérifie chaque billet (valide, déjà utilisé, inconnu).
+
 ## Limites actuelles
 
-- Pas de backend : les commandes et les modifications de contenu restent dans le navigateur.
+- Pas de backend : les commandes et les modifications de contenu restent dans le navigateur de l'admin. Le contrôle d'entrée doit se faire depuis ce même appareil (les scans ne sont pas synchronisés entre appareils).
 - L'espace équipe n'a pas d'authentification : à protéger avant une mise en ligne publique.

@@ -135,5 +135,4 @@ export interface SiteContent {
   gallery: GalleryItem[];
   faq: FaqItem[];
   sponsors: PartnerSponsor[];
-  mobileMoney: MobileMoneyAccount[];
 }

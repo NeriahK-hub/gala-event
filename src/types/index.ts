@@ -125,3 +125,15 @@ export interface GalaInfo {
     menGuidelines: string;
   };
 }
+
+export interface SiteContent {
+  galaInfo: GalaInfo;
+  texts: Record<string, string>;
+  tiers: TicketTier[];
+  program: ProgramItem[];
+  guests: GuestArtist[];
+  gallery: GalleryItem[];
+  faq: FaqItem[];
+  sponsors: PartnerSponsor[];
+  mobileMoney: MobileMoneyAccount[];
+}

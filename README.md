@@ -1,20 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Le Grand Gala Royal — Kinshasa
 
-# Run and deploy your AI Studio app
+Site officiel et billetterie du Grand Gala Royal : présentation de la soirée, réservation de billets avec paiement Mobile Money, billets à QR code et console d'administration pour l'équipe.
 
-This contains everything you need to run your app locally.
+Organisé par **Empire Informatique**.
 
-View your app in AI Studio: https://ai.studio/apps/71573d67-8cea-4cdc-a14e-d49056a48a74
+## Lancer le projet
 
-## Run Locally
+Prérequis : Node.js 20 ou plus.
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev      # http://localhost:3000
+```
 
+| Commande          | Rôle                                  |
+| ----------------- | ------------------------------------- |
+| `npm run dev`     | serveur de développement              |
+| `npm run lint`    | vérification des types (TypeScript)   |
+| `npm run build`   | build de production dans `dist/`      |
+| `npm run preview` | prévisualiser le build                |
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Ajoute `?demo` à l'adresse (`http://localhost:3000/?demo`) pour afficher le sélecteur de pages de démonstration.
+
+## Modifier les textes sans toucher au code
+
+Depuis le pied de page, ouvre **Accès équipe & contrôle**, puis l'onglet **Contenu du site** : tous les textes (de l'accueil au pied de page), les billets, le programme, les invités, la galerie, la FAQ, les partenaires et les numéros Mobile Money sont modifiables.
+
+Les modifications sont enregistrées dans le navigateur. Utilise **Exporter** / **Importer** pour les sauvegarder ou les copier sur un autre appareil.
+
+## Limites actuelles
+
+- Pas de backend : les commandes et les modifications de contenu restent dans le navigateur.
+- L'espace équipe n'a pas d'authentification : à protéger avant une mise en ligne publique.

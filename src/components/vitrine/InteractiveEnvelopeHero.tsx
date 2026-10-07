@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { WaxSeal } from '../common/WaxSeal';
-import { Sparkles, ArrowRight, X } from 'lucide-react';
-import { GALA_INFO } from '../../data/mockData';
+import { ArrowRight, MailOpen, X } from 'lucide-react';
+import { useContent } from '../../content/ContentContext';
 
 interface InteractiveEnvelopeHeroProps {
   onReserveClick: () => void;
@@ -11,6 +11,8 @@ interface InteractiveEnvelopeHeroProps {
 export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = ({
   onReserveClick,
 }) => {
+  const { content, t } = useContent();
+  const GALA_INFO = content.galaInfo;
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggleEnvelope = () => {
@@ -21,7 +23,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
           particleCount: 40,
           spread: 60,
           origin: { y: 0.6 },
-          colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#8B0A1A'],
+          colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#6E0A16'],
           disableForReducedMotion: true,
         });
       } catch {
@@ -36,10 +38,10 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
       {/* Interactive prompt banner */}
       <button
         onClick={handleToggleEnvelope}
-        className="group mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4A857]/40 bg-[#7A0815]/80 hover:bg-[#8B0A1A] hover:border-[#D4A857] transition-all duration-300 text-xs tracking-wider uppercase text-[#E8C98A] cursor-pointer shadow-lg"
+        className="group mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4A857]/40 bg-[#7A0815]/80 hover:bg-[#6E0A16] hover:border-[#D4A857] transition-all duration-300 text-xs tracking-wider uppercase text-[#E8C98A] cursor-pointer shadow-lg"
       >
-        <Sparkles className="w-3.5 h-3.5 text-[#D4A857] animate-spin" style={{ animationDuration: '6s' }} />
-        <span>{isOpen ? "L'invitation est ouverte • Clique pour refermer" : "Touche l'enveloppe pour déplier l'invitation"}</span>
+        <MailOpen className="w-4 h-4 text-[#E8C98A]" />
+        <span>{isOpen ? t('hero.envelopeHintOpen') : t('hero.envelopeHint')}</span>
       </button>
 
       {/* Main Container holding Envelope & Golden Glove Hand */}
@@ -72,17 +74,17 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
             {/* Crest & Invitation Header */}
             <div className="mb-2">
               <span className="font-script text-3xl sm:text-4xl text-[#E8C98A] block leading-none">
-                Le Grand Gala Royal
+                {GALA_INFO.name}
               </span>
               <p className="text-xs tracking-[0.25em] text-[#D4A857] uppercase font-semibold mt-1">
-                Kinshasa • Vème Édition
+                {t('hero.cardTagline')}
               </p>
             </div>
 
             <div className="my-2.5 h-[1px] w-28 mx-auto bg-gradient-to-r from-transparent via-[#D4A857]/80 to-transparent" />
 
             <p className="font-serif italic text-xs sm:text-sm text-[#F3E5AB]/95 leading-relaxed max-w-xs mx-auto">
-              « En l'honneur d'une nuit de distinction et de splendeur, nous avons l'insigne honneur de te convier à cette célébration impériale. »
+              {t('hero.cardText')}
             </p>
 
             <div className="mt-3.5 space-y-1 text-xs">
@@ -98,7 +100,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
                 }}
                 className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-semibold text-xs tracking-wider uppercase shadow-lg hover:shadow-[0_0_20px_rgba(212,168,87,0.7)] transition-all transform hover:scale-[1.02] cursor-pointer"
               >
-                <span>Réserver mon billet</span>
+                <span>{t('hero.cardCta')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -113,7 +115,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
           }`}
         >
           {/* Envelope Body Texture & Grain */}
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#8B0A1A] via-[#700715] to-[#4A030C] border border-[#A81428]/60 overflow-hidden shadow-inner">
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#6E0A16] via-[#560611] to-[#3A030B] border border-[#8A1020]/60 overflow-hidden shadow-inner">
             {/* Fine diagonal weave texture */}
             <div
               className="absolute inset-0 opacity-20"
@@ -128,7 +130,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
             {/* Inscription "Vip" in golden script on top flap zone */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center pointer-events-none select-none z-10">
               <span className="font-script text-3xl sm:text-4xl text-[#E8C98A]/90 tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Vip
+                {t('hero.envelopeLabel')}
               </span>
             </div>
 
@@ -177,7 +179,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
               <polygon
                 points="0,0 340,0 170,115"
                 fill="#7E0918"
-                stroke="#A81428"
+                stroke="#8A1020"
                 strokeWidth="0.8"
               />
               <line x1="0" y1="0" x2="170" y2="115" stroke="#D4A857" strokeWidth="0.8" opacity="0.4" />

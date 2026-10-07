@@ -1,27 +1,24 @@
 import React from 'react';
-import { PARTNERS_SPONSORS } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
 
 export const SponsorsSection: React.FC = () => {
-  return (
-    <section className="relative py-16 px-4 sm:px-6 lg:px-8 border-y border-[#D4A857]/20 bg-[#3D030B]/50">
-      <div className="max-w-6xl mx-auto text-center">
-        <p className="text-xs uppercase tracking-[0.18em] text-[#D4A857]/90 font-semibold mb-8">
-          Mécènes & Partenaires Officiels de Prestige
-        </p>
+  const { content, t } = useContent();
 
-        {/* Clean, Sobres Logos Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
-          {PARTNERS_SPONSORS.map((sponsor) => (
+  if (content.sponsors.length === 0) return null;
+
+  return (
+    <section className="relative py-14 sm:py-16 px-4 sm:px-6 lg:px-8 border-y border-[#E8C98A]/20 bg-[#160607]/30">
+      <div className="max-w-6xl mx-auto text-center">
+        <p className="text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold mb-8">{t('sponsors.title')}</p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 items-stretch">
+          {content.sponsors.map((sponsor) => (
             <div
               key={sponsor.id}
-              className="p-4 rounded-xl border border-[#D4A857]/15 bg-[#5A040F]/30 hover:border-[#D4A857]/40 hover:bg-[#7A0815]/50 transition-all flex flex-col items-center justify-center text-center group cursor-default"
+              className="p-4 rounded-xl border border-[#E8C98A]/20 bg-[#160607]/30 hover:border-[#E8C98A]/50 transition-colors flex flex-col items-center justify-center text-center"
             >
-              <span className="font-serif tracking-widest text-xs sm:text-sm font-semibold text-[#E8C98A]/85 group-hover:text-white transition-colors">
-                {sponsor.logoText}
-              </span>
-              <span className="text-xs uppercase tracking-wider text-[#D4A857]/90 mt-1">
-                {sponsor.category}
-              </span>
+              <span className="font-serif tracking-widest text-sm font-semibold text-[#F3E5AB]">{sponsor.logoText}</span>
+              <span className="text-xs uppercase tracking-wider text-[#E8C98A]/90 mt-1">{sponsor.category}</span>
             </div>
           ))}
         </div>

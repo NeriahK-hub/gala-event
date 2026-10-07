@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { GALA_INFO } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
 import { Clock } from 'lucide-react';
 
 export const CountdownSection: React.FC = () => {
-  const targetDate = new Date(GALA_INFO.isoDate).getTime();
+  const { content, t } = useContent();
+  const targetDate = new Date(content.galaInfo.isoDate).getTime();
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -25,7 +26,7 @@ export const CountdownSection: React.FC = () => {
           seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
       } else {
-        setTimeLeft({ days: 72, hours: 14, minutes: 22, seconds: 40 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
@@ -35,18 +36,18 @@ export const CountdownSection: React.FC = () => {
   }, [targetDate]);
 
   const units = [
-    { label: 'Jours', value: timeLeft.days },
-    { label: 'Heures', value: timeLeft.hours },
-    { label: 'Minutes', value: timeLeft.minutes },
-    { label: 'Secondes', value: timeLeft.seconds },
+    { label: t('countdown.days'), value: timeLeft.days },
+    { label: t('countdown.hours'), value: timeLeft.hours },
+    { label: t('countdown.minutes'), value: timeLeft.minutes },
+    { label: t('countdown.seconds'), value: timeLeft.seconds },
   ];
 
   return (
-    <section className="relative py-12 px-4 border-y border-[#D4A857]/20 bg-[#5A040F]/40 backdrop-blur-sm">
+    <section className="relative py-12 px-4 border-y border-[#D4A857]/20 bg-[#160607]/40 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-[#D4A857] mb-6">
+        <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold mb-6">
           <Clock className="w-3.5 h-3.5" />
-          <span>Le Décompte vers l'Excellence</span>
+          <span>{t('countdown.kicker')}</span>
         </div>
 
         {/* 4 Large Golden Digit Units */}
@@ -54,23 +55,23 @@ export const CountdownSection: React.FC = () => {
           {units.map((unit, index) => (
             <div
               key={index}
-              className="p-4 sm:p-5 rounded-xl border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/50 to-[#5A040F]/80 shadow-[0_8px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center relative group hover:border-[#D4A857]/60 transition-colors"
+              className="p-4 sm:p-5 rounded-xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E0A0F]/50 to-[#160607]/80 shadow-[0_8px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center relative group hover:border-[#D4A857]/60 transition-colors"
             >
               {/* Subtle top gold highlight */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[1px] bg-[#D4A857]/60" />
 
-              <span className="font-serif tabular-nums text-4xl sm:text-5xl md:text-6xl text-gold-bright tracking-tight">
+              <span className="font-serif tabular-nums text-4xl sm:text-5xl md:text-6xl text-gold-gradient tracking-tight">
                 {String(unit.value).padStart(2, '0')}
               </span>
-              <span className="text-xs sm:text-xs uppercase tracking-[0.12em] text-[#E8C98A]/80 mt-2 font-medium">
+              <span className="text-xs uppercase tracking-[0.12em] text-[#E8C98A] mt-2 font-medium">
                 {unit.label}
               </span>
             </div>
           ))}
         </div>
 
-        <p className="font-serif italic text-sm text-[#F3E5AB]/90 mt-6">
-          Les réservations sont ouvertes dans la limite stricte des 450 places disponibles.
+        <p className="font-serif italic text-base text-[#F3E5AB] mt-6">
+          {t('countdown.note')}
         </p>
       </div>
     </section>

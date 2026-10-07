@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Order, OrderStatus } from '../../types';
-import { GALA_INFO } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
 import { QRCodeSvg } from './QRCodeSvg';
 import { WaxSeal } from '../common/WaxSeal';
 import { LuxuryFrame } from '../common/LuxuryFrame';
@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   AlertCircle,
   MessageCircle,
-  Sparkles,
+  Check,
 } from 'lucide-react';
 
 interface TicketViewPageProps {
@@ -29,6 +29,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
   onBackToHome,
   onUpdateOrderStatus,
 }) => {
+  const GALA_INFO = useContent().content.galaInfo;
   // Local state for testing toggle between "pending" and "validated"
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order.status);
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
@@ -113,8 +114,8 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
 
       {/* ================= ÉTAT : EN ATTENTE ================= */}
       {isPending && (
-        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#8E0A1C]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#7A0815] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
+        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#2E0A0F]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#1C0709] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
             <Clock className="w-8 h-8 animate-pulse text-[#D4A857]" />
           </div>
 
@@ -196,7 +197,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
       {isValidated && (
         <div className="space-y-10 animate-in fade-in duration-500">
           {/* Notification banner */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#5A040F]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
+          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#160607]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-[#D4A857] shrink-0" />
               <div className="text-xs text-left">
@@ -217,7 +218,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
 
           {downloadSuccess && (
             <div className="p-3 rounded-lg bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs text-center max-w-md mx-auto animate-bounce">
-              ✓ Génération du document PDF pour {downloadSuccess} en cours...
+              <Check className="inline w-4 h-4 mr-1 -mt-0.5" /> Génération du document PDF pour {downloadSuccess} en cours...
             </div>
           )}
 
@@ -249,16 +250,17 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
   order,
   onDownload,
 }) => {
+  const GALA_INFO = useContent().content.galaInfo;
   return (
     <div className="relative rounded-2xl border-2 border-[#D4A857] bg-gradient-to-br from-[#2E0207] via-[#3E030B] to-[#2E0207] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_25px_rgba(212,168,87,0.25)] overflow-hidden max-w-3xl mx-auto print:shadow-none print:border-black">
       {/* Decorative inner frame */}
       <div className="absolute inset-2 border border-[#D4A857]/30 rounded-xl pointer-events-none" />
 
       {/* Concave scallops in the ticket corners */}
-      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
-      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
+      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
+      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
 
       <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
         

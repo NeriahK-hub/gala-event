@@ -18,6 +18,7 @@ import { Footer } from './components/common/Footer';
 import { ReservationFlow } from './components/reservation/ReservationFlow';
 import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { FloatingActions } from './components/common/FloatingActions';
 import { PosterFrame } from './components/common/PosterFrame';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 
@@ -90,13 +91,16 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
-      <PosterFrame />
+      {/* L'espace équipe a sa propre interface : pas de cadre ni d'en-tête public */}
+      {activeView !== 'admin' && <PosterFrame />}
 
-      {/* Fixed Header (visible on vitrine, and provides navigation across app) */}
-      <Header
-        onNavigateSection={handleNavigateSection}
-        onOpenReservation={() => handleOpenReservation('vip')}
-      />
+      {activeView !== 'admin' && (
+        <Header
+          isHome={activeView === 'vitrine'}
+          onNavigateSection={handleNavigateSection}
+          onOpenReservation={() => handleOpenReservation('vip')}
+        />
+      )}
 
       {/* Main Content Router */}
       <main>
@@ -197,6 +201,8 @@ export default function App() {
       </main>
 
       {/* Floating Demo Navigation Switcher (Allows testing all pages with mockData) */}
+      {activeView === 'vitrine' && <FloatingActions onReserve={() => handleOpenReservation('vip')} />}
+
       {SHOW_DEMO_NAV && (
         <DevNavSwitcher
           activeView={activeView}

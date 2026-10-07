@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Globe, Ticket, QrCode, Shield, Layers } from 'lucide-react';
+import { Globe, Ticket, QrCode, Shield, Layers } from 'lucide-react';
 
 export type ActiveView = 'vitrine' | 'reservation' | 'tickets' | 'admin';
 

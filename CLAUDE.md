@@ -2,14 +2,14 @@
 
 ## À quoi sert l'app
 
-« Le Grand Gala Royal – Kinshasa » : site officiel et billetterie d'un gala de luxe (Pullman Grand Hôtel Kinshasa, 19 décembre 2026). L'app (généré à l'origine avec Google AI Studio) regroupe :
+« Le Grand Gala Royal – Kinshasa » : site officiel et billetterie d'un gala de luxe (Pullman Grand Hôtel Kinshasa, 19 décembre 2026). L'app regroupe :
 
 - **Site vitrine** : hero avec enveloppe interactive, compte à rebours, programme, invités, billets, dress code, galerie, lieu, sponsors, FAQ, équipe/contact.
 - **Réservation** : parcours de commande de billets (Standard, VIP, Table) avec paiement Mobile Money.
 - **Mes billets** : billets personnalisés avec QR code et code de sécurité.
 - **Espace équipe** : tableau de bord admin (validation des commandes, scan/validation des billets).
 
-Pour l'instant tout est **côté client avec des données fictives** : pas de backend, pas de base de données, l'état est perdu au rechargement.
+Pour l'instant tout est **côté client** : pas de backend ni de base de données. Les commandes (données fictives) sont perdues au rechargement ; le contenu édité dans l'admin reste dans le `localStorage` du navigateur. L'espace équipe n'a pas d'authentification.
 
 ## Commandes
 
@@ -19,7 +19,7 @@ npm run dev        # serveur de dev Vite sur http://localhost:3000 (host 0.0.0.0
 npm run lint       # vérification des types : tsc --noEmit (pas d'ESLint)
 npm run build      # build de production dans dist/
 npm run preview    # prévisualiser le build
-npm run clean      # supprime dist/ et server.js
+npm run clean      # supprime dist/
 ```
 
 Il n'y a pas de tests automatisés : valide avec `npm run lint` puis `npm run build`.
@@ -46,14 +46,15 @@ src/
 - **État partagé dans `App.tsx`** : `orders` (initialisé avec `INITIAL_ORDERS`), `selectedOrderId`, `selectedTierId`. Les composants reçoivent données et callbacks (`onOrderCreated`, `onUpdateOrder`…) en props.
 - `DevNavSwitcher` est un sélecteur flottant de démo pour passer d'une vue à l'autre.
 - Alias `@` → racine du projet (`vite.config.ts`, `tsconfig.json`).
-- Le contenu (textes, prix, dates) vit dans `mockData.ts` : modifie-le là plutôt que dans les composants.
-- Thème visuel : bordeaux (`#5C0612`) et or (`#D4A857`), variables CSS dans `src/index.css`.
-- Ne touche pas aux options `hmr` / `watch` de `vite.config.ts` (liées à AI Studio via `DISABLE_HMR`).
+- **Contenu modifiable** : les textes, billets, programme, invités, galerie, FAQ, partenaires et numéros Mobile Money passent par `src/content/` (`ContentContext.tsx`, `textSchema.ts`). Les composants lisent `useContent()` (`t('clé')`, `content.xxx`) ; `mockData.ts` ne contient que les valeurs par défaut. Pour ajouter un texte modifiable : ajoute une ligne dans `textSchema.ts`, puis utilise `t('ta.clé')`. L'admin (onglet « Contenu du site ») l'édite et sauvegarde dans `localStorage`.
+- **Admin** : `components/admin/` (`AdminDashboard` = coquille + vue d'ensemble + commandes, `ScannerPanel`, `ContentEditor`, `fields.tsx` = champs génériques).
+- Logo de l'organisateur (Empire Informatique) : `public/logo-empire.png`, composant `EmpireLogo`. Icônes : uniquement `lucide-react` (pas d'emoji ni d'étincelles « IA »).
+- Thème visuel : fond noir avec lueur rouge sombre diffuse et grain de film, accents or (`#E8C98A` / `#D4A857`) ; pas de rouge vif sur de grandes surfaces (fatigue visuelle). Réglages dans `src/index.css`.
 
 ## Règles
 
 - **Tous les textes visibles sont en français** (UI, messages d'erreur, contenus, données de démo).
 - **Tutoiement** partout dans l'interface (« Si tu paies depuis un autre numéro », « Réserve ta place »), jamais de vouvoiement.
-- **`GEMINI_API_KEY` ne doit jamais apparaître dans le code** : ni en dur, ni dans un commit, ni exposée au navigateur (pas de préfixe `VITE_`, pas de `define` Vite). Elle se configure dans `.env.local` (ignoré par git) ; `.env.example` ne contient qu'un placeholder. Tout appel à Gemini doit passer par un serveur (Express est déjà en dépendance), jamais directement depuis le front.
-- Respecte le style existant : composants fonctionnels, types dans `src/types`, classes Tailwind, ambiance luxe bordeaux/or.
+- **Aucune clé d'API (dont `GEMINI_API_KEY`) ne doit apparaître dans le code** : ni en dur, ni dans un commit, ni exposée au navigateur (pas de préfixe `VITE_`, pas de `define` Vite). Une clé se configure dans `.env.local` (ignoré par git) et tout appel à un service d'IA doit passer par un serveur, jamais directement depuis le front.
+- Respecte le style existant : composants fonctionnels, types dans `src/types`, classes Tailwind, ambiance luxe noir/rouge sombre/or.
 - Avant de conclure une modification : `npm run lint` doit passer.

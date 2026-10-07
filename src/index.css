@@ -2,9 +2,9 @@
 
 @layer base {
   :root {
-    --bg-burgundy-deep: #7A0815;
-    --bg-burgundy-rich: #8E0A1C;
-    --bg-burgundy-light: #A00D22;
+    --bg-burgundy-deep: #1C0709;
+    --bg-burgundy-rich: #2E0A0F;
+    --bg-burgundy-light: #4A0A12;
     --gold-primary: #D4A857;
     --gold-light: #E8C98A;
     --gold-pale: #F3E5AB;
@@ -12,7 +12,13 @@
   }
 
   body {
-    background: linear-gradient(165deg, #A30C22 0%, #8A0A1B 45%, #5A040F 100%) fixed;
+    /* Fond noir velouté avec une lueur rouge sombre diffuse, comme un affichage flou */
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 48%, rgba(120, 12, 24, 0.55) 0%, rgba(70, 8, 16, 0.35) 45%, transparent 75%),
+      radial-gradient(ellipse 45% 30% at 100% 8%, rgba(110, 10, 22, 0.40) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 30% at 0% 95%, rgba(110, 10, 22, 0.40) 0%, transparent 70%),
+      linear-gradient(180deg, #0B0506 0%, #120608 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-size: 16px;
@@ -48,6 +54,8 @@
 
 .font-serif {
   font-family: 'Cormorant Garamond', Georgia, serif;
+  /* chiffres alignés sur la ligne de base (plus lisibles : 1 ≠ I) */
+  font-feature-settings: 'lnum' 1;
 }
 
 .font-sans {
@@ -82,7 +90,7 @@
 }
 
 .bg-burgundy-card {
-  background: linear-gradient(180deg, rgba(46, 18, 24, 0.85) 0%, rgba(23, 7, 9, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(40, 10, 14, 0.85) 0%, rgba(15, 5, 6, 0.92) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -150,4 +158,20 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Grain de film sur tout le site */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media print {
+  body::after { display: none; }
 }

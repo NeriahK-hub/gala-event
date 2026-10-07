@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import {
-  TICKET_TIERS,
-  MOBILE_MONEY_ACCOUNTS,
-  GALA_INFO,
-} from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
 import { TicketTierId, Order, IssuedTicket } from '../../types';
 import { LuxuryFrame } from '../common/LuxuryFrame';
 import {
@@ -13,7 +9,7 @@ import {
   ChevronLeft,
   ArrowRight,
   MessageCircle,
-  Sparkles,
+  Info,
   CreditCard,
   ShieldCheck,
   CheckCircle,
@@ -33,6 +29,11 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
   onOrderCreated,
   onViewTicket,
 }) => {
+  const { content } = useContent();
+  const TICKET_TIERS = content.tiers;
+  const MOBILE_MONEY_ACCOUNTS = content.mobileMoney;
+  const GALA_INFO = content.galaInfo;
+
   // Step state: 1 = Choix du billet, 2 = Formulaire, 3 = Confirmation
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
@@ -123,7 +124,7 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
         particleCount: 50,
         spread: 70,
         origin: { y: 0.5 },
-        colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#A00D22'],
+        colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#4A0A12'],
       });
     } catch {
       // ignore
@@ -173,7 +174,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
         </div>
       </div>
 
-      <LuxuryFrame className="p-6 sm:p-10 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/50 via-[#7A0815]/70 to-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+      <LuxuryFrame className="p-6 sm:p-10 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E0A0F]/50 via-[#1C0709]/70 to-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
         {/* ================= STEP 1: CHOIX DU BILLET ================= */}
         {step === 1 && (
           <div className="space-y-8 animate-in fade-in duration-300">
@@ -199,8 +200,8 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     onClick={() => setSelectedTierId(tier.id)}
                     className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? 'border-[#D4A857] bg-[#A00D22]/80 shadow-[0_0_20px_rgba(212,168,87,0.35)] scale-[1.02]'
-                        : 'border-[#D4A857]/20 bg-[#5A040F]/40 hover:border-[#D4A857]/50'
+                        ? 'border-[#D4A857] bg-[#4A0A12]/80 shadow-[0_0_20px_rgba(212,168,87,0.35)] scale-[1.02]'
+                        : 'border-[#D4A857]/20 bg-[#160607]/40 hover:border-[#D4A857]/50'
                     }`}
                   >
                     <div>
@@ -276,7 +277,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Live Calculation Summary Banner */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-gradient-to-r from-[#7A0815] to-[#3D030B] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-gradient-to-r from-[#1C0709] to-[#3D030B] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]">
                   Récapitulatif de la sélection :
@@ -402,7 +403,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Payer Phone section with explicit requested note */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/30 bg-[#5A040F]/60 space-y-4">
+            <div className="p-5 rounded-xl border border-[#D4A857]/30 bg-[#160607]/60 space-y-4">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -430,8 +431,8 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/40 bg-[#3D030B]/80 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
                   />
                   {/* The exact requested note */}
-                  <div className="p-3 rounded-lg bg-[#7A0815] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
-                    💡 <strong>Important :</strong> Si tu paies depuis un autre numéro (ex: compte d'un proche, agent shop ou société), écris ce numéro-là afin que notre équipe puisse réconcilier ton paiement.
+                  <div className="p-3 rounded-lg bg-[#1C0709] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
+                    <Info className="inline w-4 h-4 mr-1 -mt-0.5" /> <strong>Important :</strong> Si tu paies depuis un autre numéro (ex: compte d'un proche, agent shop ou société), écris ce numéro-là afin que notre équipe puisse réconcilier ton paiement.
                   </div>
                 </div>
               )}
@@ -486,7 +487,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
         {step === 3 && createdOrder && (
           <div className="space-y-8 text-center animate-in zoom-in-95 duration-400">
             {/* Top Success Badge */}
-            <div className="w-16 h-16 rounded-full border-2 border-[#D4A857] bg-[#7A0815] flex items-center justify-center text-[#D4A857] mx-auto shadow-[0_0_25px_rgba(212,168,87,0.4)]">
+            <div className="w-16 h-16 rounded-full border-2 border-[#D4A857] bg-[#1C0709] flex items-center justify-center text-[#D4A857] mx-auto shadow-[0_0_25px_rgba(212,168,87,0.4)]">
               <CheckCircle className="w-8 h-8 text-[#D4A857]" />
             </div>
 
@@ -503,7 +504,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* ORDER CODE DISPLAY (Code de commande bien visible) */}
-            <div className="p-6 rounded-2xl border-2 border-[#D4A857] bg-gradient-to-b from-[#A00D22]/80 to-[#5A040F] shadow-[0_0_30px_rgba(212,168,87,0.3)] max-w-md mx-auto">
+            <div className="p-6 rounded-2xl border-2 border-[#D4A857] bg-gradient-to-b from-[#4A0A12]/80 to-[#160607] shadow-[0_0_30px_rgba(212,168,87,0.3)] max-w-md mx-auto">
               <span className="text-xs uppercase tracking-[0.12em] text-[#D4A857] font-semibold block mb-1">
                 Ton code de commande unique
               </span>
@@ -525,7 +526,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 <span className="text-xs text-[#E8C98A] font-medium">{selectedOperator.name}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#7A0815] border border-[#D4A857]/30">
+              <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#1C0709] border border-[#D4A857]/30">
                 <div>
                   <span className="text-xs uppercase text-[#D4A857]/80 block">Numéro Officiel</span>
                   <span className="font-serif text-xl text-[#F9F5EC] font-bold tracking-wider">

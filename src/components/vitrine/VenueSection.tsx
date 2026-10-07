@@ -1,37 +1,28 @@
 import React from 'react';
-import { GALA_INFO } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
+import { SectionHeader } from '../common/SectionHeader';
 import { MapPin, Car, Clock, ShieldCheck, Shirt, ExternalLink } from 'lucide-react';
 
 export const VenueSection: React.FC = () => {
+  const { content, t } = useContent();
+  const GALA_INFO = content.galaInfo;
   return (
-    <section id="lieu" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
-            Le Sanctuaire de la Soirée
-          </span>
-          <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
-        </div>
-
-        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
-          Le Pullman Grand Hôtel Kinshasa
-        </h2>
-        <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
-          {GALA_INFO.venueRoom} • {GALA_INFO.venueAddress}, {GALA_INFO.city}
-        </p>
-      </div>
+    <section id="lieu" className="relative scroll-mt-20 py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <SectionHeader
+        kicker={t('venue.kicker')}
+        title={t('venue.title')}
+        subtitle={`${GALA_INFO.venueRoom} • ${GALA_INFO.venueAddress}, ${GALA_INFO.city}`}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Column: Venue Presentation & Practical details */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/50 to-[#5A040F]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
+          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E0A0F]/50 to-[#160607]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
             <h3 className="font-serif text-2xl text-[#F9F5EC] font-semibold mb-3">
-              Un Écrin Impérial Face au Fleuve Congo
+              {t('venue.cardTitle')}
             </h3>
-            <p className="text-stone-300 text-xs sm:text-sm leading-relaxed mb-6">
-              Haut lieu des grandes réceptions de la République et symbole d'hospitalité 5 étoiles, le Salon Congo du Pullman offre une acoustique remarquable, une hauteur sous plafond majestueuse et des accès directs aux jardins royaux.
+            <p className="text-stone-100/90 text-sm sm:text-base leading-relaxed mb-6">
+              {t('venue.cardText')}
             </p>
 
             {/* Practical Info List */}
@@ -42,10 +33,10 @@ export const VenueSection: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
-                    Heure d'arrivée
+                    {t('venue.info1.title')}
                   </h4>
-                  <p className="text-xs text-stone-300 mt-0.5">
-                    Portes dès 18h45. Début de la cérémonie à 19h30 précises.
+                  <p className="text-sm text-stone-100/90 mt-0.5">
+                    {t('venue.info1.text')}
                   </p>
                 </div>
               </div>
@@ -56,10 +47,10 @@ export const VenueSection: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
-                    Parking & Voiturier
+                    {t('venue.info2.title')}
                   </h4>
-                  <p className="text-xs text-stone-300 mt-0.5">
-                    Parking clos sécurisé 300 places. Service voiturier gratuit VIP.
+                  <p className="text-sm text-stone-100/90 mt-0.5">
+                    {t('venue.info2.text')}
                   </p>
                 </div>
               </div>
@@ -70,10 +61,10 @@ export const VenueSection: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
-                    Accès & Sécurité
+                    {t('venue.info3.title')}
                   </h4>
-                  <p className="text-xs text-stone-300 mt-0.5">
-                    Billet numérique (QR Code) ou invitation de luxe nominative requise.
+                  <p className="text-sm text-stone-100/90 mt-0.5">
+                    {t('venue.info3.text')}
                   </p>
                 </div>
               </div>
@@ -84,10 +75,10 @@ export const VenueSection: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
-                    Vestiaire d'Honneur
+                    {t('venue.info4.title')}
                   </h4>
-                  <p className="text-xs text-stone-300 mt-0.5">
-                    Vestiaire d'apparat gratuit et gardé à l'entrée du Salon.
+                  <p className="text-sm text-stone-100/90 mt-0.5">
+                    {t('venue.info4.text')}
                   </p>
                 </div>
               </div>
@@ -130,10 +121,10 @@ export const VenueSection: React.FC = () => {
               </div>
               <div className="mt-3 px-3 py-1.5 rounded-lg bg-[#2E0207]/90 border border-[#D4A857]/50 shadow-md">
                 <span className="font-serif text-xs font-semibold text-[#F9F5EC] block">
-                  Pullman Kinshasa (Gombe)
+                  {t('venue.mapName')}
                 </span>
                 <span className="text-xs text-[#D4A857]">
-                  4 Avenue Batetela
+                  {t('venue.mapAddress')}
                 </span>
               </div>
             </div>
@@ -141,15 +132,15 @@ export const VenueSection: React.FC = () => {
 
           <div className="p-5 border-t border-[#D4A857]/20 flex items-center justify-between bg-[#33030A]">
             <div className="text-xs text-stone-300">
-              <span>Quartier Diplomatique • Gombe</span>
+              <span>{t('venue.district')}</span>
             </div>
             <a
-              href="https://maps.google.com/?q=Pullman+Grand+Hotel+Kinshasa"
+              href={t('venue.gpsUrl')}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs text-[#E8C98A] hover:text-white uppercase tracking-wider font-semibold"
             >
-              <span>Itinéraire GPS</span>
+              <span>{t('venue.gpsLabel')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>

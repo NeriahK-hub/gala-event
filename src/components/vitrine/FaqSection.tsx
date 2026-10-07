@@ -1,59 +1,34 @@
 import React, { useState } from 'react';
-import { FAQ_ITEMS } from '../../data/mockData';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { useContent } from '../../content/ContentContext';
+import { SectionHeader } from '../common/SectionHeader';
 
 export const FaqSection: React.FC = () => {
-  const [openIds, setOpenIds] = useState<Record<string, boolean>>({
-    [FAQ_ITEMS[0].id]: true, // First one open by default
-  });
-
-  const toggleItem = (id: string) => {
-    setOpenIds((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const { content, t } = useContent();
+  const [openId, setOpenId] = useState<string | null>(content.faq[0]?.id ?? null);
 
   return (
-    <section id="faq" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
-            Conciergerie & Informations
-          </span>
-          <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
-        </div>
+    <section id="faq" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto scroll-mt-20">
+      <SectionHeader kicker={t('faq.kicker')} title={t('faq.title')} subtitle={t('faq.subtitle')} />
 
-        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
-          Questions Fréquentes
-        </h2>
-        <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
-          Tout ce que tu dois savoir pour préparer ta venue dans les meilleures conditions.
-        </p>
-      </div>
-
-      {/* Accordion List */}
-      <div className="space-y-4">
-        {FAQ_ITEMS.map((item) => {
-          const isOpen = !!openIds[item.id];
+      <div className="space-y-3">
+        {content.faq.map((item) => {
+          const isOpen = openId === item.id;
 
           return (
             <div
               key={item.id}
-              className="rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/30 to-[#5A040F]/60 overflow-hidden transition-all duration-300"
+              className="rounded-2xl border border-[#E8C98A]/25 bg-[#160607]/35 overflow-hidden"
             >
               <button
-                onClick={() => toggleItem(item.id)}
-                className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#D4A857]/5 transition-colors"
+                onClick={() => setOpenId(isOpen ? null : item.id)}
+                aria-expanded={isOpen}
+                className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#E8C98A]/5 transition-colors"
               >
-                <span className="font-serif text-base sm:text-lg text-[#F9F5EC] font-medium">
-                  {item.question}
-                </span>
+                <span className="font-serif text-lg text-[#F9F5EC] font-medium">{item.question}</span>
                 <span
-                  className={`w-7 h-7 rounded-full border border-[#D4A857]/40 flex items-center justify-center shrink-0 text-[#E8C98A] transition-transform duration-300 ${
-                    isOpen ? 'rotate-180 bg-[#D4A857]/20' : ''
+                  className={`w-8 h-8 rounded-full border border-[#E8C98A]/50 flex items-center justify-center shrink-0 text-[#E8C98A] transition-transform duration-300 ${
+                    isOpen ? 'rotate-180 bg-[#E8C98A]/15' : ''
                   }`}
                 >
                   <ChevronDown className="w-4 h-4" />
@@ -61,7 +36,7 @@ export const FaqSection: React.FC = () => {
               </button>
 
               {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-stone-300 leading-relaxed border-t border-[#D4A857]/10 animate-in fade-in duration-200">
+                <div className="px-5 sm:px-6 pb-6 pt-3 text-sm sm:text-base text-stone-100/90 leading-relaxed border-t border-[#E8C98A]/15">
                   {item.answer}
                 </div>
               )}

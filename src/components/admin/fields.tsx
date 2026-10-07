@@ -1,0 +1,229 @@
+import React from 'react';
+import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+
+const inputCls =
+  'w-full px-3.5 py-2.5 rounded-lg border border-white/15 bg-black/25 text-sm text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20 transition';
+
+export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'lines' | 'color';
+
+export interface FieldDef<T> {
+  key: keyof T & string;
+  label: string;
+  type?: FieldType;
+  hint?: string;
+}
+
+interface FieldProps {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}
+
+export const Field: React.FC<FieldProps> = ({ label, hint, children }) => (
+  <label className="block">
+    <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">{label}</span>
+    {children}
+    {hint && <span className="block text-xs text-stone-400 mt-1">{hint}</span>}
+  </label>
+);
+
+interface TextFieldProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  multiline?: boolean;
+  hint?: string;
+}
+
+export const TextInput: React.FC<TextFieldProps> = ({ label, value, onChange, multiline, hint }) => (
+  <Field label={label} hint={hint}>
+    {multiline ? (
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={Math.min(8, Math.max(3, Math.ceil(value.length / 70)))}
+        className={`${inputCls} resize-y leading-relaxed`}
+      />
+    ) : (
+      <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} />
+    )}
+  </Field>
+);
+
+// Édition d'un objet à partir d'une liste de champs
+interface ObjectFieldsProps<T> {
+  item: T;
+  fields: FieldDef<T>[];
+  onChange: (next: T) => void;
+}
+
+export function ObjectFields<T extends object>({ item, fields, onChange }: ObjectFieldsProps<T>) {
+  const set = (key: string, value: unknown) => onChange({ ...item, [key]: value } as T);
+  const get = (key: string) => (item as Record<string, unknown>)[key];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {fields.map((f) => {
+        const type = f.type ?? 'text';
+        const wide = type === 'textarea' || type === 'lines';
+        const raw = get(f.key);
+        return (
+          <div key={f.key} className={wide ? 'sm:col-span-2' : ''}>
+            {type === 'checkbox' ? (
+              <label className="flex items-center gap-2.5 text-sm text-[#F9F5EC] cursor-pointer pt-6">
+                <input
+                  type="checkbox"
+                  checked={!!raw}
+                  onChange={(e) => set(f.key, e.target.checked)}
+                  className="w-4 h-4 accent-[#E8C98A]"
+                />
+                {f.label}
+              </label>
+            ) : type === 'lines' ? (
+              <Field label={f.label} hint={f.hint ?? 'Une ligne par élément'}>
+                <textarea
+                  value={Array.isArray(raw) ? (raw as string[]).join('\n') : ''}
+                  onChange={(e) => set(f.key, e.target.value.split('\n'))}
+                  rows={6}
+                  className={`${inputCls} resize-y leading-relaxed`}
+                />
+              </Field>
+            ) : type === 'textarea' ? (
+              <TextInput label={f.label} value={String(raw ?? '')} onChange={(v) => set(f.key, v)} multiline hint={f.hint} />
+            ) : type === 'number' ? (
+              <Field label={f.label} hint={f.hint}>
+                <input
+                  type="number"
+                  min={0}
+                  value={Number(raw ?? 0)}
+                  onChange={(e) => set(f.key, Number(e.target.value))}
+                  className={inputCls}
+                />
+              </Field>
+            ) : type === 'color' ? (
+              <Field label={f.label} hint={f.hint}>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={String(raw ?? '#000000')}
+                    onChange={(e) => set(f.key, e.target.value)}
+                    className="h-10 w-12 rounded-lg border border-white/15 bg-transparent cursor-pointer"
+                  />
+                  <input type="text" value={String(raw ?? '')} onChange={(e) => set(f.key, e.target.value)} className={inputCls} />
+                </div>
+              </Field>
+            ) : (
+              <TextInput label={f.label} value={String(raw ?? '')} onChange={(v) => set(f.key, v)} hint={f.hint} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Liste d'éléments modifiables (ajout, suppression, réorganisation)
+interface ListEditorProps<T> {
+  items: T[];
+  onChange: (next: T[]) => void;
+  fields: FieldDef<T>[];
+  title: (item: T, index: number) => string;
+  createItem?: () => T;
+  addLabel?: string;
+  canRemove?: boolean;
+}
+
+export function ListEditor<T extends object>({
+  items,
+  onChange,
+  fields,
+  title,
+  createItem,
+  addLabel = 'Ajouter',
+  canRemove = true,
+}: ListEditorProps<T>) {
+  const move = (from: number, to: number) => {
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    const [it] = next.splice(from, 1);
+    next.splice(to, 0, it);
+    onChange(next);
+  };
+
+  return (
+    <div className="space-y-4">
+      {items.map((item, index) => (
+        <details
+          key={(item as { id?: string }).id ?? index}
+          className="group rounded-xl border border-white/10 bg-black/20 open:bg-black/30"
+          open={items.length <= 3}
+        >
+          <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none">
+            <span className="text-sm font-semibold text-[#F9F5EC] truncate">
+              <span className="text-[#E8C98A] mr-2 tabular-nums">{index + 1}.</span>
+              {title(item, index) || 'Sans titre'}
+            </span>
+            <span className="flex items-center gap-1 shrink-0" onClick={(e) => e.preventDefault()}>
+              {createItem && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => move(index, index - 1)}
+                    disabled={index === 0}
+                    aria-label="Monter"
+                    className="p-1.5 rounded-md text-stone-300 hover:bg-white/10 disabled:opacity-30 cursor-pointer"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(index, index + 1)}
+                    disabled={index === items.length - 1}
+                    aria-label="Descendre"
+                    className="p-1.5 rounded-md text-stone-300 hover:bg-white/10 disabled:opacity-30 cursor-pointer"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+              {canRemove && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm(`Supprimer « ${title(item, index) || 'cet élément'} » ?`)) {
+                      onChange(items.filter((_, i) => i !== index));
+                    }
+                  }}
+                  aria-label="Supprimer"
+                  className="p-1.5 rounded-md text-red-300 hover:bg-red-500/15 cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </span>
+          </summary>
+          <div className="px-4 pb-4 pt-1 border-t border-white/10">
+            <div className="pt-4">
+              <ObjectFields
+                item={item}
+                fields={fields}
+                onChange={(next) => onChange(items.map((it, i) => (i === index ? next : it)))}
+              />
+            </div>
+          </div>
+        </details>
+      ))}
+
+      {createItem && (
+        <button
+          type="button"
+          onClick={() => onChange([...items, createItem()])}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-[#E8C98A]/60 text-sm font-semibold text-[#F3E5AB] hover:bg-[#E8C98A]/10 transition-colors cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          {addLabel}
+        </button>
+      )}
+    </div>
+  );
+}

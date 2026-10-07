@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { GALLERY_ITEMS } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
+import { SectionHeader } from '../common/SectionHeader';
 import { GalleryItem } from '../../types';
-import { Eye, X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const GallerySection: React.FC = () => {
+  const { content, t } = useContent();
+  const GALLERY_ITEMS = content.gallery;
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
@@ -27,24 +30,8 @@ export const GallerySection: React.FC = () => {
   };
 
   return (
-    <section id="galerie" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
-            Mémoires & Instants Rares
-          </span>
-          <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
-        </div>
-
-        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
-          La Galerie Impériale
-        </h2>
-        <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
-          Un aperçu des fastes des éditions précédentes sous les ors de Kinshasa.
-        </p>
-      </div>
+    <section id="galerie" className="relative scroll-mt-20 py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <SectionHeader kicker={t('gallery.kicker')} title={t('gallery.title')} subtitle={t('gallery.subtitle')} />
 
       {/* Photo Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -55,6 +42,7 @@ export const GallerySection: React.FC = () => {
             className="group relative rounded-xl border border-[#D4A857]/25 overflow-hidden aspect-[4/3] cursor-pointer shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:border-[#D4A857] transition-all duration-500"
           >
             <img
+              loading="lazy"
               src={item.imageUrl}
               alt={item.title}
               referrerPolicy="no-referrer"

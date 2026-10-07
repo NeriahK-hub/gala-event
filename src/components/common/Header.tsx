@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { GALA_INFO } from '../../data/mockData';
+import { useContent } from '../../content/ContentContext';
+import { EmpireLogo } from './EmpireLogo';
 
 interface HeaderProps {
   onNavigateSection: (sectionId: string) => void;
   onOpenReservation: () => void;
-  activeSection?: string;
+  /** Vrai quand on est sur la page d'accueil (active le suivi de section) */
+  isHome?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onNavigateSection,
-  onOpenReservation,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReservation, isHome = true }) => {
+  const { content, t } = useContent();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string>('');
 
   const navLinks = [
-    { label: 'Le gala', id: 'about' },
-    { label: 'Programme', id: 'programme' },
-    { label: 'Billets', id: 'billets' },
-    { label: 'Galerie', id: 'galerie' },
-    { label: 'Contact', id: 'contact' },
+    { label: t('nav.about'), id: 'about' },
+    { label: t('nav.program'), id: 'programme' },
+    { label: t('nav.tickets'), id: 'billets' },
+    { label: t('nav.gallery'), id: 'galerie' },
+    { label: t('nav.contact'), id: 'contact' },
   ];
+
+  // Met en évidence la section visible à l'écran (la dernière dont le haut a dépassé 35 % de la hauteur)
+  useEffect(() => {
+    if (!isHome) {
+      setActiveId('');
+      return;
+    }
+    const ids = ['about', 'programme', 'billets', 'galerie', 'contact'];
+    const onScroll = () => {
+      const line = window.innerHeight * 0.35;
+      let current = '';
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = id;
+      });
+      setActiveId(current);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isHome]);
 
   const handleNavClick = (id: string) => {
     onNavigateSection(id);
@@ -28,85 +50,89 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#8A0A1B]/85 backdrop-blur-md border-b border-[#E8C98A]/20 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        
-        {/* Zone 1: Brand Wordmark (Single text element in royal script) */}
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0E0506]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         <button
           onClick={() => handleNavClick('hero')}
-          className="text-left group cursor-pointer focus:outline-none"
+          aria-label="Retour en haut de la page"
+          className="flex items-center gap-3 text-left group cursor-pointer"
         >
-          <span className="font-script text-2xl sm:text-3xl text-[#E8C98A] group-hover:text-[#FFF2C6] transition-colors whitespace-nowrap block">
-            {GALA_INFO.name}
+          <EmpireLogo size={40} className="hidden sm:block" />
+          <span className="font-script text-2xl sm:text-3xl text-[#F3E5AB] group-hover:text-white transition-colors whitespace-nowrap">
+            {content.galaInfo.name}
           </span>
         </button>
 
-        {/* Zone 2: 4–6 nav links (Clean text with subtle underline hover) */}
-        <nav className="hidden lg:flex items-center gap-5 ml-auto mr-6">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => handleNavClick(link.id)}
-              className="text-xs font-medium uppercase tracking-[0.1em] text-[#E8C98A]/85 hover:text-[#FFF2C6] transition-colors relative py-1 cursor-pointer group whitespace-nowrap"
-            >
-              <span>{link.label}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#D4A857] transition-all duration-300 group-hover:w-full" />
-            </button>
-          ))}
+        <nav className="hidden lg:flex items-center gap-6 ml-auto mr-6" aria-label="Navigation principale">
+          {navLinks.map((link) => {
+            const isActive = activeId === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.id)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`text-xs font-semibold uppercase tracking-[0.1em] transition-colors relative py-1.5 cursor-pointer whitespace-nowrap ${
+                  isActive ? 'text-white' : 'text-[#E8C98A] hover:text-white'
+                }`}
+              >
+                {link.label}
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-[#E8C98A] transition-all duration-300 ${
+                    isActive ? 'w-full' : 'w-0'
+                  }`}
+                />
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Zone 3: Primary action (Bouton doré « Réserver ») */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:block">
           <button
             onClick={onOpenReservation}
-            className="px-5 py-2.5 rounded-full border border-[#D4A857] bg-transparent text-[#E8C98A] font-semibold text-xs uppercase tracking-wider hover:bg-gradient-to-r hover:from-[#D4A857] hover:to-[#B88934] hover:text-[#3D030B] hover:shadow-[0_0_20px_rgba(212,168,87,0.4)] transition-all duration-300 cursor-pointer whitespace-nowrap"
+            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-xs uppercase tracking-wider hover:brightness-110 transition cursor-pointer whitespace-nowrap"
           >
-            Réserver
+            {t('nav.cta')}
           </button>
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <button
             onClick={onOpenReservation}
-            className="px-3.5 py-1.5 rounded-full border border-[#D4A857] bg-[#D4A857]/10 text-[#E8C98A] text-xs font-semibold uppercase tracking-wider"
+            className="sm:hidden px-3.5 py-2 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
-            Réserver
+            {t('nav.cta')}
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Menu principal"
-            className="p-2 rounded-lg text-[#E8C98A] hover:bg-[#D4A857]/10 focus:outline-none cursor-pointer"
+            aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={mobileMenuOpen}
+            className="p-2.5 rounded-lg text-[#F3E5AB] hover:bg-white/10 cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#3D030B]/98 border-b border-[#D4A857]/30 px-6 py-8 space-y-5 animate-in slide-in-from-top-4 duration-300">
-          <div className="flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => handleNavClick(link.id)}
-                className="text-left text-sm font-medium uppercase tracking-widest text-[#E8C98A] hover:text-white py-2 border-b border-[#D4A857]/15"
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
-
+        <div className="lg:hidden bg-[#140506]/98 border-b border-[#E8C98A]/25 px-6 py-6 space-y-2 animate-in slide-in-from-top-4 duration-300">
+          {navLinks.map((link) => (
+            <button
+              key={link.id}
+              onClick={() => handleNavClick(link.id)}
+              className="block w-full text-left text-base font-medium text-[#F3E5AB] hover:text-white py-3 border-b border-[#E8C98A]/15 cursor-pointer"
+            >
+              {link.label}
+            </button>
+          ))}
           <div className="pt-4">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenReservation();
               }}
-              className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-widest shadow-lg"
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-sm tracking-wide cursor-pointer"
             >
-              Réserver mon billet
+              {t('nav.ctaMobile')}
             </button>
           </div>
         </div>

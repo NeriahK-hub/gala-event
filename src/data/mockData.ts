@@ -14,7 +14,7 @@ export const GALA_INFO: GalaInfo = {
   name: "Le Grand Gala Royal",
   edition: "Cinquième Édition Anniversaire",
   theme: "L'Élégance Céleste & L'Or Noir",
-  slogan: "Une nuit intemporelle où le prestige rencontre l'art, la grâce et la haute distinction.",
+  slogan: "Une nuit où le prestige rencontre l'art et la musique.",
   dateText: "Samedi 19 Décembre 2026",
   timeText: "19h30 — 03h30",
   isoDate: "2026-12-19T19:30:00",
@@ -22,8 +22,8 @@ export const GALA_INFO: GalaInfo = {
   venueRoom: "Salon Congo & Jardins Royaux",
   venueAddress: "4 Avenue Batetela, Gombe",
   city: "Kinshasa, RDC",
-  organizersName: "Le Cercle de l'Excellence & Prestige Kin",
-  organizersBio: "Collectif de mécènes et de créateurs dédié au rayonnement de l'art de vivre, de la culture et de la réussite à Kinshasa et à travers le monde.",
+  organizersName: "Empire Informatique",
+  organizersBio: "Équipe organisatrice du Grand Gala Royal, dédiée au rayonnement de l'art de vivre, de la culture et de la réussite à Kinshasa et à travers le monde.",
   whatsappNumber: "+243820000147",
   contactEmail: "concierge@gala-royal-kinshasa.com",
   instagram: "@legrandgalaroyal",
@@ -36,7 +36,7 @@ export const GALA_INFO: GalaInfo = {
   dressCode: {
     title: "Black Tie & Touche d'Or",
     subtitle: "Haute Couture & Tenue d'Apparat",
-    description: "Une célébration royale requiert une élégance sans compromis. Laisse-toi inspirer par la splendeur du bordeaux impérial, de l'or satiné et des soieries précieuses.",
+    description: "Une soirée royale demande une tenue à la hauteur. Inspire-toi du bordeaux, de l'or et des soieries précieuses.",
     colors: [
       { name: "Bordeaux Royal", hex: "#7A0815", desc: "La noblesse et la passion" },
       { name: "Bordeaux Sombre", hex: "#4D040E", desc: "La profondeur impériale" },

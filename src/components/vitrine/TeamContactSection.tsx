@@ -9,22 +9,22 @@ export const TeamContactSection: React.FC = () => {
 
   return (
     <section id="contact" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#7A0815]/50 via-[#5C0612]/70 to-[#3D030B] shadow-[0_15px_40px_rgba(0,0,0,0.5)] text-center">
+      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/50 via-[#1F0B10]/70 to-[#150608] shadow-[0_15px_40px_rgba(0,0,0,0.5)] text-center">
         
         {/* Header */}
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-[11px] uppercase tracking-[0.3em] text-[#D4A857] font-medium">
+          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
             Comité d'Organisation
           </span>
           <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
         </div>
 
-        <h2 className="font-script text-4xl sm:text-6xl text-gold-gradient mb-4">
+        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
           {GALA_INFO.organizersName}
         </h2>
 
-        <p className="text-stone-300 text-xs sm:text-sm font-light leading-relaxed max-w-2xl mx-auto mb-10">
+        <p className="text-stone-300 text-xs sm:text-sm leading-relaxed max-w-2xl mx-auto mb-10">
           {GALA_INFO.organizersBio}
         </p>
 
@@ -56,14 +56,14 @@ export const TeamContactSection: React.FC = () => {
             <span>{GALA_INFO.instagram}</span>
           </div>
 
-          <span aria-hidden="true" className="text-[#D4A857]/40">·</span>
+          <span aria-hidden="true" className="text-[#D4A857]/90">·</span>
 
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-[#D4A857]" />
             <span>{GALA_INFO.whatsappNumber}</span>
           </div>
 
-          <span aria-hidden="true" className="text-[#D4A857]/40">·</span>
+          <span aria-hidden="true" className="text-[#D4A857]/90">·</span>
 
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#D4A857]" />

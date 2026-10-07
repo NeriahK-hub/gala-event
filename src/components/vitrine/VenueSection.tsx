@@ -9,13 +9,13 @@ export const VenueSection: React.FC = () => {
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-[11px] uppercase tracking-[0.3em] text-[#D4A857] font-medium">
+          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
             Le Sanctuaire de la Soirée
           </span>
           <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
         </div>
 
-        <h2 className="font-script text-4xl sm:text-6xl text-gold-gradient mb-4">
+        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
           Le Pullman Grand Hôtel Kinshasa
         </h2>
         <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
@@ -26,11 +26,11 @@ export const VenueSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Column: Venue Presentation & Practical details */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/50 to-[#4D040E]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
+          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
             <h3 className="font-serif text-2xl text-[#F9F5EC] font-semibold mb-3">
               Un Écrin Impérial Face au Fleuve Congo
             </h3>
-            <p className="text-stone-300 text-xs sm:text-sm leading-relaxed font-light mb-6">
+            <p className="text-stone-300 text-xs sm:text-sm leading-relaxed mb-6">
               Haut lieu des grandes réceptions de la République et symbole d'hospitalité 5 étoiles, le Salon Congo du Pullman offre une acoustique remarquable, une hauteur sous plafond majestueuse et des accès directs aux jardins royaux.
             </p>
 
@@ -44,7 +44,7 @@ export const VenueSection: React.FC = () => {
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
                     Heure d'arrivée
                   </h4>
-                  <p className="text-[11px] text-stone-300 font-light mt-0.5">
+                  <p className="text-xs text-stone-300 mt-0.5">
                     Portes dès 18h45. Début de la cérémonie à 19h30 précises.
                   </p>
                 </div>
@@ -58,7 +58,7 @@ export const VenueSection: React.FC = () => {
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
                     Parking & Voiturier
                   </h4>
-                  <p className="text-[11px] text-stone-300 font-light mt-0.5">
+                  <p className="text-xs text-stone-300 mt-0.5">
                     Parking clos sécurisé 300 places. Service voiturier gratuit VIP.
                   </p>
                 </div>
@@ -72,7 +72,7 @@ export const VenueSection: React.FC = () => {
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
                     Accès & Sécurité
                   </h4>
-                  <p className="text-[11px] text-stone-300 font-light mt-0.5">
+                  <p className="text-xs text-stone-300 mt-0.5">
                     Billet numérique (QR Code) ou invitation de luxe nominative requise.
                   </p>
                 </div>
@@ -86,7 +86,7 @@ export const VenueSection: React.FC = () => {
                   <h4 className="text-xs font-semibold text-[#E8C98A] uppercase tracking-wider">
                     Vestiaire d'Honneur
                   </h4>
-                  <p className="text-[11px] text-stone-300 font-light mt-0.5">
+                  <p className="text-xs text-stone-300 mt-0.5">
                     Vestiaire d'apparat gratuit et gardé à l'entrée du Salon.
                   </p>
                 </div>
@@ -96,7 +96,7 @@ export const VenueSection: React.FC = () => {
         </div>
 
         {/* Right Column: Stylized Luxury Map / Location View */}
-        <div className="lg:col-span-5 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B] overflow-hidden flex flex-col justify-between shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+        <div className="lg:col-span-5 rounded-2xl border border-[#D4A857]/30 bg-[#150608] overflow-hidden flex flex-col justify-between shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
           {/* Map Representation with Gold Coordinates */}
           <div className="relative h-64 sm:h-72 w-full bg-[#2A0207] flex items-center justify-center p-6 text-center overflow-hidden">
             {/* Map styling grid */}
@@ -125,14 +125,14 @@ export const VenueSection: React.FC = () => {
 
             {/* Pullman Pin */}
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#D4A857] flex items-center justify-center text-[#3D030B] shadow-[0_0_25px_rgba(212,168,87,0.8)] animate-bounce">
+              <div className="w-12 h-12 rounded-full bg-[#D4A857] flex items-center justify-center text-[#150608] shadow-[0_0_25px_rgba(212,168,87,0.8)] animate-bounce">
                 <MapPin className="w-6 h-6" />
               </div>
-              <div className="mt-3 px-3 py-1.5 rounded-lg bg-[#1C0206]/90 border border-[#D4A857]/50 shadow-md">
+              <div className="mt-3 px-3 py-1.5 rounded-lg bg-[#0F0405]/90 border border-[#D4A857]/50 shadow-md">
                 <span className="font-serif text-xs font-semibold text-[#F9F5EC] block">
                   Pullman Kinshasa (Gombe)
                 </span>
-                <span className="text-[10px] text-[#D4A857]">
+                <span className="text-xs text-[#D4A857]">
                   4 Avenue Batetela
                 </span>
               </div>

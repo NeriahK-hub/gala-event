@@ -9,13 +9,13 @@ export const GuestsSection: React.FC = () => {
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-[11px] uppercase tracking-[0.3em] text-[#D4A857] font-medium">
+          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
             Prestige & Talents
           </span>
           <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
         </div>
 
-        <h2 className="font-script text-4xl sm:text-6xl text-gold-gradient mb-4">
+        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
           Invités d'Honneur & Artistes
         </h2>
         <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
@@ -41,9 +41,9 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="group rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/50 to-[#4D040E]/80 overflow-hidden flex flex-col hover:border-[#D4A857] transition-all duration-500 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+    <div className="group rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 overflow-hidden flex flex-col hover:border-[#D4A857] transition-all duration-500 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
       {/* Photo Frame */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#3D030B]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#150608]">
         {!imgError ? (
           <img
             src={artist.imageUrl}
@@ -53,18 +53,18 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
             className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 filter brightness-95 contrast-105"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#5C0612] to-[#3D030B]">
-            <Music className="w-10 h-10 text-[#D4A857]/60 mb-2" />
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#1F0B10] to-[#150608]">
+            <Music className="w-10 h-10 text-[#D4A857]/90 mb-2" />
             <span className="font-serif text-lg text-[#E8C98A]">{artist.name}</span>
           </div>
         )}
 
         {/* Ambient Dark Scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#4D040E] via-transparent to-transparent opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#170709] via-transparent to-transparent opacity-90" />
 
         {/* Delicate Role Kicker pinned over bottom of image */}
         <div className="absolute bottom-3 left-4 right-4">
-          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#1C0206]/85 border border-[#D4A857]/40 text-[10px] uppercase tracking-wider text-[#F3E5AB]">
+          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#0F0405]/85 border border-[#D4A857]/40 text-xs uppercase tracking-wider text-[#F3E5AB]">
             {artist.role}
           </span>
         </div>
@@ -79,12 +79,12 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
           <p className="text-xs text-[#D4A857]/80 font-medium mb-3">
             {artist.title}
           </p>
-          <p className="text-xs text-stone-300/80 leading-relaxed line-clamp-3 font-light">
+          <p className="text-xs text-stone-300/80 leading-relaxed line-clamp-3">
             {artist.bio}
           </p>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-[#D4A857]/15 flex items-center gap-1.5 text-[11px] text-[#D4A857]/70">
+        <div className="mt-4 pt-3 border-t border-[#D4A857]/15 flex items-center gap-1.5 text-xs text-[#D4A857]/90">
           <Sparkles className="w-3 h-3" />
           <span>Prestation exclusive</span>
         </div>

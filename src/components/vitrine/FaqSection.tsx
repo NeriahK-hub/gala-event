@@ -20,17 +20,17 @@ export const FaqSection: React.FC = () => {
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-[11px] uppercase tracking-[0.3em] text-[#D4A857] font-medium">
+          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
             Conciergerie & Informations
           </span>
           <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
         </div>
 
-        <h2 className="font-script text-4xl sm:text-6xl text-gold-gradient mb-4">
+        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
           Questions Fréquentes
         </h2>
         <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
-          Tout ce que vous devez savoir pour préparer votre venue dans les meilleures conditions.
+          Tout ce que tu dois savoir pour préparer ta venue dans les meilleures conditions.
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export const FaqSection: React.FC = () => {
           return (
             <div
               key={item.id}
-              className="rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/30 to-[#4D040E]/60 overflow-hidden transition-all duration-300"
+              className="rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/30 to-[#170709]/60 overflow-hidden transition-all duration-300"
             >
               <button
                 onClick={() => toggleItem(item.id)}
@@ -61,7 +61,7 @@ export const FaqSection: React.FC = () => {
               </button>
 
               {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-stone-300 font-light leading-relaxed border-t border-[#D4A857]/10 animate-in fade-in duration-200">
+                <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-stone-300 leading-relaxed border-t border-[#D4A857]/10 animate-in fade-in duration-200">
                   {item.answer}
                 </div>
               )}

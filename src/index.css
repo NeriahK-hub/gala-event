@@ -2,9 +2,9 @@
 
 @layer base {
   :root {
-    --bg-burgundy-deep: #5C0612;
-    --bg-burgundy-rich: #7A0815;
-    --bg-burgundy-light: #8B0A1A;
+    --bg-burgundy-deep: #1F0B10;
+    --bg-burgundy-rich: #2E1218;
+    --bg-burgundy-light: #3A141C;
     --gold-primary: #D4A857;
     --gold-light: #E8C98A;
     --gold-pale: #F3E5AB;
@@ -12,9 +12,11 @@
   }
 
   body {
-    background: radial-gradient(circle at 50% 30%, #7D0917 0%, #5C0612 60%, #3D030B 100%);
+    background: radial-gradient(circle at 50% 0%, #2E1218 0%, #1F0B10 55%, #150608 100%);
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
     color: #F9F5EC;
     overflow-x: hidden;
   }
@@ -24,7 +26,7 @@
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #3D030B;
+    background: #150608;
   }
   ::-webkit-scrollbar-thumb {
     background: #D4A857;
@@ -80,7 +82,7 @@
 }
 
 .bg-burgundy-card {
-  background: linear-gradient(180deg, rgba(125, 9, 23, 0.75) 0%, rgba(77, 4, 14, 0.85) 100%);
+  background: linear-gradient(180deg, rgba(46, 18, 24, 0.85) 0%, rgba(23, 7, 9, 0.92) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -134,3 +136,18 @@
   animation: subtlePulse 4s ease-in-out infinite;
 }
 
+
+/* Accessibilité : focus visible partout + respect de prefers-reduced-motion */
+:focus-visible {
+  outline: 2px solid #E8C98A;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

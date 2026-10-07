@@ -39,7 +39,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
         className="group mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4A857]/40 bg-[#7A0815]/80 hover:bg-[#8B0A1A] hover:border-[#D4A857] transition-all duration-300 text-xs tracking-wider uppercase text-[#E8C98A] cursor-pointer shadow-lg"
       >
         <Sparkles className="w-3.5 h-3.5 text-[#D4A857] animate-spin" style={{ animationDuration: '6s' }} />
-        <span>{isOpen ? "L'invitation est ouverte • Cliquez pour refermer" : "Touchez l'enveloppe pour déplier l'invitation"}</span>
+        <span>{isOpen ? "L'invitation est ouverte • Clique pour refermer" : "Touche l'enveloppe pour déplier l'invitation"}</span>
       </button>
 
       {/* Main Container holding Envelope & Golden Glove Hand */}
@@ -62,7 +62,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
                   e.stopPropagation();
                   setIsOpen(false);
                 }}
-                className="p-1 rounded-full text-[#D4A857]/70 hover:text-[#D4A857] hover:bg-[#D4A857]/10"
+                className="p-1 rounded-full text-[#D4A857]/90 hover:text-[#D4A857] hover:bg-[#D4A857]/10"
                 title="Refermer l'invitation"
               >
                 <X className="w-4 h-4" />
@@ -74,7 +74,7 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
               <span className="font-script text-3xl sm:text-4xl text-[#E8C98A] block leading-none">
                 Le Grand Gala Royal
               </span>
-              <p className="text-[10px] tracking-[0.25em] text-[#D4A857] uppercase font-semibold mt-1">
+              <p className="text-xs tracking-[0.25em] text-[#D4A857] uppercase font-semibold mt-1">
                 Kinshasa • Vème Édition
               </p>
             </div>
@@ -82,12 +82,12 @@ export const InteractiveEnvelopeHero: React.FC<InteractiveEnvelopeHeroProps> = (
             <div className="my-2.5 h-[1px] w-28 mx-auto bg-gradient-to-r from-transparent via-[#D4A857]/80 to-transparent" />
 
             <p className="font-serif italic text-xs sm:text-sm text-[#F3E5AB]/95 leading-relaxed max-w-xs mx-auto">
-              « En l'honneur d'une nuit de distinction et de splendeur, nous avons l'insigne honneur de vous convier à cette célébration impériale. »
+              « En l'honneur d'une nuit de distinction et de splendeur, nous avons l'insigne honneur de te convier à cette célébration impériale. »
             </p>
 
             <div className="mt-3.5 space-y-1 text-xs">
               <p className="text-[#E8C98A] font-semibold">{GALA_INFO.dateText}</p>
-              <p className="text-[#D4A857]/90 text-[11px]">{GALA_INFO.venueName} • {GALA_INFO.timeText}</p>
+              <p className="text-[#D4A857]/90 text-xs">{GALA_INFO.venueName} • {GALA_INFO.timeText}</p>
             </div>
 
             <div className="mt-4 pt-2">

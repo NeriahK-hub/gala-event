@@ -120,7 +120,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const getWhatsAppValidationUrl = (order: Order) => {
-    const message = `Bonjour ${order.customerName},\n\nExcellente nouvelle ! Votre réservation pour Le Grand Gala Royal de Kinshasa est désormais *VALIDÉE* :\n- Commande : *${order.id}*\n- Formule : *${order.quantity}x ${order.tierId.toUpperCase()}*\n- Réf. SMS : *${order.paymentReference || 'CONFIRMÉ'}*\n\nVous pouvez dès à présent consulter et télécharger vos invitations avec QR code personnel sur le portail officiel.\n\nNous avons hâte de vous accueillir le 19 Décembre au Pullman Kinshasa !`;
+    const message = `Bonjour ${order.customerName},\n\nExcellente nouvelle ! Ta réservation pour Le Grand Gala Royal de Kinshasa est désormais *VALIDÉE* :\n- Commande : *${order.id}*\n- Formule : *${order.quantity}x ${order.tierId.toUpperCase()}*\n- Réf. SMS : *${order.paymentReference || 'CONFIRMÉ'}*\n\nTu peux dès à présent consulter et télécharger tes invitations avec QR code personnel sur le portail officiel.\n\nNous avons hâte de t'accueillir le 19 Décembre au Pullman Kinshasa !`;
 
     return `https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
@@ -129,15 +129,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen pt-28 pb-20 px-4 flex items-center justify-center">
-        <div className="max-w-md w-full p-8 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.7)] text-center">
-          <div className="w-12 h-12 rounded-full border border-[#D4A857] bg-[#5C0612] flex items-center justify-center text-[#D4A857] mx-auto mb-4">
+        <div className="max-w-md w-full p-8 rounded-2xl border border-[#D4A857]/30 bg-[#150608] shadow-[0_20px_50px_rgba(0,0,0,0.7)] text-center">
+          <div className="w-12 h-12 rounded-full border border-[#D4A857] bg-[#1F0B10] flex items-center justify-center text-[#D4A857] mx-auto mb-4">
             <Shield className="w-6 h-6" />
           </div>
 
           <h2 className="font-serif text-2xl text-[#F9F5EC] font-semibold mb-1">
             Espace Équipe & Contrôle
           </h2>
-          <p className="text-xs text-stone-300 font-light mb-6">
+          <p className="text-xs text-stone-300 mb-6">
             Accès sécurisé réservé aux organisateurs du Grand Gala Royal.
           </p>
 
@@ -149,32 +149,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             className="space-y-4 text-left"
           >
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-[#E8C98A] block mb-1">
+              <label className="text-xs uppercase tracking-wider text-[#E8C98A] block mb-1">
                 Adresse Courriel
               </label>
               <input
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#250106] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-[#E8C98A] block mb-1">
+              <label className="text-xs uppercase tracking-wider text-[#E8C98A] block mb-1">
                 Mot de Passe
               </label>
               <input
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#250106] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer mt-4"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer mt-4"
             >
               Connexion Organisateur
             </button>
@@ -212,19 +212,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               Console d'Administration & Billetterie
             </h1>
           </div>
-          <p className="text-xs text-stone-300 font-light mt-1">
+          <p className="text-xs text-stone-300 mt-1">
             Supervision des commandes Mobile Money et contrôle d'accès au Pullman Kinshasa
           </p>
         </div>
 
         {/* Action Tabs & Logout */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#2E0207] border border-[#D4A857]/30">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#120507] border border-[#D4A857]/30">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeTab === 'dashboard'
-                  ? 'bg-[#D4A857] text-[#3D030B]'
+                  ? 'bg-[#D4A857] text-[#150608]'
                   : 'text-[#E8C98A] hover:text-white'
               }`}
             >
@@ -235,7 +235,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               onClick={() => setActiveTab('scanner')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer ${
                 activeTab === 'scanner'
-                  ? 'bg-[#D4A857] text-[#3D030B]'
+                  ? 'bg-[#D4A857] text-[#150608]'
                   : 'text-[#E8C98A] hover:text-white'
               }`}
             >
@@ -260,15 +260,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {/* Top 4 KPI Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {/* 1. Billets vendus */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/40 to-[#3D030B] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#D4A857] font-semibold block">
+                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Billets Vendus
                 </span>
-                <span className="font-serif text-3xl sm:text-4xl text-gold-bright font-light tabular-nums">
+                <span className="font-serif text-3xl sm:text-4xl text-gold-bright tabular-nums">
                   {totalSoldTickets}
                 </span>
-                <span className="text-[10px] text-stone-400 block mt-0.5">sur 450 places</span>
+                <span className="text-xs text-stone-400 block mt-0.5">sur 450 places</span>
               </div>
               <div className="p-3 rounded-full bg-[#D4A857]/10 text-[#D4A857]">
                 <Ticket className="w-5 h-5" />
@@ -276,15 +276,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 2. En attente */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/40 to-[#3D030B] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#D4A857] font-semibold block">
+                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   En Attente
                 </span>
-                <span className="font-serif text-3xl sm:text-4xl text-gold-bright font-light tabular-nums">
+                <span className="font-serif text-3xl sm:text-4xl text-gold-bright tabular-nums">
                   {totalPendingOrders}
                 </span>
-                <span className="text-[10px] text-amber-300/80 block mt-0.5">À vérifier Mobile Money</span>
+                <span className="text-xs text-amber-300/80 block mt-0.5">À vérifier Mobile Money</span>
               </div>
               <div className="p-3 rounded-full bg-amber-500/10 text-amber-400">
                 <Clock className="w-5 h-5" />
@@ -292,15 +292,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 3. Montant encaissé */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/40 to-[#3D030B] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#D4A857] font-semibold block">
+                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Montant Encaissé
                 </span>
-                <span className="font-serif text-3xl sm:text-4xl text-gold-bright font-light tabular-nums">
+                <span className="font-serif text-3xl sm:text-4xl text-gold-bright tabular-nums">
                   {totalRevenue} <span className="text-sm font-semibold uppercase text-[#E8C98A]">USD</span>
                 </span>
-                <span className="text-[10px] text-stone-400 block mt-0.5">Transactions validées</span>
+                <span className="text-xs text-stone-400 block mt-0.5">Transactions validées</span>
               </div>
               <div className="p-3 rounded-full bg-[#D4A857]/10 text-[#D4A857]">
                 <DollarSign className="w-5 h-5" />
@@ -308,15 +308,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 4. Entrées scannées */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/40 to-[#3D030B] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#D4A857] font-semibold block">
+                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Entrées Scannées
                 </span>
-                <span className="font-serif text-3xl sm:text-4xl text-gold-bright font-light tabular-nums">
+                <span className="font-serif text-3xl sm:text-4xl text-gold-bright tabular-nums">
                   {scannedTicketsCount}
                 </span>
-                <span className="text-[10px] text-emerald-400 block mt-0.5">Convives en salle</span>
+                <span className="text-xs text-emerald-400 block mt-0.5">Convives en salle</span>
               </div>
               <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-400">
                 <Scan className="w-5 h-5" />
@@ -325,7 +325,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Controls: Search and Filters */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-[#D4A857]/20 bg-[#150608]/60">
             {/* Search Input */}
             <div className="relative w-full sm:w-80">
               <Search className="w-4 h-4 text-[#D4A857] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -334,7 +334,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 placeholder="Rechercher par nom, code ou tél..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#D4A857]/30 bg-[#250106] text-xs text-[#F9F5EC] placeholder-stone-400 focus:border-[#D4A857] focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-xs text-[#F9F5EC] placeholder-stone-400 focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
@@ -344,7 +344,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                   statusFilter === 'all'
-                    ? 'bg-[#D4A857] text-[#3D030B] font-bold'
+                    ? 'bg-[#D4A857] text-[#150608] font-bold'
                     : 'text-stone-300 hover:bg-[#D4A857]/10'
                 }`}
               >
@@ -387,10 +387,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Orders Table */}
-          <div className="rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/80 overflow-hidden shadow-lg">
+          <div className="rounded-xl border border-[#D4A857]/20 bg-[#150608]/80 overflow-hidden shadow-lg">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#2E0207] text-[#E8C98A] uppercase tracking-wider font-semibold border-b border-[#D4A857]/20">
+                <thead className="bg-[#120507] text-[#E8C98A] uppercase tracking-wider font-semibold border-b border-[#D4A857]/20">
                   <tr>
                     <th className="p-4">Code</th>
                     <th className="p-4">Nom du Convive</th>
@@ -425,7 +425,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         {/* Customer */}
                         <td className="p-4">
                           <div className="font-semibold text-white">{order.customerName}</div>
-                          <div className="text-[10px] text-stone-400">{order.customerPhone}</div>
+                          <div className="text-xs text-stone-400">{order.customerPhone}</div>
                         </td>
 
                         {/* Type & Quantity */}
@@ -444,7 +444,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <td className="p-4 font-mono text-stone-300">
                           {order.payerPhone}
                           {order.payerPhone !== order.customerPhone && (
-                            <span className="ml-1.5 text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
+                            <span className="ml-1.5 text-xs uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
                               Tiers
                             </span>
                           )}
@@ -453,19 +453,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         {/* Status */}
                         <td className="p-4">
                           {order.status === 'validated' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/50 text-emerald-300 text-[10px] uppercase font-semibold">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/50 text-emerald-300 text-xs uppercase font-semibold">
                               <CheckCircle className="w-3 h-3" />
                               <span>Validé</span>
                             </span>
                           )}
                           {order.status === 'pending' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-950 border border-amber-500/50 text-amber-300 text-[10px] uppercase font-semibold">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-950 border border-amber-500/50 text-amber-300 text-xs uppercase font-semibold">
                               <Clock className="w-3 h-3" />
                               <span>En attente</span>
                             </span>
                           )}
                           {order.status === 'rejected' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-950 border border-red-500/50 text-red-300 text-[10px] uppercase font-semibold">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-950 border border-red-500/50 text-red-300 text-xs uppercase font-semibold">
                               <XCircle className="w-3 h-3" />
                               <span>Refusé</span>
                             </span>
@@ -479,7 +479,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               <>
                                 <button
                                   onClick={() => handleOpenValidateModal(order)}
-                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase hover:brightness-110 transition-all cursor-pointer"
+                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase hover:brightness-110 transition-all cursor-pointer"
                                 >
                                   Valider
                                 </button>
@@ -514,14 +514,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {activeTab === 'scanner' && (
         <div className="space-y-8 max-w-2xl mx-auto text-center animate-in fade-in duration-300">
           <div>
-            <span className="text-[11px] uppercase tracking-[0.25em] text-[#D4A857] font-semibold block mb-1">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#D4A857] font-semibold block mb-1">
               Contrôle des Accès en Temps Réel
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#F9F5EC] font-semibold">
               Scanner de Contrôle d'Entrée
             </h2>
-            <p className="text-xs text-stone-300 font-light mt-1">
-              Positionnez le QR Code du billet face à la caméra pour validation automatique.
+            <p className="text-xs text-stone-300 mt-1">
+              Positionne le QR Code du billet face à la caméra pour validation automatique.
             </p>
           </div>
 
@@ -548,16 +548,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {/* Camera center lens prompt */}
             <div className="flex flex-col items-center pointer-events-none z-10 text-stone-400">
-              <Camera className="w-12 h-12 text-[#D4A857]/60 mb-2" />
+              <Camera className="w-12 h-12 text-[#D4A857]/90 mb-2" />
               <span className="text-xs uppercase tracking-widest text-[#E8C98A]/80">
                 Caméra Active
               </span>
-              <span className="text-[10px] text-stone-500">Viseur Prêt</span>
+              <span className="text-xs text-stone-500">Viseur Prêt</span>
             </div>
           </div>
 
           {/* Test Buttons to Trigger the 3 Required Results */}
-          <div className="p-6 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B]/80 space-y-4">
+          <div className="p-6 rounded-2xl border border-[#D4A857]/30 bg-[#150608]/80 space-y-4">
             <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
               Tester les 3 Réponses du Contrôle d'Accès :
             </span>
@@ -728,7 +728,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     <p className="text-xs text-rose-100/90 leading-relaxed max-w-sm mx-auto">
-                      Ce code QR ne correspond à aucune commande enregistrée dans la base officielle du gala. Veuillez diriger le convive vers la conciergerie.
+                      Ce code QR ne correspond à aucune commande enregistrée dans la base officielle du gala. Merci de diriger le convive vers la conciergerie.
                     </p>
 
                     <button
@@ -749,15 +749,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {validatingOrder && (
         <div
           onClick={() => setValidatingOrder(null)}
-          className="fixed inset-0 z-50 bg-[#1C0206]/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-[#0F0405]/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full p-7 rounded-2xl border-2 border-[#D4A857] bg-[#2E0207] shadow-[0_0_50px_rgba(212,168,87,0.3)] text-left space-y-6"
+            className="relative max-w-md w-full p-7 rounded-2xl border-2 border-[#D4A857] bg-[#120507] shadow-[0_0_50px_rgba(212,168,87,0.3)] text-left space-y-6"
           >
             <div className="flex items-center justify-between border-b border-[#D4A857]/20 pb-3">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#D4A857] font-semibold">
+                <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold">
                   Validation de Transaction
                 </span>
                 <h3 className="font-serif text-xl font-bold text-white">
@@ -774,7 +774,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {!isValidationSuccess ? (
               <form onSubmit={handleConfirmValidation} className="space-y-4">
-                <div className="p-3 rounded-lg bg-[#3D030B] border border-[#D4A857]/20 text-xs space-y-1">
+                <div className="p-3 rounded-lg bg-[#150608] border border-[#D4A857]/20 text-xs space-y-1">
                   <div className="flex justify-between">
                     <span className="text-stone-400">Titulaire :</span>
                     <span className="font-semibold text-white">{validatingOrder.customerName}</span>
@@ -799,16 +799,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     placeholder="Ex: MPESA-88492021"
                     value={smsReference}
                     onChange={(e) => setSmsReference(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/40 bg-[#1C0206] text-sm text-[#F9F5EC] focus:border-[#D4A857] focus:outline-none"
+                    className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/40 bg-[#0F0405] text-sm text-[#F9F5EC] focus:border-[#D4A857] focus:outline-none"
                   />
-                  <span className="text-[10px] text-stone-400 mt-1 block">
+                  <span className="text-xs text-stone-400 mt-1 block">
                     Code d'autorisation figurant sur le SMS reçu par Le Cercle.
                   </span>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase tracking-widest hover:brightness-110 cursor-pointer shadow-lg"
+                  className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase tracking-widest hover:brightness-110 cursor-pointer shadow-lg"
                 >
                   Confirmer la Validation
                 </button>

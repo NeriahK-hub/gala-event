@@ -42,7 +42,7 @@ export const CountdownSection: React.FC = () => {
   ];
 
   return (
-    <section className="relative py-12 px-4 border-y border-[#D4A857]/20 bg-[#4D040E]/40 backdrop-blur-sm">
+    <section className="relative py-12 px-4 border-y border-[#D4A857]/20 bg-[#170709]/40 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-[#D4A857] mb-6">
           <Clock className="w-3.5 h-3.5" />
@@ -54,22 +54,22 @@ export const CountdownSection: React.FC = () => {
           {units.map((unit, index) => (
             <div
               key={index}
-              className="p-4 sm:p-5 rounded-xl border border-[#D4A857]/30 bg-gradient-to-b from-[#7A0815]/50 to-[#4D040E]/80 shadow-[0_8px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center relative group hover:border-[#D4A857]/60 transition-colors"
+              className="p-4 sm:p-5 rounded-xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 shadow-[0_8px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center relative group hover:border-[#D4A857]/60 transition-colors"
             >
               {/* Subtle top gold highlight */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[1px] bg-[#D4A857]/60" />
 
-              <span className="font-serif tabular-nums text-4xl sm:text-5xl md:text-6xl font-light text-gold-bright tracking-tight">
+              <span className="font-serif tabular-nums text-4xl sm:text-5xl md:text-6xl text-gold-bright tracking-tight">
                 {String(unit.value).padStart(2, '0')}
               </span>
-              <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-[#E8C98A]/80 mt-2 font-medium">
+              <span className="text-xs sm:text-xs uppercase tracking-[0.12em] text-[#E8C98A]/80 mt-2 font-medium">
                 {unit.label}
               </span>
             </div>
           ))}
         </div>
 
-        <p className="font-serif italic text-sm text-[#F3E5AB]/75 mt-6">
+        <p className="font-serif italic text-sm text-[#F3E5AB]/90 mt-6">
           Les réservations sont ouvertes dans la limite stricte des 450 places disponibles.
         </p>
       </div>

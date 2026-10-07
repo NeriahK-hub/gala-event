@@ -32,13 +32,13 @@ export const GallerySection: React.FC = () => {
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4A857]/60" />
-          <span className="text-[11px] uppercase tracking-[0.3em] text-[#D4A857] font-medium">
+          <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-medium">
             Mémoires & Instants Rares
           </span>
           <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4A857]/60" />
         </div>
 
-        <h2 className="font-script text-4xl sm:text-6xl text-gold-gradient mb-4">
+        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
           La Galerie Impériale
         </h2>
         <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/80 max-w-xl mx-auto">
@@ -62,15 +62,15 @@ export const GallerySection: React.FC = () => {
             />
 
             {/* Gradient Scrim */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#3D030B] via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#150608] via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
 
             {/* Hover Overlay Info */}
             <div className="absolute inset-0 p-5 flex flex-col justify-between opacity-90 group-hover:opacity-100 transition-opacity">
               <div className="flex justify-between items-start">
-                <span className="px-2.5 py-1 rounded-full bg-[#1C0206]/80 border border-[#D4A857]/40 text-[10px] uppercase tracking-wider text-[#F3E5AB]">
+                <span className="px-2.5 py-1 rounded-full bg-[#0F0405]/80 border border-[#D4A857]/40 text-xs uppercase tracking-wider text-[#F3E5AB]">
                   {item.category}
                 </span>
-                <span className="w-8 h-8 rounded-full bg-[#1C0206]/80 border border-[#D4A857]/40 flex items-center justify-center text-[#E8C98A] group-hover:scale-110 transition-transform">
+                <span className="w-8 h-8 rounded-full bg-[#0F0405]/80 border border-[#D4A857]/40 flex items-center justify-center text-[#E8C98A] group-hover:scale-110 transition-transform">
                   <Eye className="w-4 h-4" />
                 </span>
               </div>
@@ -79,7 +79,7 @@ export const GallerySection: React.FC = () => {
                 <h3 className="font-serif text-lg font-semibold text-[#F9F5EC] group-hover:text-[#F3E5AB] transition-colors leading-tight">
                   {item.title}
                 </h3>
-                <p className="text-xs text-stone-300 font-light line-clamp-1 mt-1">
+                <p className="text-xs text-stone-300 line-clamp-1 mt-1">
                   {item.caption}
                 </p>
               </div>
@@ -92,11 +92,11 @@ export const GallerySection: React.FC = () => {
       {selectedPhoto && (
         <div
           onClick={() => setSelectedPhoto(null)}
-          className="fixed inset-0 z-50 bg-[#1C0206]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-300"
+          className="fixed inset-0 z-50 bg-[#0F0405]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-300"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl w-full max-h-[90vh] rounded-2xl border border-[#D4A857]/50 bg-[#2E0207] shadow-[0_0_50px_rgba(212,168,87,0.3)] overflow-hidden flex flex-col"
+            className="relative max-w-4xl w-full max-h-[90vh] rounded-2xl border border-[#D4A857]/50 bg-[#120507] shadow-[0_0_50px_rgba(212,168,87,0.3)] overflow-hidden flex flex-col"
           >
             {/* Top Bar with Close button */}
             <div className="p-4 flex items-center justify-between border-b border-[#D4A857]/20">
@@ -121,25 +121,25 @@ export const GallerySection: React.FC = () => {
 
               <button
                 onClick={handlePrev}
-                className="absolute left-3 p-2 rounded-full bg-[#1C0206]/80 border border-[#D4A857]/50 text-[#E8C98A] hover:scale-110 transition-transform cursor-pointer"
+                className="absolute left-3 p-2 rounded-full bg-[#0F0405]/80 border border-[#D4A857]/50 text-[#E8C98A] hover:scale-110 transition-transform cursor-pointer"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
 
               <button
                 onClick={handleNext}
-                className="absolute right-3 p-2 rounded-full bg-[#1C0206]/80 border border-[#D4A857]/50 text-[#E8C98A] hover:scale-110 transition-transform cursor-pointer"
+                className="absolute right-3 p-2 rounded-full bg-[#0F0405]/80 border border-[#D4A857]/50 text-[#E8C98A] hover:scale-110 transition-transform cursor-pointer"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
             </div>
 
             {/* Caption Footer */}
-            <div className="p-5 border-t border-[#D4A857]/20 bg-[#250106]">
+            <div className="p-5 border-t border-[#D4A857]/20 bg-[#120507]">
               <h4 className="font-serif text-xl text-[#F9F5EC] font-semibold">
                 {selectedPhoto.title}
               </h4>
-              <p className="text-xs sm:text-sm text-stone-300 font-light mt-1">
+              <p className="text-xs sm:text-sm text-stone-300 mt-1">
                 {selectedPhoto.caption}
               </p>
             </div>

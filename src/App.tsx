@@ -20,6 +20,9 @@ import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 
+// Le sélecteur de vues n'est visible que si l'URL contient ?demo
+const SHOW_DEMO_NAV = new URLSearchParams(window.location.search).has('demo');
+
 export default function App() {
   // Current active view
   const [activeView, setActiveView] = useState<ActiveView>('vitrine');
@@ -85,7 +88,7 @@ export default function App() {
     orders.find((o) => o.id === selectedOrderId) || orders[0];
 
   return (
-    <div className="relative min-h-screen bg-[#5C0612] text-[#F9F5EC]">
+    <div className="relative min-h-screen bg-[#1F0B10] text-[#F9F5EC]">
       {/* Fixed Header (visible on vitrine, and provides navigation across app) */}
       <Header
         onNavigateSection={handleNavigateSection}
@@ -191,14 +194,16 @@ export default function App() {
       </main>
 
       {/* Floating Demo Navigation Switcher (Allows testing all pages with mockData) */}
-      <DevNavSwitcher
-        activeView={activeView}
-        onChangeView={(view) => {
-          setActiveView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        selectedOrderId={selectedOrderId}
-      />
+      {SHOW_DEMO_NAV && (
+        <DevNavSwitcher
+          activeView={activeView}
+          onChangeView={(view) => {
+            setActiveView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          selectedOrderId={selectedOrderId}
+        />
+      )}
     </div>
   );
 }

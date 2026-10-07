@@ -36,7 +36,7 @@ export const GALA_INFO: GalaInfo = {
   dressCode: {
     title: "Black Tie & Touche d'Or",
     subtitle: "Haute Couture & Tenue d'Apparat",
-    description: "Une célébration royale requiert une élégance sans compromis. Laissez-vous inspirer par la splendeur du bordeaux impérial, de l'or satiné et des soieries précieuses.",
+    description: "Une célébration royale requiert une élégance sans compromis. Laisse-toi inspirer par la splendeur du bordeaux impérial, de l'or satiné et des soieries précieuses.",
     colors: [
       { name: "Bordeaux Royal", hex: "#7A0815", desc: "La noblesse et la passion" },
       { name: "Bordeaux Sombre", hex: "#4D040E", desc: "La profondeur impériale" },
@@ -55,7 +55,7 @@ export const TICKET_TIERS: TicketTier[] = [
     name: 'Billet Standard',
     price: 50,
     subtitle: "L'Accès Prestige",
-    description: "Vivez une soirée d'exception avec accès au cocktail de bienvenue, au grand spectacle et au bal dansant.",
+    description: "Vis une soirée d'exception avec accès au cocktail de bienvenue, au grand spectacle et au bal dansant.",
     capacityPerTicket: 1,
     availableCount: 78,
     perks: [
@@ -97,8 +97,8 @@ export const TICKET_TIERS: TicketTier[] = [
     capacityPerTicket: 8,
     availableCount: 5,
     perks: [
-      "Table royale privative réservée au nom de votre entreprise ou famille",
-      "Maître d'hôtel & sommelier dédiés à votre table toute la nuit",
+      "Table royale privative réservée au nom de ton entreprise ou de ta famille",
+      "Maître d'hôtel & sommelier dédiés à ta table toute la nuit",
       "Dîner Gastronomique 5 services pour les 8 convives",
       "3 bouteilles de Champagne Grand Cru & spiritueux rares",
       "Service voiturier VIP pour les 8 véhicules",
@@ -246,27 +246,27 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'faq-1',
     question: 'Comment effectuer le règlement de mon billet par Mobile Money ?',
-    answer: 'La procédure est simple et instantanée : choisissez votre formule de billet sur le site, remplissez votre nom et coordonnées, puis vous recevez notre numéro Mobile Money officiel (M-Pesa, Airtel Money ou Orange Money). Effectuez le transfert du montant exact depuis votre téléphone, puis transmettez le code de transaction par WhatsApp. Notre équipe valide votre commande sous 15 minutes.'
+    answer: 'La procédure est simple et instantanée : choisis ta formule de billet sur le site, remplis ton nom et tes coordonnées, puis tu reçois notre numéro Mobile Money officiel (M-Pesa, Airtel Money ou Orange Money). Effectue le transfert du montant exact depuis ton téléphone, puis transmets le code de transaction par WhatsApp. Notre équipe valide ta commande sous 15 minutes.'
   },
   {
     id: 'faq-2',
     question: 'Comment vais-je recevoir mon billet et son QR Code officiel ?',
-    answer: 'Dès validation de votre paiement par l\'équipe, votre billet numérique sécurisé est généré avec un QR Code unique haute sécurité. Vous le recevez directement sur WhatsApp et vous pouvez également le télécharger en format PDF haute définition sur cette plateforme via votre code de commande personnel.'
+    answer: 'Dès validation de ton paiement par l\'équipe, ton billet numérique sécurisé est généré avec un QR Code unique haute sécurité. Tu le reçois directement sur WhatsApp et tu peux également le télécharger en format PDF haute définition sur cette plateforme via ton code de commande personnel.'
   },
   {
     id: 'faq-3',
     question: 'Puis-je commander plusieurs billets en une seule fois ?',
-    answer: 'Absolument ! Lors de la sélection, ajustez la quantité souhaitée (+ / -). Chaque billet de votre commande disposera de son propre QR Code individuel (ex: Billet 1/3, 2/3, 3/3) nominatif que vous pourrez partager individuellement avec vos accompagnateurs.'
+    answer: 'Absolument ! Lors de la sélection, ajuste la quantité souhaitée (+ / -). Chaque billet de ta commande disposera de son propre QR Code individuel (ex: Billet 1/3, 2/3, 3/3) nominatif que tu pourras partager individuellement avec tes accompagnateurs.'
   },
   {
     id: 'faq-4',
     question: 'Que faire si je paie depuis le numéro d\'un tiers ou d\'un agent ?',
-    answer: 'C\'est prévu ! Le formulaire comporte un champ spécifique « Numéro qui va envoyer l\'argent ». Indiquez-y simplement le numéro exact émetteur du transfert Mobile Money afin que nos contrôleurs puissent réconcilier votre versement en toute sérénité.'
+    answer: 'C\'est prévu ! Le formulaire comporte un champ spécifique « Numéro qui va envoyer l\'argent ». Indique-y simplement le numéro exact émetteur du transfert Mobile Money afin que nos contrôleurs puissent réconcilier ton versement en toute sérénité.'
   },
   {
     id: 'faq-5',
     question: 'Que faire si je perds mon billet ou mon code de commande ?',
-    answer: 'Ne vous inquiétez pas : munissez-vous de votre nom et de votre numéro de téléphone utilisé lors de la réservation et contactez notre conciergerie WhatsApp (+243 82 000 0147). Votre invitation vous sera renvoyée instantanément sans aucun frais.'
+    answer: 'Ne t\'inquiète pas : munis-toi de ton nom et du numéro de téléphone utilisé lors de la réservation, puis contacte notre conciergerie WhatsApp (+243 82 000 0147). Ton invitation te sera renvoyée instantanément sans aucun frais.'
   },
   {
     id: 'faq-6',

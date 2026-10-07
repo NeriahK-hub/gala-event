@@ -33,7 +33,7 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
 
   // Selected Order for the Ticket View
-  const [selectedOrderId, setSelectedOrderId] = useState<string>(INITIAL_ORDERS[0].id);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   // Pre-selected ticket tier for reservation flow
   const [selectedTierId, setSelectedTierId] = useState<TicketTierId>('standard');
@@ -86,8 +86,7 @@ export default function App() {
   };
 
   // Get current order object for Ticket View
-  const currentTicketOrder =
-    orders.find((o) => o.id === selectedOrderId) || orders[0];
+  const currentTicketOrder = orders.find((o) => o.id === selectedOrderId) ?? null;
 
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
@@ -178,6 +177,8 @@ export default function App() {
         {activeView === 'tickets' && (
           <TicketViewPage
             order={currentTicketOrder}
+            orders={orders}
+            onFindOrder={setSelectedOrderId}
             onBackToHome={() => {
               setActiveView('vitrine');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -207,10 +208,11 @@ export default function App() {
         <DevNavSwitcher
           activeView={activeView}
           onChangeView={(view) => {
+            if (view === 'tickets' && !selectedOrderId) setSelectedOrderId(orders[0]?.id ?? null);
             setActiveView(view);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          selectedOrderId={selectedOrderId}
+          selectedOrderId={selectedOrderId ?? undefined}
         />
       )}
     </div>

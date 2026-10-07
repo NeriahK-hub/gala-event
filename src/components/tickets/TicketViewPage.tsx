@@ -1,347 +1,366 @@
 import React, { useState } from 'react';
-import { Order, OrderStatus } from '../../types';
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  Download,
+  Info,
+  MessageCircle,
+  Search,
+  Share2,
+} from 'lucide-react';
+import { IssuedTicket, Order, OrderStatus } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { QRCodeSvg } from './QRCodeSvg';
-import { WaxSeal } from '../common/WaxSeal';
-import { LuxuryFrame } from '../common/LuxuryFrame';
-import {
-  Download,
-  Clock,
-  CheckCircle,
-  Share2,
-  Calendar,
-  MapPin,
-  ChevronLeft,
-  ShieldCheck,
-  AlertCircle,
-  MessageCircle,
-  Check,
-} from 'lucide-react';
 
 interface TicketViewPageProps {
-  order: Order;
+  /** Commande à afficher ; null = formulaire de recherche « Retrouver mon billet » */
+  order: Order | null;
+  orders: Order[];
   onBackToHome: () => void;
+  onFindOrder: (orderId: string) => void;
   onUpdateOrderStatus?: (orderId: string, status: OrderStatus) => void;
 }
 
+const isDemo = () => new URLSearchParams(window.location.search).has('demo');
+const digits = (v: string) => v.replace(/[^0-9]/g, '');
+
 export const TicketViewPage: React.FC<TicketViewPageProps> = ({
   order,
+  orders,
   onBackToHome,
+  onFindOrder,
   onUpdateOrderStatus,
 }) => {
-  const GALA_INFO = useContent().content.galaInfo;
-  // Local state for testing toggle between "pending" and "validated"
-  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order.status);
-  const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
+  if (!order) {
+    return <LookupForm orders={orders} onBackToHome={onBackToHome} onFindOrder={onFindOrder} />;
+  }
+  return <ReservationDetails order={order} onBackToHome={onBackToHome} onUpdateOrderStatus={onUpdateOrderStatus} />;
+};
 
-  const isPending = currentStatus === 'pending';
-  const isValidated = currentStatus === 'validated';
-  const isRejected = currentStatus === 'rejected';
+/* ---------- Retrouver mon billet ---------- */
+const LookupForm: React.FC<{
+  orders: Order[];
+  onBackToHome: () => void;
+  onFindOrder: (id: string) => void;
+}> = ({ orders, onBackToHome, onFindOrder }) => {
+  const { content } = useContent();
+  const [code, setCode] = useState('');
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState('');
 
-  const handleStatusToggle = (newStatus: OrderStatus) => {
-    setCurrentStatus(newStatus);
-    if (onUpdateOrderStatus) {
-      onUpdateOrderStatus(order.id, newStatus);
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const found = orders.find(
+      (o) =>
+        o.id.toLowerCase() === code.trim().toLowerCase() &&
+        (digits(o.customerPhone) === digits(phone) || digits(o.payerPhone) === digits(phone))
+    );
+    if (!found) {
+      setError('Aucune commande ne correspond. Vérifie ton code et ton numéro, ou contacte-nous sur WhatsApp.');
+      return;
+    }
+    setError('');
+    onFindOrder(found.id);
+  };
+
+  return (
+    <div className="min-h-screen pt-28 pb-24 px-4">
+      <div className="max-w-md mx-auto">
+        <button onClick={onBackToHome} className="inline-flex items-center gap-2 text-sm text-[#FFD9A0] hover:text-white mb-6 cursor-pointer">
+          <ArrowLeft className="w-4 h-4" /> Retour au site
+        </button>
+        <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl">
+          <div className="w-12 h-12 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center mb-4">
+            <Search className="w-6 h-6" />
+          </div>
+          <h1 className="font-serif text-3xl font-semibold mb-1">Retrouver mon billet</h1>
+          <p className="text-sm text-[#6B4A4F] mb-6">Entre ton code de commande et le numéro utilisé pour réserver.</p>
+
+          <form onSubmit={submit} className="space-y-4">
+            <label className="block">
+              <span className="block text-xs font-semibold text-[#6B4A4F] mb-1.5">Code de commande</span>
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+                placeholder="GALA-0001"
+                className="w-full px-4 py-3 rounded-xl border border-[#E7DCCB] bg-white font-mono focus:border-[#D8590B] focus:outline-none focus:ring-2 focus:ring-[#F2761B]/20"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-[#6B4A4F] mb-1.5">Numéro de téléphone</span>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                type="tel"
+                placeholder="+243 …"
+                className="w-full px-4 py-3 rounded-xl border border-[#E7DCCB] bg-white focus:border-[#D8590B] focus:outline-none focus:ring-2 focus:ring-[#F2761B]/20"
+              />
+            </label>
+            {error && (
+              <p role="alert" className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {error}
+              </p>
+            )}
+            <button type="submit" className="w-full py-3.5 rounded-full bg-[#2A1014] text-white font-bold hover:bg-black cursor-pointer">
+              Voir mon billet
+            </button>
+          </form>
+
+          <a
+            href={`https://wa.me/${digits(content.galaInfo.whatsappNumber)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-2 text-sm text-[#2A1014] underline underline-offset-4"
+          >
+            <MessageCircle className="w-4 h-4" /> Un souci ? Écris-nous sur WhatsApp
+          </a>
+          {isDemo() && (
+            <p className="mt-4 text-xs text-[#8B6B70]">Démo : essaie GALA-0001 avec le numéro +243 81 000 0001.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Détails de la réservation ---------- */
+const ReservationDetails: React.FC<{
+  order: Order;
+  onBackToHome: () => void;
+  onUpdateOrderStatus?: (orderId: string, status: OrderStatus) => void;
+}> = ({ order, onBackToHome, onUpdateOrderStatus }) => {
+  const { content } = useContent();
+  const info = content.galaInfo;
+  const [index, setIndex] = useState(0);
+  const [shared, setShared] = useState(false);
+
+  const status = order.status;
+  const whatsappUrl = `https://wa.me/${digits(info.whatsappNumber)}?text=${encodeURIComponent(
+    `Bonjour, je consulte ma réservation ${order.id}. Peux-tu vérifier l'état de ma commande ?`
+  )}`;
+
+  const ticket: IssuedTicket | undefined = order.tickets[index];
+  const place = [info.venueName, info.city].filter(Boolean).join(', ');
+
+  const share = async () => {
+    const text = `Mon billet pour ${info.name} — ${info.dateText}. Commande ${order.id}.`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: info.name, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        setShared(true);
+        setTimeout(() => setShared(false), 2200);
+      }
+    } catch {
+      // partage annulé
     }
   };
 
-  const handleDownloadPdf = (ticketNum: string) => {
-    setDownloadSuccess(ticketNum);
-    setTimeout(() => {
-      window.print();
-    }, 400);
-    setTimeout(() => {
-      setDownloadSuccess(null);
-    }, 4000);
-  };
-
-  const whatsappUrl = `https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-    `Bonjour Conciergerie, je consulte mon billet pour la commande ${order.id}. Peux-tu vérifier l'état de validation ?`
-  )}`;
-
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 max-w-5xl mx-auto">
-      {/* Top Header & Back */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <button
-          onClick={onBackToHome}
-          className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#E8C98A] hover:text-white transition-colors cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Retour au site officiel</span>
-        </button>
-
-        {/* DEMO STATE SWITCHER FOR TESTING */}
-        <div className="flex items-center gap-2 p-1.5 rounded-full border border-[#D4A857]/40 bg-[#3D030B]/80 text-xs">
-          <span className="text-xs uppercase text-[#D4A857]/80 px-2 font-medium">
-            Testeur d'état :
-          </span>
+    <div className="min-h-screen pt-24 pb-24 px-4 print:pt-4">
+      <div className="max-w-md mx-auto">
+        {/* Barre du haut */}
+        <div className="flex items-center gap-3 mb-5 print:hidden">
           <button
-            onClick={() => handleStatusToggle('pending')}
-            className={`px-3 py-1 rounded-full text-xs transition-colors cursor-pointer ${
-              isPending
-                ? 'bg-[#B88934] text-[#3D030B] font-bold'
-                : 'text-[#E8C98A] hover:text-white'
-            }`}
+            onClick={onBackToHome}
+            aria-label="Retour au site"
+            className="p-2 -ml-2 rounded-full text-white hover:bg-white/10 cursor-pointer"
           >
-            En attente
+            <ArrowLeft className="w-6 h-6" />
           </button>
-          <button
-            onClick={() => handleStatusToggle('validated')}
-            className={`px-3 py-1 rounded-full text-xs transition-colors cursor-pointer ${
-              isValidated
-                ? 'bg-[#D4A857] text-[#3D030B] font-bold'
-                : 'text-[#E8C98A] hover:text-white'
-            }`}
-          >
-            Validé
-          </button>
+          <h1 className="font-serif text-2xl text-white">Détails de la réservation</h1>
         </div>
-      </div>
 
-      {/* Main Order Header Banner */}
-      <div className="text-center mb-8">
-        <span className="text-xs uppercase tracking-[0.25em] text-[#D4A857] font-semibold block mb-1">
-          Portail Numérique des Convives
-        </span>
-        <h1 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight">
-          Invitation & Billet Officiel
-        </h1>
-        <p className="text-xs sm:text-sm text-[#F3E5AB]/80 mt-1">
-          Commande <strong className="text-gold-bright">{order.id}</strong> • Titulaire : {order.customerName}
-        </p>
-      </div>
-
-      {/* ================= ÉTAT : EN ATTENTE ================= */}
-      {isPending && (
-        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#7A0815]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#5A040F] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
-            <Clock className="w-8 h-8 animate-pulse text-[#D4A857]" />
+        {isDemo() && (
+          <div className="mb-4 flex items-center gap-2 p-1.5 rounded-full bg-black/40 text-xs print:hidden">
+            <span className="px-2 text-[#FFD9A0]">Démo :</span>
+            {(['pending', 'validated', 'rejected'] as OrderStatus[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => onUpdateOrderStatus?.(order.id, s)}
+                className={`px-3 py-1 rounded-full cursor-pointer ${status === s ? 'bg-[#FFB43A] text-[#3D0A04] font-bold' : 'text-white/80 hover:text-white'}`}
+              >
+                {s === 'pending' ? 'En attente' : s === 'validated' ? 'Validé' : 'Refusé'}
+              </button>
+            ))}
           </div>
+        )}
 
-          <span className="inline-block px-3 py-1 rounded-full bg-[#B88934]/20 border border-[#D4A857] text-xs font-bold uppercase tracking-widest text-[#F3E5AB] mb-3">
-            Paiement en cours de vérification
-          </span>
-
-          <h2 className="font-serif text-2xl sm:text-3xl text-[#F9F5EC] font-semibold mb-3">
-            Ton versement est en cours de traitement
-          </h2>
-
-          <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-md mx-auto mb-6">
-            Notre équipe de conciergerie procède actuellement à la réconciliation de ta transaction Mobile Money. Dès réception, tes QR codes d'accès officiels seront activés sur cette page.
-          </p>
-
-          {/* Details summary */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/20 bg-[#3D030B] text-left max-w-md mx-auto space-y-2 text-xs mb-8">
-            <div className="flex justify-between">
-              <span className="text-stone-400">Code Commande :</span>
-              <span className="font-bold text-[#E8C98A]">{order.id}</span>
+        {/* ===== En attente ===== */}
+        {status === 'pending' && (
+          <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl text-center">
+            <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-7 h-7" />
             </div>
-            <div className="flex justify-between">
-              <span className="text-stone-400">Formule :</span>
-              <span className="text-stone-200">{order.quantity}x {order.tierId.toUpperCase()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-stone-400">Montant attendu :</span>
-              <span className="font-bold text-[#E8C98A]">{order.totalAmount} USD</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-stone-400">Numéro payeur renseigné :</span>
-              <span className="text-stone-200">{order.payerPhone}</span>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <span className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-3">
+              Paiement en cours de vérification
+            </span>
+            <h2 className="font-serif text-2xl font-semibold mb-2">Ton billet arrive bientôt</h2>
+            <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
+              Notre équipe vérifie ton paiement Mobile Money. Dès qu'il est validé, ton QR code apparaît sur cette page et tu reçois ton billet sur WhatsApp.
+            </p>
+            <dl className="rounded-2xl bg-white border border-[#EFE5D6] p-4 text-sm text-left space-y-2 mb-5">
+              <Row k="Commande" v={order.id} mono />
+              <Row k="Billets" v={`${order.quantity} × ${content.tiers.find((t) => t.id === order.tierId)?.name ?? order.tierId}`} />
+              <Row k="Montant" v={`${order.totalAmount} USD`} strong />
+            </dl>
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white font-semibold text-xs uppercase tracking-wider shadow-md hover:bg-[#20ba59] transition-all"
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>Contacter la conciergerie</span>
+              <MessageCircle className="w-5 h-5" /> Contacter l'équipe
             </a>
-
-            <button
-              onClick={() => handleStatusToggle('validated')}
-              className="w-full sm:w-auto px-6 py-3 rounded-full border border-[#D4A857] text-[#E8C98A] hover:bg-[#D4A857]/20 text-xs uppercase tracking-wider transition-colors cursor-pointer"
-            >
-              Simuler la validation immédiate
-            </button>
           </div>
-        </LuxuryFrame>
-      )}
+        )}
 
-      {/* ================= ÉTAT : REFUSÉ ================= */}
-      {isRejected && (
-        <div className="p-8 rounded-2xl border border-red-500/50 bg-[#3D030B] text-center max-w-md mx-auto">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h2 className="font-serif text-2xl text-red-200 font-semibold mb-2">
-            Réservation Non Validée
-          </h2>
-          <p className="text-xs text-stone-300 leading-relaxed mb-6">
-            {order.notes || "Le versement Mobile Money correspondant n'a pas pu être identifié."}
-          </p>
-          <a
-            href={whatsappUrl}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white text-xs uppercase font-bold"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>Régulariser sur WhatsApp</span>
-          </a>
-        </div>
-      )}
+        {/* ===== Refusé ===== */}
+        {status === 'rejected' && (
+          <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl text-center">
+            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
+            <h2 className="font-serif text-2xl font-semibold mb-2">Réservation non validée</h2>
+            <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
+              {order.notes || "Nous n'avons pas pu retrouver ton paiement Mobile Money."}
+            </p>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
+            >
+              <MessageCircle className="w-5 h-5" /> Régulariser sur WhatsApp
+            </a>
+          </div>
+        )}
 
-      {/* ================= ÉTAT : VALIDÉ ================= */}
-      {isValidated && (
-        <div className="space-y-10 animate-in fade-in duration-500">
-          {/* Notification banner */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#3D0309]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-[#D4A857] shrink-0" />
-              <div className="text-xs text-left">
-                <span className="font-bold text-[#E8C98A] block">
-                  Paiement Confirmé • Billets Officiels Activés
-                </span>
-                <span className="text-stone-300">
-                  {order.tickets.length} invitation(s) individuelle(s) prête(s) pour le contrôle d'accès.
-                </span>
+        {/* ===== Validé : détails + QR code ===== */}
+        {status === 'validated' && ticket && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-emerald-200 print:hidden">
+              <CheckCircle2 className="w-5 h-5 text-emerald-300" />
+              <span>Paiement confirmé{order.paymentReference ? ` • Réf. ${order.paymentReference}` : ''}</span>
+            </div>
+
+            {/* Choix du billet quand la commande en contient plusieurs */}
+            {order.tickets.length > 1 && (
+              <div className="flex flex-wrap gap-2 print:hidden" role="tablist" aria-label="Billets de la commande">
+                {order.tickets.map((t, i) => (
+                  <button
+                    key={t.ticketNumber}
+                    role="tab"
+                    aria-selected={i === index}
+                    onClick={() => setIndex(i)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-colors ${
+                      i === index ? 'bg-[#FFB43A] text-[#3D0A04]' : 'bg-black/30 text-white hover:bg-black/50'
+                    }`}
+                  >
+                    Billet {i + 1}/{order.tickets.length}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Carte événement */}
+            <div className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] p-4 flex items-start justify-between gap-3 shadow-xl">
+              <div className="min-w-0">
+                <h2 className="font-semibold text-base leading-snug">{info.name}</h2>
+                <p className="text-xs text-[#8B6B70] mt-0.5">{info.dateText}</p>
+              </div>
+              <button
+                onClick={share}
+                aria-label="Partager"
+                className="p-2 rounded-full text-[#D8590B] hover:bg-[#F2761B]/10 cursor-pointer shrink-0 print:hidden"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+            </div>
+            {shared && <p role="status" className="text-xs text-[#FFD9A0] text-center">Texte copié, tu peux le coller où tu veux.</p>}
+
+            {/* Détails */}
+            <div className="rounded-2xl bg-[#FBF8F2] text-[#2A1014] shadow-xl overflow-hidden">
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-4 p-4">
+                <Cell k="Titulaire" v={ticket.attendeeName} />
+                <Cell k="Billet" v={ticket.tierName} />
+                <Cell k="N° du billet" v={ticket.ticketNumber} mono />
+                <Cell k="Commande" v={order.id} mono />
+                <Cell k="Date" v={info.dateText} />
+                <Cell k="Horaires" v={info.timeText || '—'} />
+                <div className="col-span-2">
+                  <Cell k="Lieu" v={place || '—'} />
+                </div>
+              </dl>
+              <div className="border-t border-dashed border-[#E7DCCB] px-4 py-3 flex items-center justify-between text-sm">
+                <span className="text-[#6B4A4F]">Total de la commande</span>
+                <span className="font-bold text-[#D8590B] tabular-nums">{order.totalAmount.toFixed(2)} USD</span>
               </div>
             </div>
-            {order.paymentReference && (
-              <span className="hidden sm:inline text-xs uppercase font-mono px-2 py-1 rounded bg-[#3D030B] border border-[#D4A857]/30 text-[#D4A857]">
-                Réf: {order.paymentReference}
+
+            {/* QR code */}
+            <div className="rounded-2xl bg-white text-[#2A1014] p-5 shadow-xl text-center">
+              <div className="relative inline-block">
+                <QRCodeSvg value={ticket.qrPayload} size={220} dimmed={ticket.scanned} />
+                {ticket.scanned && (
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="px-3 py-1.5 rounded-full bg-[#2A1014] text-white text-sm font-bold">Déjà utilisé</span>
+                  </span>
+                )}
+              </div>
+              <p className="mt-3 text-xs text-[#8B6B70]">
+                Code de sécurité : <span className="font-mono font-semibold text-[#2A1014]">{ticket.securityCode}</span>
+              </p>
+            </div>
+
+            <p className="flex gap-2 text-xs text-white/90 leading-relaxed px-1">
+              <Info className="w-4 h-4 shrink-0 mt-0.5 text-[#FFD9A0]" />
+              <span>
+                <strong className="text-[#FFD9A0]">À savoir :</strong> présente simplement ce QR code à l'entrée. Un seul passage par billet.
               </span>
-            )}
-          </div>
-
-          {downloadSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs text-center max-w-md mx-auto animate-bounce">
-              <Check className="inline w-4 h-4 mr-1 -mt-0.5" /> Génération du document PDF pour {downloadSuccess} en cours...
-            </div>
-          )}
-
-          {/* LIST OF ISSUED TICKETS (Chacun avec son QR Code, nom, type, numéro 1/3, 2/3, etc.) */}
-          <div className="space-y-12">
-            {order.tickets.map((tkt, idx) => (
-              <LuxuryTicketCard
-                key={tkt.ticketNumber}
-                ticket={tkt}
-                order={order}
-                onDownload={() => handleDownloadPdf(tkt.ticketNumber)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-interface LuxuryTicketCardProps {
-  ticket: Order['tickets'][0];
-  order: Order;
-  onDownload: () => void;
-}
-
-const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
-  ticket,
-  order,
-  onDownload,
-}) => {
-  const GALA_INFO = useContent().content.galaInfo;
-  return (
-    <div className="relative rounded-2xl border-2 border-[#D4A857] bg-gradient-to-br from-[#2E0207] via-[#3E030B] to-[#2E0207] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_25px_rgba(212,168,87,0.25)] overflow-hidden max-w-3xl mx-auto print:shadow-none print:border-black">
-      {/* Decorative inner frame */}
-      <div className="absolute inset-2 border border-[#D4A857]/30 rounded-xl pointer-events-none" />
-
-      {/* Concave scallops in the ticket corners */}
-      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
-      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
-
-      <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-        
-        {/* Left Side: Gala info, Attendee, Seat Tier */}
-        <div className="flex-1 space-y-4 text-center md:text-left">
-          {/* Header */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-wider">
-              {ticket.tierName}
-            </span>
-            <span className="text-xs font-mono text-[#E8C98A]">
-              Billet {ticket.ticketIndex} / {ticket.totalTickets}
-            </span>
-          </div>
-
-          <div>
-            <span className="font-script text-3xl sm:text-4xl text-gold-gradient block">
-              {GALA_INFO.name}
-            </span>
-            <p className="text-xs uppercase tracking-[0.12em] text-[#D4A857] font-semibold">
-              {GALA_INFO.edition} • Kinshasa
             </p>
-          </div>
 
-          <div className="space-y-1 pt-1 border-t border-[#D4A857]/20">
-            <span className="text-xs uppercase tracking-wider text-stone-400 block">
-              Nom du Convive :
-            </span>
-            <p className="font-serif text-xl sm:text-2xl text-[#F9F5EC] font-semibold">
-              {ticket.attendeeName}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 pt-2 text-xs text-[#E8C98A]/90">
-            <div>
-              <span className="text-xs uppercase tracking-wider text-stone-400 block">Date & Heure</span>
-              <p className="font-semibold text-stone-200">{GALA_INFO.dateText}</p>
-              <p className="text-xs text-[#D4A857]">{GALA_INFO.timeText}</p>
-            </div>
-            <div>
-              <span className="text-xs uppercase tracking-wider text-stone-400 block">Lieu de Réception</span>
-              <p className="font-semibold text-stone-200">{GALA_INFO.venueName}</p>
-              <p className="text-xs text-[#D4A857]">{GALA_INFO.city}</p>
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-3 pt-2 print:hidden">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-3.5 rounded-xl border-2 border-white/70 text-white text-center font-semibold hover:bg-white/10 inline-flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" /> Aide
+              </a>
+              <button
+                onClick={() => window.print()}
+                className="py-3.5 rounded-xl bg-[#2A1014] text-white font-semibold hover:bg-black inline-flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              >
+                <Download className="w-4 h-4" /> Télécharger
+              </button>
             </div>
           </div>
+        )}
 
-          <div className="pt-2 flex items-center justify-center md:justify-start gap-2 text-xs text-stone-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#D4A857]" />
-            <span>Code de Sécurité : <strong className="font-mono text-[#E8C98A]">{ticket.securityCode}</strong></span>
-          </div>
-        </div>
-
-        {/* Separator Line (Dashed ticket stub effect) */}
-        <div className="hidden md:flex flex-col items-center justify-between h-48 border-r-2 border-dashed border-[#D4A857]/40 px-2" />
-
-        {/* Right Side: QR Code, Wax Seal & Download Action */}
-        <div className="flex flex-col items-center justify-center space-y-4 shrink-0 text-center">
-          {/* Individual QR Code for this ticket */}
-          <div className="relative group">
-            <QRCodeSvg value={ticket.qrPayload} size={150} />
-            <div className="text-xs font-mono text-[#D4A857] mt-1.5 uppercase">
-              {ticket.ticketNumber}
-            </div>
-          </div>
-
-          {/* Download PDF CTA Button */}
-          <button
-            onClick={onDownload}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-[0_0_20px_rgba(212,168,87,0.7)] transition-all transform hover:scale-[1.02] cursor-pointer print:hidden"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Télécharger le PDF</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Ticket Footer Ribbon */}
-      <div className="bg-[#3D030B] px-6 py-2.5 border-t border-[#D4A857]/20 flex items-center justify-between text-xs text-[#D4A857]/90">
-        <span>Dress Code impératif : Black Tie & Touche d'Or</span>
-        <span>Invitation nominative et non transférable sans accord</span>
+        {status === 'validated' && !ticket && (
+          <p className="text-white text-center">Aucun billet n'est rattaché à cette commande pour le moment.</p>
+        )}
       </div>
     </div>
   );
 };
+
+const Cell: React.FC<{ k: string; v: string; mono?: boolean }> = ({ k, v, mono }) => (
+  <div className="min-w-0">
+    <dt className="text-xs text-[#9C8286]">{k}</dt>
+    <dd className={`text-sm font-medium break-words ${mono ? 'font-mono' : ''}`}>{v}</dd>
+  </div>
+);
+
+const Row: React.FC<{ k: string; v: string; mono?: boolean; strong?: boolean }> = ({ k, v, mono, strong }) => (
+  <div className="flex justify-between gap-4">
+    <dt className="text-[#8B6B70]">{k}</dt>
+    <dd className={`text-right ${mono ? 'font-mono' : ''} ${strong ? 'font-bold text-[#D8590B]' : ''}`}>{v}</dd>
+  </div>
+);

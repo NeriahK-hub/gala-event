@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import { useContent } from '../../content/ContentContext';
 import { TicketTierId, Order, IssuedTicket } from '../../types';
-import { LuxuryFrame } from '../common/LuxuryFrame';
 import {
   Check,
   Copy,
   ChevronLeft,
   ArrowRight,
+  Minus,
+  Plus,
+  QrCode,
+  Smartphone,
+  Zap,
   MessageCircle,
   Info,
   CreditCard,
@@ -152,162 +157,219 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
     return `https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
 
+  const stepLabels = ['Billet', 'Coordonnées', 'Confirmation'];
+
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 max-w-4xl mx-auto">
-      {/* Top Breadcrumb & Back */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen pt-24 sm:pt-28 pb-32 sm:pb-20 px-4 sm:px-6 max-w-5xl mx-auto">
+      {/* Retour + progression */}
+      <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
         <button
           onClick={step === 1 ? onBackToHome : () => setStep((step - 1) as 1 | 2)}
-          className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#E8C98A] hover:text-white transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1 text-sm font-medium text-white/90 hover:text-white transition-colors cursor-pointer"
         >
-          <ChevronLeft className="w-4 h-4" />
-          <span>{step === 1 ? "Retour à l'accueil" : 'Étape précédente'}</span>
+          <ChevronLeft className="w-5 h-5 -ml-1" />
+          <span>{step === 1 ? 'Accueil' : 'Retour'}</span>
         </button>
 
-        {/* Step Indicator */}
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#D4A857]">
-          <span className={step >= 1 ? 'font-bold text-[#F3E5AB]' : 'opacity-75'}>1. Billet</span>
-          <span className="opacity-40">›</span>
-          <span className={step >= 2 ? 'font-bold text-[#F3E5AB]' : 'opacity-75'}>2. Coordonnées</span>
-          <span className="opacity-40">›</span>
-          <span className={step === 3 ? 'font-bold text-[#F3E5AB]' : 'opacity-75'}>3. Confirmation</span>
-        </div>
+        <ol className="flex items-center gap-2 sm:gap-3" aria-label="Progression de la réservation">
+          {stepLabels.map((label, i) => {
+            const n = i + 1;
+            const done = step > n;
+            const current = step === n;
+            return (
+              <li key={label} className="flex items-center gap-2" aria-current={current ? 'step' : undefined}>
+                <span
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                    current ? 'bg-white text-[#5A040F]' : done ? 'bg-[#FFB43A] text-[#3D0A04]' : 'bg-white/15 text-white/70'
+                  }`}
+                >
+                  {done ? <Check className="w-4 h-4" strokeWidth={3} /> : n}
+                </span>
+                <span className={`hidden sm:inline text-sm ${current ? 'text-white font-semibold' : 'text-white/60'}`}>{label}</span>
+                {n < 3 && <span className="w-5 sm:w-8 h-px bg-white/25" aria-hidden="true" />}
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
-      <LuxuryFrame className="p-6 sm:p-10 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#7A0815]/50 via-[#5A040F]/70 to-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+      <div className="rounded-[2rem] border border-white/15 bg-black/25 backdrop-blur-2xl shadow-[0_30px_80px_rgba(0,0,0,0.35)] p-5 sm:p-10">
         {/* ================= STEP 1: CHOIX DU BILLET ================= */}
         {step === 1 && (
-          <div className="space-y-8 animate-in fade-in duration-300">
-            <div className="text-center">
-              <span className="text-xs uppercase tracking-[0.25em] text-[#D4A857] font-semibold block mb-2">
-                Étape 1 sur 3
-              </span>
-              <h1 className="font-serif font-medium text-3xl sm:text-4xl text-[#F3E5AB] tracking-tight">
-                Choisis ton billet
+          <div className="animate-in fade-in duration-300">
+            <header className="mb-8 sm:mb-10 max-w-xl">
+              <p className="text-sm font-semibold text-[#FFB43A] mb-2">{GALA_INFO.theme}</p>
+              <h1 className="font-sans font-bold tracking-tight text-white text-4xl sm:text-5xl leading-[1.05]">
+                Choisis ton billet.
               </h1>
-              <p className="font-serif italic text-sm text-[#F3E5AB]/80 mt-1">
-                Choisis ton billet et le nombre de personnes.
+              <p className="text-base sm:text-lg text-white/75 mt-3">
+                Une seule étape pour réserver ta place, puis tu paies par Mobile Money.
               </p>
-            </div>
+            </header>
 
-            {/* Tier Selector Radio Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {TICKET_TIERS.map((tier) => {
-                const isSelected = selectedTierId === tier.id;
-                return (
-                  <div
-                    key={tier.id}
-                    onClick={() => setSelectedTierId(tier.id)}
-                    className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
-                      isSelected
-                        ? 'border-[#D4A857] bg-[#8E0A1C]/80 shadow-[0_0_20px_rgba(212,168,87,0.35)] scale-[1.02]'
-                        : 'border-[#D4A857]/20 bg-[#3D0309]/40 hover:border-[#D4A857]/50'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold">
-                          {tier.subtitle}
-                        </span>
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            isSelected
-                              ? 'border-[#D4A857] bg-[#D4A857] text-[#3D030B]'
-                              : 'border-[#D4A857]/40'
-                          }`}
-                        >
-                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-10 items-start">
+              {/* Choix du billet */}
+              <div className="space-y-3" role="radiogroup" aria-label="Type de billet">
+                {TICKET_TIERS.map((tier) => {
+                  const isSelected = currentTier.id === tier.id;
+                  return (
+                    <div
+                      key={tier.id}
+                      role="radio"
+                      aria-checked={isSelected}
+                      tabIndex={0}
+                      onClick={() => setSelectedTierId(tier.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedTierId(tier.id);
+                        }
+                      }}
+                      className={`rounded-3xl p-5 sm:p-6 cursor-pointer transition-all duration-300 ${
+                        isSelected
+                          ? 'bg-white text-[#2A1014] shadow-[0_18px_50px_rgba(0,0,0,0.35)] ring-2 ring-[#FFB43A]'
+                          : 'bg-white/10 text-white hover:bg-white/15 ring-1 ring-white/15'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className={`text-xs font-semibold ${isSelected ? 'text-[#D8590B]' : 'text-[#FFB43A]'}`}>
+                              {tier.subtitle}
+                            </span>
+                            {tier.badge && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#F2761B] text-white text-[11px] font-bold">{tier.badge}</span>
+                            )}
+                          </div>
+                          <h3 className="font-sans text-xl sm:text-2xl font-bold tracking-tight">{tier.name}</h3>
+                          <p className={`text-sm mt-1.5 leading-relaxed ${isSelected ? 'text-[#6B4A4F]' : 'text-white/70'}`}>
+                            {tier.description}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-sans font-bold text-3xl sm:text-4xl tracking-tight tabular-nums leading-none">
+                            {tier.price}
+                            <span className="text-lg ml-0.5">$</span>
+                          </p>
+                          <p className={`text-xs mt-1 ${isSelected ? 'text-[#8B6B70]' : 'text-white/60'}`}>
+                            {tier.capacityPerTicket > 1 ? `${tier.capacityPerTicket} places` : 'par personne'}
+                          </p>
                         </div>
                       </div>
 
-                      <h3 className="font-serif text-lg font-semibold text-[#F9F5EC] mb-1">
-                        {tier.name}
-                      </h3>
-
-                      <div className="font-serif text-3xl text-gold-bright tabular-nums mb-3">
-                        {tier.price} <span className="text-xs uppercase text-[#E8C98A]">USD</span>
-                      </div>
+                      {isSelected && tier.perks.length > 0 && (
+                        <ul className="mt-5 pt-5 border-t border-[#EFE5D6] space-y-2.5">
+                          {tier.perks.map((perk, i) => (
+                            <li key={i} className="flex items-start gap-3 text-sm text-[#2A1014]">
+                              <span className="mt-0.5 w-5 h-5 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center shrink-0">
+                                <Check className="w-3 h-3" strokeWidth={3} />
+                              </span>
+                              {perk}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
+                  );
+                })}
 
-                    <p className="text-xs text-stone-300/80 line-clamp-2">
-                      {tier.description}
-                    </p>
+                <ul className="flex flex-wrap gap-x-6 gap-y-2 pt-3 text-sm text-white/75">
+                  <li className="inline-flex items-center gap-2"><Smartphone className="w-4 h-4 text-[#FFB43A]" /> Paiement Mobile Money</li>
+                  <li className="inline-flex items-center gap-2"><Zap className="w-4 h-4 text-[#FFB43A]" /> Billet envoyé sur WhatsApp</li>
+                  <li className="inline-flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-[#FFB43A]" /> QR code personnel</li>
+                </ul>
+              </div>
+
+              {/* Ta commande */}
+              <aside className="lg:sticky lg:top-28 space-y-4">
+                <TicketPreview
+                  name={GALA_INFO.name}
+                  badge={currentTier.name}
+                  dateText={GALA_INFO.dateText}
+                  quantity={quantity}
+                />
+
+                <div className="rounded-3xl bg-white/10 ring-1 ring-white/15 p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-white">Quantité</p>
+                      <p className="text-xs text-white/60">
+                        {currentTier.capacityPerTicket > 1
+                          ? `Chaque billet donne accès à ${currentTier.capacityPerTicket} personnes`
+                          : 'Un QR code personnel par billet'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 rounded-full bg-black/30 p-1">
+                      <button
+                        type="button"
+                        onClick={handleDecrease}
+                        disabled={quantity <= 1}
+                        aria-label="Retirer un billet"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/15 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span aria-live="polite" className="w-9 text-center font-sans font-bold text-xl text-white tabular-nums">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleIncrease}
+                        disabled={quantity >= 10}
+                        aria-label="Ajouter un billet"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/15 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
+
+                  <dl className="mt-5 pt-4 border-t border-white/15 space-y-2 text-sm">
+                    <div className="flex justify-between text-white/75">
+                      <dt>{quantity} × {currentTier.name}</dt>
+                      <dd className="tabular-nums">{currentTier.price * quantity} $</dd>
+                    </div>
+                    <div className="flex items-baseline justify-between pt-2">
+                      <dt className="text-white font-semibold">Total</dt>
+                      <dd className="font-sans font-bold text-3xl tracking-tight text-white tabular-nums">
+                        {totalAmount}
+                        <span className="text-lg ml-0.5">$</span>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="hidden lg:flex mt-5 w-full items-center justify-center gap-2 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
+                  >
+                    Continuer
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </aside>
             </div>
 
-            {/* Quantity Selector (+ and -) */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div>
-                <h3 className="font-serif text-lg text-[#F9F5EC] font-semibold">
-                  Nombre de Billets
-                </h3>
-                <p className="text-xs text-stone-300">
-                  {currentTier.id === 'table'
-                    ? 'Chaque table réserve 8 places royales contiguës'
-                    : '1 billet par convive (QR Code nominatif par personne)'}
-                </p>
-              </div>
-
-              {/* + and - controller */}
-              <div className="flex items-center gap-4">
+            {/* Barre collée en bas sur mobile (hors du conteneur flouté, sinon « fixed » est piégé) */}
+            {createPortal(
+            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-4 pt-3 pb-4 bg-[#4A030C]/85 backdrop-blur-xl border-t border-white/15">
+              <div className="max-w-5xl mx-auto flex items-center gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs text-white/70">Total • {quantity} billet{quantity > 1 ? 's' : ''}</p>
+                  <p className="font-sans font-bold text-2xl text-white tabular-nums leading-tight">{totalAmount} $</p>
+                </div>
                 <button
                   type="button"
-                  onClick={handleDecrease}
-                  disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#3D030B] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
+                  onClick={() => setStep(2)}
+                  className="ml-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold shadow-lg cursor-pointer"
                 >
-                  -
-                </button>
-
-                <span className="font-serif text-3xl text-gold-bright tabular-nums min-w-8 text-center">
-                  {quantity}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={handleIncrease}
-                  disabled={quantity >= 10}
-                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#3D030B] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
-                >
-                  +
+                  Continuer
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
-            </div>
-
-            {/* Live Calculation Summary Banner */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-gradient-to-r from-[#5A040F] to-[#3D030B] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <span className="text-xs uppercase tracking-wider text-[#D4A857]">
-                  Récapitulatif de la sélection :
-                </span>
-                <p className="font-serif text-xl text-[#F9F5EC] font-semibold">
-                  {quantity}x {currentTier.name}
-                </p>
-              </div>
-
-              <div className="text-right flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
-                <span className="text-xs uppercase tracking-wider text-[#D4A857]/80">
-                  Total à régler :
-                </span>
-                <span className="font-serif text-3xl sm:text-4xl text-gold-bright tabular-nums">
-                  {totalAmount} <span className="text-sm font-semibold uppercase text-[#E8C98A]">USD</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Next Step CTA */}
-            <div className="pt-4 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.5)] transition-all cursor-pointer"
-              >
-                <span>Continuer vers le formulaire</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+            </div>,
+              document.body
+            )}
           </div>
         )}
 
@@ -315,13 +377,13 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
         {step === 2 && (
           <form onSubmit={handleSubmitForm} className="space-y-8 animate-in fade-in duration-300">
             <div className="text-center">
-              <span className="text-xs uppercase tracking-[0.25em] text-[#D4A857] font-semibold block mb-2">
+              <span className="text-sm text-[#FFB43A] font-semibold block mb-2">
                 Étape 2 sur 3
               </span>
-              <h2 className="font-serif font-medium text-3xl sm:text-4xl text-[#F3E5AB] tracking-tight">
+              <h2 className="font-sans font-bold tracking-tight text-white text-3xl sm:text-4xl">
                 Tes coordonnées & paiement
               </h2>
-              <p className="font-serif italic text-sm text-[#F3E5AB]/80 mt-1">
+              <p className="text-base text-white/75 max-w-md mx-auto mt-1">
                 Informations requises pour l'émission des invitations officielles.
               </p>
             </div>
@@ -335,7 +397,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Full Name */}
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold block">
+                <label className="text-sm text-white/90 font-semibold block">
                   Nom Complet du Titulaire <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -344,7 +406,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: Princesse Kalubi Banza"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
                 <span className="text-xs text-stone-400">
                   Ce nom sera inscrit sur l'invitation officielle de gala.
@@ -353,7 +415,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
               {/* Email */}
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold block">
+                <label className="text-sm text-white/90 font-semibold block">
                   Adresse Courriel (Optionnel)
                 </label>
                 <input
@@ -361,13 +423,13 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: kalubi@prestige.cd"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
               </div>
 
               {/* Contact Phone (WhatsApp) */}
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold block">
+                <label className="text-sm text-white/90 font-semibold block">
                   Numéro de Contact (WhatsApp) <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -376,7 +438,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: +243 81 555 1234"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
                 <span className="text-xs text-stone-400">
                   Numéro auquel nous t'enverrons tes billets validés.
@@ -385,13 +447,13 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
               {/* Mobile Money Operator Selection */}
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold block">
+                <label className="text-sm text-white/90 font-semibold block">
                   Opérateur Mobile Money Prévu
                 </label>
                 <select
                   value={selectedOperatorIndex}
                   onChange={(e) => setSelectedOperatorIndex(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/90 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white text-sm focus:border-[#FFB43A] focus:outline-none"
                 >
                   {MOBILE_MONEY_ACCOUNTS.map((op, idx) => (
                     <option key={idx} value={idx} className="bg-[#3D030B] text-[#F9F5EC]">
@@ -403,7 +465,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Payer Phone section with explicit requested note */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/30 bg-[#3D0309]/60 space-y-4">
+            <div className="p-5 rounded-3xl border border-white/15 bg-white/10 space-y-4">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -419,7 +481,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
               {!useSamePhone && (
                 <div className="space-y-2 pt-2 border-t border-[#D4A857]/20 animate-in fade-in">
-                  <label className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold block">
+                  <label className="text-sm text-white/90 font-semibold block">
                     Numéro qui va envoyer l'argent (Mobile Money) <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -428,7 +490,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     placeholder="Ex: +243 89 123 4567"
                     value={payerPhone}
                     onChange={(e) => setPayerPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/40 bg-[#3D030B]/80 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                    className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white text-sm focus:border-[#FFB43A] focus:outline-none"
                   />
                   {/* The exact requested note */}
                   <div className="p-3 rounded-lg bg-[#5A040F] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
@@ -439,7 +501,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Visible Order Recap */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-[#3D030B]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-5 rounded-3xl border border-white/15 bg-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]">
                   Récapitulatif de la commande :
@@ -456,7 +518,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]/80 block">
                   Total à transférer :
                 </span>
-                <span className="font-serif text-3xl text-gold-bright tabular-nums">
+                <span className="font-sans font-bold tracking-tight text-3xl text-white tabular-nums">
                   {totalAmount} USD
                 </span>
               </div>
@@ -467,14 +529,14 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-full sm:w-auto px-6 py-3 rounded-full border border-[#D4A857]/40 text-[#E8C98A] text-xs uppercase tracking-wider hover:bg-[#D4A857]/10 cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3 rounded-full ring-1 ring-white/30 text-white text-sm font-semibold hover:bg-[#D4A857]/10 cursor-pointer"
               >
                 Modifier le billet
               </button>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
               >
                 <span>Confirmer ma réservation</span>
                 <Check className="w-4 h-4 stroke-[3]" />
@@ -492,33 +554,33 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             <div>
-              <span className="text-xs uppercase tracking-[0.18em] text-[#D4A857] font-semibold block mb-1">
+              <span className="text-sm text-[#FFB43A] font-semibold block mb-1">
                 Réservation Enregistrée avec Succès
               </span>
-              <h2 className="font-serif font-medium text-3xl sm:text-4xl text-[#F3E5AB] tracking-tight">
+              <h2 className="font-sans font-bold tracking-tight text-white text-3xl sm:text-4xl">
                 Félicitations, {createdOrder.customerName}
               </h2>
-              <p className="font-serif italic text-sm text-[#F3E5AB]/85 max-w-md mx-auto mt-2">
+              <p className="text-base text-white/75 max-w-md mx-auto mt-2">
                 Ta demande de réservation a bien été reçue. Il ne te reste plus qu'à effectuer ton transfert Mobile Money.
               </p>
             </div>
 
             {/* ORDER CODE DISPLAY (Code de commande bien visible) */}
-            <div className="p-6 rounded-2xl border-2 border-[#D4A857] bg-gradient-to-b from-[#8E0A1C]/80 to-[#3D0309] shadow-[0_0_30px_rgba(212,168,87,0.3)] max-w-md mx-auto">
-              <span className="text-xs uppercase tracking-[0.12em] text-[#D4A857] font-semibold block mb-1">
+            <div className="p-6 rounded-3xl bg-white text-[#2A1014] shadow-[0_18px_50px_rgba(0,0,0,0.35)] ring-2 ring-[#FFB43A] max-w-md mx-auto">
+              <span className="text-xs font-semibold text-[#8B6B70] block mb-1">
                 Ton code de commande unique
               </span>
-              <div className="font-serif text-4xl sm:text-5xl text-gold-bright font-bold tracking-wider py-1">
+              <div className="font-sans font-bold text-4xl sm:text-5xl tracking-wider text-[#D8590B] py-1">
                 {createdOrder.id}
               </div>
-              <div className="mt-3 pt-3 border-t border-[#D4A857]/20 flex items-center justify-between text-xs text-stone-200">
+              <div className="mt-3 pt-3 border-t border-[#EFE5D6] flex items-center justify-between text-xs text-[#6B4A4F]">
                 <span>Montant exact à envoyer :</span>
-                <span className="font-bold text-[#E8C98A] text-base">{createdOrder.totalAmount} USD</span>
+                <span className="font-bold text-[#D8590B] text-base">{createdOrder.totalAmount} USD</span>
               </div>
             </div>
 
             {/* MOBILE MONEY DETAILS WITH ONE-CLICK COPY */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-[#3D030B]/80 max-w-lg mx-auto text-left space-y-4">
+            <div className="p-6 rounded-3xl border border-white/15 bg-white/10 max-w-lg mx-auto text-left space-y-4">
               <div className="flex items-center justify-between border-b border-[#D4A857]/20 pb-3">
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold">
                   Numéro Mobile Money Récepteur
@@ -568,7 +630,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
               <button
                 type="button"
                 onClick={() => onViewTicket(createdOrder.id)}
-                className="w-full py-3.5 rounded-full border border-[#D4A857] text-[#E8C98A] hover:bg-[#D4A857]/20 text-xs uppercase tracking-widest font-semibold transition-colors cursor-pointer"
+                className="w-full py-3.5 rounded-full ring-1 ring-white/30 text-white hover:bg-white/10 text-sm font-semibold transition-colors cursor-pointer"
               >
                 Voir mon billet (Lien personnel)
               </button>
@@ -579,7 +641,38 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </p>
           </div>
         )}
-      </LuxuryFrame>
+      </div>
+    </div>
+  );
+};
+
+// Aperçu du billet en forme de ticket (encoches latérales par masque CSS)
+const TicketPreview: React.FC<{ name: string; badge: string; dateText: string; quantity: number }> = ({ name, badge, dateText, quantity }) => {
+  const notch = 'radial-gradient(circle 12px at 0 66%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 66%, #0000 98%, #000) right / 51% 100% no-repeat';
+  return (
+    <div
+      className="relative text-white"
+      style={{ WebkitMask: notch, mask: notch, filter: 'drop-shadow(0 18px 30px rgba(0,0,0,0.35))' }}
+      aria-hidden="true"
+    >
+      <div className="bg-gradient-to-br from-[#C21226] via-[#8E0A18] to-[#5A040F] rounded-3xl">
+        <div className="p-5 pb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#FFD9A0]">Soirée gala</p>
+          <p className="font-sans font-bold text-2xl tracking-tight leading-tight mt-1">{name}</p>
+          <p className="text-sm text-white/80 mt-1">{dateText}</p>
+        </div>
+        <div className="mx-5 border-t border-dashed border-white/35" />
+        <div className="p-5 pt-5 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-white/70">Billet</p>
+            <p className="text-sm font-semibold">{badge}</p>
+            <p className="text-xs text-[#FFD9A0] mt-0.5">× {quantity}</p>
+          </div>
+          <span className="w-14 h-14 rounded-xl bg-white/90 text-[#5A040F] flex items-center justify-center">
+            <QrCode className="w-9 h-9" />
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

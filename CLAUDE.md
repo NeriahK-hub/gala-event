@@ -49,7 +49,7 @@ src/
 - **Contenu modifiable** : les textes, billets, programme, invités, galerie, FAQ, partenaires et numéros Mobile Money passent par `src/content/` (`ContentContext.tsx`, `textSchema.ts`). Les composants lisent `useContent()` (`t('clé')`, `content.xxx`) ; `mockData.ts` ne contient que les valeurs par défaut. Pour ajouter un texte modifiable : ajoute une ligne dans `textSchema.ts`, puis utilise `t('ta.clé')`. L'admin (onglet « Contenu du site ») l'édite et sauvegarde dans `localStorage`.
 - **Admin** : `components/admin/` (`AdminDashboard` = coquille + vue d'ensemble + commandes, `ScannerPanel`, `ContentEditor`, `fields.tsx` = champs génériques).
 - Logo de l'organisateur (Empire Informatique) : `public/logo-empire.png`, composant `EmpireLogo`. Icônes : uniquement `lucide-react` (pas d'emoji ni d'étincelles « IA »).
-- Thème visuel : inspiré des affiches de l'événement — rideau de velours rouge (plis verticaux + vignette), texte blanc, accents orange (`#FFB43A`→`#F2761B`) et or (`#E8C98A`), découpes dorées aux bords (`PosterFrame`). La console admin garde un fond sombre neutre. Réglages dans `src/index.css`.
+- Thème visuel : inspiré des affiches de l'événement — rideau de velours rouge (plis verticaux + vignette), texte blanc, accents orange (`#FFB43A`→`#F2761B`) et or (`#E8C98A`). La console admin garde un fond sombre neutre. Réglages dans `src/index.css`.
 
 ## Règles
 

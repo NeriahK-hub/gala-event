@@ -19,7 +19,6 @@ import { ReservationFlow } from './components/reservation/ReservationFlow';
 import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { FloatingActions } from './components/common/FloatingActions';
-import { PosterFrame } from './components/common/PosterFrame';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 
 // Le sélecteur de vues n'est visible que si l'URL contient ?demo
@@ -90,8 +89,6 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
-      {/* L'espace équipe a sa propre interface : pas de cadre ni d'en-tête public */}
-      {activeView !== 'admin' && <PosterFrame />}
 
       {activeView !== 'admin' && (
         <Header

@@ -42,7 +42,7 @@ export const FaqSection: React.FC = () => {
           return (
             <div
               key={item.id}
-              className="rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/30 to-[#170709]/60 overflow-hidden transition-all duration-300"
+              className="rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/30 to-[#5A040F]/60 overflow-hidden transition-all duration-300"
             >
               <button
                 onClick={() => toggleItem(item.id)}

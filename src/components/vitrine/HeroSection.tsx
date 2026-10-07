@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section id="hero" className="relative min-h-screen pt-24 pb-16 flex flex-col justify-center items-center overflow-hidden">
       {/* Background ambient lighting and soft vignette */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[#3A141C]/60 rounded-full blur-[130px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[#A00D22]/60 rounded-full blur-[130px]" />
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-[#D4A857]/15 rounded-full blur-[100px]" />
       </div>
 
@@ -57,7 +57,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Action principale, visible tout de suite */}
         <button
           onClick={onReserveClick}
-          className="mb-6 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-sm tracking-wide shadow-[0_8px_24px_rgba(212,168,87,0.25)] hover:brightness-110 transition cursor-pointer"
+          className="mb-6 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-sm tracking-wide shadow-[0_8px_24px_rgba(212,168,87,0.25)] hover:brightness-110 transition cursor-pointer"
         >
           Réserver mon billet
         </button>

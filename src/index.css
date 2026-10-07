@@ -2,9 +2,9 @@
 
 @layer base {
   :root {
-    --bg-burgundy-deep: #1F0B10;
-    --bg-burgundy-rich: #2E1218;
-    --bg-burgundy-light: #3A141C;
+    --bg-burgundy-deep: #7A0815;
+    --bg-burgundy-rich: #8E0A1C;
+    --bg-burgundy-light: #A00D22;
     --gold-primary: #D4A857;
     --gold-light: #E8C98A;
     --gold-pale: #F3E5AB;
@@ -12,7 +12,7 @@
   }
 
   body {
-    background: radial-gradient(circle at 50% 0%, #2E1218 0%, #1F0B10 55%, #150608 100%);
+    background: linear-gradient(165deg, #A30C22 0%, #8A0A1B 45%, #5A040F 100%) fixed;
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-size: 16px;
@@ -26,7 +26,7 @@
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #150608;
+    background: #3D030B;
   }
   ::-webkit-scrollbar-thumb {
     background: #D4A857;
@@ -56,7 +56,7 @@
 
 /* Luxury Gold Text Gradient */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #F3E5AB 0%, #D4A857 50%, #E8C98A 100%);
+  background: linear-gradient(180deg, #F3DDA2 0%, #E0B565 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

@@ -26,7 +26,7 @@ export const VenueSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Column: Venue Presentation & Practical details */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
+          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/50 to-[#5A040F]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
             <h3 className="font-serif text-2xl text-[#F9F5EC] font-semibold mb-3">
               Un Écrin Impérial Face au Fleuve Congo
             </h3>
@@ -96,7 +96,7 @@ export const VenueSection: React.FC = () => {
         </div>
 
         {/* Right Column: Stylized Luxury Map / Location View */}
-        <div className="lg:col-span-5 rounded-2xl border border-[#D4A857]/30 bg-[#150608] overflow-hidden flex flex-col justify-between shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+        <div className="lg:col-span-5 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B] overflow-hidden flex flex-col justify-between shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
           {/* Map Representation with Gold Coordinates */}
           <div className="relative h-64 sm:h-72 w-full bg-[#2A0207] flex items-center justify-center p-6 text-center overflow-hidden">
             {/* Map styling grid */}
@@ -125,10 +125,10 @@ export const VenueSection: React.FC = () => {
 
             {/* Pullman Pin */}
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#D4A857] flex items-center justify-center text-[#150608] shadow-[0_0_25px_rgba(212,168,87,0.8)] animate-bounce">
+              <div className="w-12 h-12 rounded-full bg-[#D4A857] flex items-center justify-center text-[#3D030B] shadow-[0_0_25px_rgba(212,168,87,0.8)] animate-bounce">
                 <MapPin className="w-6 h-6" />
               </div>
-              <div className="mt-3 px-3 py-1.5 rounded-lg bg-[#0F0405]/90 border border-[#D4A857]/50 shadow-md">
+              <div className="mt-3 px-3 py-1.5 rounded-lg bg-[#2E0207]/90 border border-[#D4A857]/50 shadow-md">
                 <span className="font-serif text-xs font-semibold text-[#F9F5EC] block">
                   Pullman Kinshasa (Gombe)
                 </span>

@@ -14,11 +14,11 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenMyTickets,
 }) => {
   return (
-    <footer className="relative border-t border-[#D4A857]/25 bg-[#120507] text-[#F9F5EC] pt-16 pb-12 px-4 sm:px-6 lg:px-8">
+    <footer className="relative border-t border-[#D4A857]/25 bg-[#3D030B] text-[#F9F5EC] pt-16 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
         
         {/* Monogram / Crest */}
-        <div className="w-12 h-12 rounded-full border border-[#D4A857] flex items-center justify-center text-[#D4A857] mb-4 bg-[#1F0B10]/50 shadow-[0_0_15px_rgba(212,168,87,0.3)]">
+        <div className="w-12 h-12 rounded-full border border-[#D4A857] flex items-center justify-center text-[#D4A857] mb-4 bg-[#7A0815]/50 shadow-[0_0_15px_rgba(212,168,87,0.3)]">
           <span className="font-script text-2xl">R</span>
         </div>
 

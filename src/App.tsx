@@ -18,6 +18,7 @@ import { Footer } from './components/common/Footer';
 import { ReservationFlow } from './components/reservation/ReservationFlow';
 import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { PosterFrame } from './components/common/PosterFrame';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 
 // Le sélecteur de vues n'est visible que si l'URL contient ?demo
@@ -88,7 +89,9 @@ export default function App() {
     orders.find((o) => o.id === selectedOrderId) || orders[0];
 
   return (
-    <div className="relative min-h-screen bg-[#1F0B10] text-[#F9F5EC]">
+    <div className="relative min-h-screen text-[#F9F5EC]">
+      <PosterFrame />
+
       {/* Fixed Header (visible on vitrine, and provides navigation across app) */}
       <Header
         onNavigateSection={handleNavigateSection}

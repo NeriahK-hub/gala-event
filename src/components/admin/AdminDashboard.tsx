@@ -129,8 +129,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen pt-28 pb-20 px-4 flex items-center justify-center">
-        <div className="max-w-md w-full p-8 rounded-2xl border border-[#D4A857]/30 bg-[#150608] shadow-[0_20px_50px_rgba(0,0,0,0.7)] text-center">
-          <div className="w-12 h-12 rounded-full border border-[#D4A857] bg-[#1F0B10] flex items-center justify-center text-[#D4A857] mx-auto mb-4">
+        <div className="max-w-md w-full p-8 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.7)] text-center">
+          <div className="w-12 h-12 rounded-full border border-[#D4A857] bg-[#7A0815] flex items-center justify-center text-[#D4A857] mx-auto mb-4">
             <Shield className="w-6 h-6" />
           </div>
 
@@ -156,7 +156,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#3D030B] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
@@ -168,13 +168,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/30 bg-[#3D030B] text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer mt-4"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer mt-4"
             >
               Connexion Organisateur
             </button>
@@ -219,12 +219,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         {/* Action Tabs & Logout */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#120507] border border-[#D4A857]/30">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#3D030B] border border-[#D4A857]/30">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
                 activeTab === 'dashboard'
-                  ? 'bg-[#D4A857] text-[#150608]'
+                  ? 'bg-[#D4A857] text-[#3D030B]'
                   : 'text-[#E8C98A] hover:text-white'
               }`}
             >
@@ -235,7 +235,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               onClick={() => setActiveTab('scanner')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer ${
                 activeTab === 'scanner'
-                  ? 'bg-[#D4A857] text-[#150608]'
+                  ? 'bg-[#D4A857] text-[#3D030B]'
                   : 'text-[#E8C98A] hover:text-white'
               }`}
             >
@@ -260,7 +260,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {/* Top 4 KPI Metrics */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {/* 1. Billets vendus */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/40 to-[#3D030B] flex items-center justify-between">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Billets Vendus
@@ -276,7 +276,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 2. En attente */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/40 to-[#3D030B] flex items-center justify-between">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   En Attente
@@ -292,7 +292,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 3. Montant encaissé */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/40 to-[#3D030B] flex items-center justify-between">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Montant Encaissé
@@ -308,7 +308,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             {/* 4. Entrées scannées */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/40 to-[#150608] flex items-center justify-between">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/40 to-[#3D030B] flex items-center justify-between">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
                   Entrées Scannées
@@ -325,7 +325,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Controls: Search and Filters */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-[#D4A857]/20 bg-[#150608]/60">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60">
             {/* Search Input */}
             <div className="relative w-full sm:w-80">
               <Search className="w-4 h-4 text-[#D4A857] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -334,7 +334,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 placeholder="Rechercher par nom, code ou tél..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#D4A857]/30 bg-[#120507] text-xs text-[#F9F5EC] placeholder-stone-400 focus:border-[#D4A857] focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#D4A857]/30 bg-[#3D030B] text-xs text-[#F9F5EC] placeholder-stone-400 focus:border-[#D4A857] focus:outline-none"
               />
             </div>
 
@@ -344,7 +344,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                   statusFilter === 'all'
-                    ? 'bg-[#D4A857] text-[#150608] font-bold'
+                    ? 'bg-[#D4A857] text-[#3D030B] font-bold'
                     : 'text-stone-300 hover:bg-[#D4A857]/10'
                 }`}
               >
@@ -387,10 +387,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Orders Table */}
-          <div className="rounded-xl border border-[#D4A857]/20 bg-[#150608]/80 overflow-hidden shadow-lg">
+          <div className="rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/80 overflow-hidden shadow-lg">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#120507] text-[#E8C98A] uppercase tracking-wider font-semibold border-b border-[#D4A857]/20">
+                <thead className="bg-[#3D030B] text-[#E8C98A] uppercase tracking-wider font-semibold border-b border-[#D4A857]/20">
                   <tr>
                     <th className="p-4">Code</th>
                     <th className="p-4">Nom du Convive</th>
@@ -479,7 +479,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               <>
                                 <button
                                   onClick={() => handleOpenValidateModal(order)}
-                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase hover:brightness-110 transition-all cursor-pointer"
+                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase hover:brightness-110 transition-all cursor-pointer"
                                 >
                                   Valider
                                 </button>
@@ -557,7 +557,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Test Buttons to Trigger the 3 Required Results */}
-          <div className="p-6 rounded-2xl border border-[#D4A857]/30 bg-[#150608]/80 space-y-4">
+          <div className="p-6 rounded-2xl border border-[#D4A857]/30 bg-[#3D030B]/80 space-y-4">
             <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold block">
               Tester les 3 Réponses du Contrôle d'Accès :
             </span>
@@ -749,11 +749,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {validatingOrder && (
         <div
           onClick={() => setValidatingOrder(null)}
-          className="fixed inset-0 z-50 bg-[#0F0405]/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-[#2E0207]/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-md w-full p-7 rounded-2xl border-2 border-[#D4A857] bg-[#120507] shadow-[0_0_50px_rgba(212,168,87,0.3)] text-left space-y-6"
+            className="relative max-w-md w-full p-7 rounded-2xl border-2 border-[#D4A857] bg-[#3D030B] shadow-[0_0_50px_rgba(212,168,87,0.3)] text-left space-y-6"
           >
             <div className="flex items-center justify-between border-b border-[#D4A857]/20 pb-3">
               <div>
@@ -774,7 +774,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {!isValidationSuccess ? (
               <form onSubmit={handleConfirmValidation} className="space-y-4">
-                <div className="p-3 rounded-lg bg-[#150608] border border-[#D4A857]/20 text-xs space-y-1">
+                <div className="p-3 rounded-lg bg-[#3D030B] border border-[#D4A857]/20 text-xs space-y-1">
                   <div className="flex justify-between">
                     <span className="text-stone-400">Titulaire :</span>
                     <span className="font-semibold text-white">{validatingOrder.customerName}</span>
@@ -799,7 +799,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     placeholder="Ex: MPESA-88492021"
                     value={smsReference}
                     onChange={(e) => setSmsReference(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/40 bg-[#0F0405] text-sm text-[#F9F5EC] focus:border-[#D4A857] focus:outline-none"
+                    className="w-full px-4 py-2.5 rounded-lg border border-[#D4A857]/40 bg-[#2E0207] text-sm text-[#F9F5EC] focus:border-[#D4A857] focus:outline-none"
                   />
                   <span className="text-xs text-stone-400 mt-1 block">
                     Code d'autorisation figurant sur le SMS reçu par Le Cercle.
@@ -808,7 +808,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] font-bold text-xs uppercase tracking-widest hover:brightness-110 cursor-pointer shadow-lg"
+                  className="w-full py-3 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] font-bold text-xs uppercase tracking-widest hover:brightness-110 cursor-pointer shadow-lg"
                 >
                   Confirmer la Validation
                 </button>

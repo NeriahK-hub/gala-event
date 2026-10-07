@@ -8,7 +8,7 @@ export const DressCodeSection: React.FC = () => {
   return (
     <section id="dresscode" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Container with gold hairline frame */}
-      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/40 via-[#1F0B10]/60 to-[#170709]/80 shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden">
+      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/40 via-[#7A0815]/60 to-[#5A040F]/80 shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden">
         
         {/* Header */}
         <div className="text-center mb-10">
@@ -55,7 +55,7 @@ export const DressCodeSection: React.FC = () => {
         {/* Guidelines for Women & Men */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-[#D4A857]/20">
           {/* Pour les Dames */}
-          <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#150608]/60">
+          <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60">
             <h3 className="font-serif text-lg font-semibold text-[#F3E5AB] mb-2 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#D4A857]" />
               Pour les Dames
@@ -66,7 +66,7 @@ export const DressCodeSection: React.FC = () => {
           </div>
 
           {/* Pour les Messieurs */}
-          <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#150608]/60">
+          <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60">
             <h3 className="font-serif text-lg font-semibold text-[#F3E5AB] mb-2 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#D4A857]" />
               Pour les Messieurs

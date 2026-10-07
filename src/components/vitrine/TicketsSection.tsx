@@ -38,14 +38,14 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) 
               key={tier.id}
               className={`relative rounded-2xl flex flex-col justify-between transition-all duration-300 ${
                 isVip
-                  ? 'border-2 border-[#D4A857] bg-gradient-to-b from-[#3A141C]/80 via-[#1F0B10]/90 to-[#150608] shadow-[0_0_35px_rgba(212,168,87,0.3)] lg:-translate-y-3'
-                  : 'border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)] hover:border-[#D4A857]/60'
+                  ? 'border-2 border-[#D4A857] bg-gradient-to-b from-[#A00D22]/80 via-[#7A0815]/90 to-[#3D030B] shadow-[0_0_35px_rgba(212,168,87,0.3)] lg:-translate-y-3'
+                  : 'border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/50 to-[#5A040F]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)] hover:border-[#D4A857]/60'
               }`}
             >
               {/* Top VIP Badge */}
               {tier.badge && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] text-xs font-bold tracking-widest uppercase shadow-md">
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1 rounded-full bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] text-xs font-bold tracking-widest uppercase shadow-md">
                     <Crown className="w-3.5 h-3.5" />
                     <span>{tier.badge}</span>
                   </span>
@@ -101,8 +101,8 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) 
                     onClick={() => onSelectTier(tier.id)}
                     className={`w-full py-3.5 px-6 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
                       isVip
-                        ? 'bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#150608] shadow-[0_0_20px_rgba(212,168,87,0.5)] hover:shadow-[0_0_30px_rgba(212,168,87,0.8)] hover:scale-[1.02]'
-                        : 'border border-[#D4A857] text-[#E8C98A] hover:bg-[#D4A857] hover:text-[#150608]'
+                        ? 'bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] shadow-[0_0_20px_rgba(212,168,87,0.5)] hover:shadow-[0_0_30px_rgba(212,168,87,0.8)] hover:scale-[1.02]'
+                        : 'border border-[#D4A857] text-[#E8C98A] hover:bg-[#D4A857] hover:text-[#3D030B]'
                     }`}
                   >
                     <span>Réserver ce billet</span>

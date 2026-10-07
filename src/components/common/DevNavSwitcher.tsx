@@ -23,7 +23,7 @@ export const DevNavSwitcher: React.FC<DevNavSwitcherProps> = ({
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] select-none print:hidden">
-      <div className="flex items-center gap-1 p-1.5 rounded-full border border-[#D4A857] bg-[#120507]/95 backdrop-blur-md shadow-[0_10px_35px_rgba(0,0,0,0.8),0_0_20px_rgba(212,168,87,0.3)]">
+      <div className="flex items-center gap-1 p-1.5 rounded-full border border-[#D4A857] bg-[#3D030B]/95 backdrop-blur-md shadow-[0_10px_35px_rgba(0,0,0,0.8),0_0_20px_rgba(212,168,87,0.3)]">
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#D4A857] border-r border-[#D4A857]/30">
           <Layers className="w-3 h-3 text-[#E8C98A]" />
           <span>Navigation Démo</span>
@@ -37,7 +37,7 @@ export const DevNavSwitcher: React.FC<DevNavSwitcherProps> = ({
               onClick={() => onChangeView(v.id)}
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#150608] shadow-md scale-105'
+                  ? 'bg-gradient-to-r from-[#D4A857] to-[#B88934] text-[#3D030B] shadow-md scale-105'
                   : 'text-[#E8C98A]/80 hover:text-white hover:bg-[#D4A857]/10'
               }`}
             >

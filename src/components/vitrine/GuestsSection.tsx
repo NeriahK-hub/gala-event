@@ -41,9 +41,9 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="group rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E1218]/50 to-[#170709]/80 overflow-hidden flex flex-col hover:border-[#D4A857] transition-all duration-500 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+    <div className="group rounded-xl border border-[#D4A857]/25 bg-gradient-to-b from-[#8E0A1C]/50 to-[#5A040F]/80 overflow-hidden flex flex-col hover:border-[#D4A857] transition-all duration-500 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
       {/* Photo Frame */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#150608]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#3D030B]">
         {!imgError ? (
           <img
             src={artist.imageUrl}
@@ -53,18 +53,18 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
             className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 filter brightness-95 contrast-105"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#1F0B10] to-[#150608]">
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#7A0815] to-[#3D030B]">
             <Music className="w-10 h-10 text-[#D4A857]/90 mb-2" />
             <span className="font-serif text-lg text-[#E8C98A]">{artist.name}</span>
           </div>
         )}
 
         {/* Ambient Dark Scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#170709] via-transparent to-transparent opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#5A040F] via-transparent to-transparent opacity-90" />
 
         {/* Delicate Role Kicker pinned over bottom of image */}
         <div className="absolute bottom-3 left-4 right-4">
-          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#0F0405]/85 border border-[#D4A857]/40 text-xs uppercase tracking-wider text-[#F3E5AB]">
+          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#2E0207]/85 border border-[#D4A857]/40 text-xs uppercase tracking-wider text-[#F3E5AB]">
             {artist.role}
           </span>
         </div>

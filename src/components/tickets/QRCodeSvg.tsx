@@ -72,7 +72,7 @@ export const QRCodeSvg: React.FC<QRCodeSvgProps> = ({
                 y={r * cellSize}
                 width={cellSize + 0.1}
                 height={cellSize + 0.1}
-                fill="#150608"
+                fill="#3D030B"
               />
             ) : null
           )

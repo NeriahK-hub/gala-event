@@ -71,7 +71,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
         </button>
 
         {/* DEMO STATE SWITCHER FOR TESTING */}
-        <div className="flex items-center gap-2 p-1.5 rounded-full border border-[#D4A857]/40 bg-[#150608]/80 text-xs">
+        <div className="flex items-center gap-2 p-1.5 rounded-full border border-[#D4A857]/40 bg-[#3D030B]/80 text-xs">
           <span className="text-xs uppercase text-[#D4A857]/80 px-2 font-medium">
             Testeur d'état :
           </span>
@@ -79,7 +79,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
             onClick={() => handleStatusToggle('pending')}
             className={`px-3 py-1 rounded-full text-xs transition-colors cursor-pointer ${
               isPending
-                ? 'bg-[#B88934] text-[#150608] font-bold'
+                ? 'bg-[#B88934] text-[#3D030B] font-bold'
                 : 'text-[#E8C98A] hover:text-white'
             }`}
           >
@@ -89,7 +89,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
             onClick={() => handleStatusToggle('validated')}
             className={`px-3 py-1 rounded-full text-xs transition-colors cursor-pointer ${
               isValidated
-                ? 'bg-[#D4A857] text-[#150608] font-bold'
+                ? 'bg-[#D4A857] text-[#3D030B] font-bold'
                 : 'text-[#E8C98A] hover:text-white'
             }`}
           >
@@ -113,8 +113,8 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
 
       {/* ================= ÉTAT : EN ATTENTE ================= */}
       {isPending && (
-        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#2E1218]/70 to-[#150608] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#1F0B10] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
+        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#8E0A1C]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#7A0815] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
             <Clock className="w-8 h-8 animate-pulse text-[#D4A857]" />
           </div>
 
@@ -131,7 +131,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
           </p>
 
           {/* Details summary */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/20 bg-[#120507] text-left max-w-md mx-auto space-y-2 text-xs mb-8">
+          <div className="p-4 rounded-xl border border-[#D4A857]/20 bg-[#3D030B] text-left max-w-md mx-auto space-y-2 text-xs mb-8">
             <div className="flex justify-between">
               <span className="text-stone-400">Code Commande :</span>
               <span className="font-bold text-[#E8C98A]">{order.id}</span>
@@ -174,7 +174,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
 
       {/* ================= ÉTAT : REFUSÉ ================= */}
       {isRejected && (
-        <div className="p-8 rounded-2xl border border-red-500/50 bg-[#150608] text-center max-w-md mx-auto">
+        <div className="p-8 rounded-2xl border border-red-500/50 bg-[#3D030B] text-center max-w-md mx-auto">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <h2 className="font-serif text-2xl text-red-200 font-semibold mb-2">
             Réservation Non Validée
@@ -196,7 +196,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
       {isValidated && (
         <div className="space-y-10 animate-in fade-in duration-500">
           {/* Notification banner */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#170709]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
+          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#5A040F]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-[#D4A857] shrink-0" />
               <div className="text-xs text-left">
@@ -209,7 +209,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
               </div>
             </div>
             {order.paymentReference && (
-              <span className="hidden sm:inline text-xs uppercase font-mono px-2 py-1 rounded bg-[#120507] border border-[#D4A857]/30 text-[#D4A857]">
+              <span className="hidden sm:inline text-xs uppercase font-mono px-2 py-1 rounded bg-[#3D030B] border border-[#D4A857]/30 text-[#D4A857]">
                 Réf: {order.paymentReference}
               </span>
             )}
@@ -250,15 +250,15 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
   onDownload,
 }) => {
   return (
-    <div className="relative rounded-2xl border-2 border-[#D4A857] bg-gradient-to-br from-[#0F0405] via-[#3E030B] to-[#0F0405] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_25px_rgba(212,168,87,0.25)] overflow-hidden max-w-3xl mx-auto print:shadow-none print:border-black">
+    <div className="relative rounded-2xl border-2 border-[#D4A857] bg-gradient-to-br from-[#2E0207] via-[#3E030B] to-[#2E0207] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_25px_rgba(212,168,87,0.25)] overflow-hidden max-w-3xl mx-auto print:shadow-none print:border-black">
       {/* Decorative inner frame */}
       <div className="absolute inset-2 border border-[#D4A857]/30 rounded-xl pointer-events-none" />
 
       {/* Concave scallops in the ticket corners */}
-      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#1F0B10] border border-[#D4A857]" />
-      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#1F0B10] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#1F0B10] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#1F0B10] border border-[#D4A857]" />
+      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
+      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#7A0815] border border-[#D4A857]" />
 
       <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
         
@@ -266,7 +266,7 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
         <div className="flex-1 space-y-4 text-center md:text-left">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#D4A857] text-[#150608] font-bold text-xs uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-wider">
               {ticket.tierName}
             </span>
             <span className="text-xs font-mono text-[#E8C98A]">
@@ -327,7 +327,7 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
           {/* Download PDF CTA Button */}
           <button
             onClick={onDownload}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#150608] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-[0_0_20px_rgba(212,168,87,0.7)] transition-all transform hover:scale-[1.02] cursor-pointer print:hidden"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-[0_0_20px_rgba(212,168,87,0.7)] transition-all transform hover:scale-[1.02] cursor-pointer print:hidden"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Télécharger le PDF</span>
@@ -336,7 +336,7 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
       </div>
 
       {/* Ticket Footer Ribbon */}
-      <div className="bg-[#120507] px-6 py-2.5 border-t border-[#D4A857]/20 flex items-center justify-between text-xs text-[#D4A857]/90">
+      <div className="bg-[#3D030B] px-6 py-2.5 border-t border-[#D4A857]/20 flex items-center justify-between text-xs text-[#D4A857]/90">
         <span>Dress Code impératif : Black Tie & Touche d'Or</span>
         <span>Invitation nominative et non transférable sans accord</span>
       </div>

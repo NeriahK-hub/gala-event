@@ -123,7 +123,7 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
         particleCount: 50,
         spread: 70,
         origin: { y: 0.5 },
-        colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#3A141C'],
+        colors: ['#D4A857', '#E8C98A', '#FFF2C6', '#A00D22'],
       });
     } catch {
       // ignore
@@ -173,7 +173,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
         </div>
       </div>
 
-      <LuxuryFrame className="p-6 sm:p-10 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/50 via-[#1F0B10]/70 to-[#150608] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+      <LuxuryFrame className="p-6 sm:p-10 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/50 via-[#7A0815]/70 to-[#3D030B] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
         {/* ================= STEP 1: CHOIX DU BILLET ================= */}
         {step === 1 && (
           <div className="space-y-8 animate-in fade-in duration-300">
@@ -199,8 +199,8 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     onClick={() => setSelectedTierId(tier.id)}
                     className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? 'border-[#D4A857] bg-[#3A141C]/80 shadow-[0_0_20px_rgba(212,168,87,0.35)] scale-[1.02]'
-                        : 'border-[#D4A857]/20 bg-[#170709]/40 hover:border-[#D4A857]/50'
+                        ? 'border-[#D4A857] bg-[#A00D22]/80 shadow-[0_0_20px_rgba(212,168,87,0.35)] scale-[1.02]'
+                        : 'border-[#D4A857]/20 bg-[#5A040F]/40 hover:border-[#D4A857]/50'
                     }`}
                   >
                     <div>
@@ -211,7 +211,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                         <div
                           className={`w-5 h-5 rounded-full border flex items-center justify-center ${
                             isSelected
-                              ? 'border-[#D4A857] bg-[#D4A857] text-[#150608]'
+                              ? 'border-[#D4A857] bg-[#D4A857] text-[#3D030B]'
                               : 'border-[#D4A857]/40'
                           }`}
                         >
@@ -237,7 +237,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Quantity Selector (+ and -) */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#150608]/60 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="p-6 rounded-xl border border-[#D4A857]/20 bg-[#3D030B]/60 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="font-serif text-lg text-[#F9F5EC] font-semibold">
                   Nombre de Billets
@@ -255,7 +255,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   type="button"
                   onClick={handleDecrease}
                   disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#150608] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#3D030B] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
                 >
                   -
                 </button>
@@ -268,7 +268,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   type="button"
                   onClick={handleIncrease}
                   disabled={quantity >= 10}
-                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#150608] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-full border border-[#D4A857] text-[#E8C98A] disabled:opacity-40 disabled:border-stone-600 hover:bg-[#D4A857] hover:text-[#3D030B] flex items-center justify-center font-bold text-lg transition-colors cursor-pointer"
                 >
                   +
                 </button>
@@ -276,7 +276,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Live Calculation Summary Banner */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-gradient-to-r from-[#1F0B10] to-[#150608] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-gradient-to-r from-[#7A0815] to-[#3D030B] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]">
                   Récapitulatif de la sélection :
@@ -301,7 +301,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#150608] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.5)] transition-all cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.5)] transition-all cursor-pointer"
               >
                 <span>Continuer vers le formulaire</span>
                 <ArrowRight className="w-4 h-4" />
@@ -343,7 +343,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: Princesse Kalubi Banza"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#150608]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
                 />
                 <span className="text-xs text-stone-400">
                   Ce nom sera inscrit sur l'invitation officielle de gala.
@@ -360,7 +360,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: kalubi@prestige.cd"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#150608]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
                 />
               </div>
 
@@ -375,7 +375,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                   placeholder="Ex: +243 81 555 1234"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#150608]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
+                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/70 text-[#F9F5EC] placeholder-[#D4A857]/40 text-sm focus:border-[#D4A857] focus:outline-none focus:ring-1 focus:ring-[#D4A857]"
                 />
                 <span className="text-xs text-stone-400">
                   Numéro auquel nous t'enverrons tes billets validés.
@@ -390,10 +390,10 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 <select
                   value={selectedOperatorIndex}
                   onChange={(e) => setSelectedOperatorIndex(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#150608]/90 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/30 bg-[#3D030B]/90 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
                 >
                   {MOBILE_MONEY_ACCOUNTS.map((op, idx) => (
-                    <option key={idx} value={idx} className="bg-[#150608] text-[#F9F5EC]">
+                    <option key={idx} value={idx} className="bg-[#3D030B] text-[#F9F5EC]">
                       {op.name} ({op.number})
                     </option>
                   ))}
@@ -402,7 +402,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Payer Phone section with explicit requested note */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/30 bg-[#170709]/60 space-y-4">
+            <div className="p-5 rounded-xl border border-[#D4A857]/30 bg-[#5A040F]/60 space-y-4">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -427,10 +427,10 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                     placeholder="Ex: +243 89 123 4567"
                     value={payerPhone}
                     onChange={(e) => setPayerPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/40 bg-[#150608]/80 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-lg border border-[#D4A857]/40 bg-[#3D030B]/80 text-[#F9F5EC] text-sm focus:border-[#D4A857] focus:outline-none"
                   />
                   {/* The exact requested note */}
-                  <div className="p-3 rounded-lg bg-[#1F0B10] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
+                  <div className="p-3 rounded-lg bg-[#7A0815] border border-[#D4A857]/30 text-xs text-[#F3E5AB]">
                     💡 <strong>Important :</strong> Si tu paies depuis un autre numéro (ex: compte d'un proche, agent shop ou société), écris ce numéro-là afin que notre équipe puisse réconcilier ton paiement.
                   </div>
                 </div>
@@ -438,7 +438,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* Visible Order Recap */}
-            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-[#150608]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-5 rounded-xl border border-[#D4A857]/25 bg-[#3D030B]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs uppercase tracking-wider text-[#D4A857]">
                   Récapitulatif de la commande :
@@ -473,7 +473,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
 
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#150608] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#D4A857] via-[#F3E5AB] to-[#D4A857] text-[#3D030B] font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
               >
                 <span>Confirmer ma réservation</span>
                 <Check className="w-4 h-4 stroke-[3]" />
@@ -486,7 +486,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
         {step === 3 && createdOrder && (
           <div className="space-y-8 text-center animate-in zoom-in-95 duration-400">
             {/* Top Success Badge */}
-            <div className="w-16 h-16 rounded-full border-2 border-[#D4A857] bg-[#1F0B10] flex items-center justify-center text-[#D4A857] mx-auto shadow-[0_0_25px_rgba(212,168,87,0.4)]">
+            <div className="w-16 h-16 rounded-full border-2 border-[#D4A857] bg-[#7A0815] flex items-center justify-center text-[#D4A857] mx-auto shadow-[0_0_25px_rgba(212,168,87,0.4)]">
               <CheckCircle className="w-8 h-8 text-[#D4A857]" />
             </div>
 
@@ -503,7 +503,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* ORDER CODE DISPLAY (Code de commande bien visible) */}
-            <div className="p-6 rounded-2xl border-2 border-[#D4A857] bg-gradient-to-b from-[#3A141C]/80 to-[#170709] shadow-[0_0_30px_rgba(212,168,87,0.3)] max-w-md mx-auto">
+            <div className="p-6 rounded-2xl border-2 border-[#D4A857] bg-gradient-to-b from-[#A00D22]/80 to-[#5A040F] shadow-[0_0_30px_rgba(212,168,87,0.3)] max-w-md mx-auto">
               <span className="text-xs uppercase tracking-[0.12em] text-[#D4A857] font-semibold block mb-1">
                 Ton code de commande unique
               </span>
@@ -517,7 +517,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
             </div>
 
             {/* MOBILE MONEY DETAILS WITH ONE-CLICK COPY */}
-            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-[#150608]/80 max-w-lg mx-auto text-left space-y-4">
+            <div className="p-6 rounded-xl border border-[#D4A857]/30 bg-[#3D030B]/80 max-w-lg mx-auto text-left space-y-4">
               <div className="flex items-center justify-between border-b border-[#D4A857]/20 pb-3">
                 <span className="text-xs uppercase tracking-wider text-[#D4A857] font-semibold">
                   Numéro Mobile Money Récepteur
@@ -525,7 +525,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 <span className="text-xs text-[#E8C98A] font-medium">{selectedOperator.name}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#1F0B10] border border-[#D4A857]/30">
+              <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#7A0815] border border-[#D4A857]/30">
                 <div>
                   <span className="text-xs uppercase text-[#D4A857]/80 block">Numéro Officiel</span>
                   <span className="font-serif text-xl text-[#F9F5EC] font-bold tracking-wider">
@@ -538,7 +538,7 @@ Voici la confirmation de mon transfert Mobile Money pour valider mes billets. Me
                 <button
                   type="button"
                   onClick={() => copyToClipboard(selectedOperator.number)}
-                  className="px-4 py-2 rounded-full border border-[#D4A857] bg-[#D4A857]/20 text-[#E8C98A] hover:bg-[#D4A857] hover:text-[#150608] text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full border border-[#D4A857] bg-[#D4A857]/20 text-[#E8C98A] hover:bg-[#D4A857] hover:text-[#3D030B] text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>{copiedNumber ? 'Copié !' : 'Copier'}</span>

@@ -28,7 +28,7 @@ export const ProgramSection: React.FC = () => {
           <div key={item.id} className="relative pl-8 sm:pl-10 group">
             
             {/* Timeline Node (Golden Wax/Ring Point) */}
-            <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-[#D4A857] bg-[#1F0B10] group-hover:bg-[#D4A857] group-hover:scale-125 transition-all duration-300 shadow-[0_0_10px_rgba(212,168,87,0.5)]" />
+            <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-[#D4A857] bg-[#7A0815] group-hover:bg-[#D4A857] group-hover:scale-125 transition-all duration-300 shadow-[0_0_10px_rgba(212,168,87,0.5)]" />
 
             {/* Time label on the left (visible on desktop) */}
             <div className="sm:absolute sm:-left-36 sm:top-0 sm:text-right sm:w-28 mb-1 sm:mb-0">
@@ -41,7 +41,7 @@ export const ProgramSection: React.FC = () => {
             </div>
 
             {/* Content card */}
-            <div className="p-5 sm:p-6 rounded-xl border border-[#D4A857]/20 bg-gradient-to-br from-[#2E1218]/40 to-[#170709]/60 backdrop-blur-sm hover:border-[#D4A857]/50 transition-all duration-300 shadow-md">
+            <div className="p-5 sm:p-6 rounded-xl border border-[#D4A857]/20 bg-gradient-to-br from-[#8E0A1C]/40 to-[#5A040F]/60 backdrop-blur-sm hover:border-[#D4A857]/50 transition-all duration-300 shadow-md">
               <h3 className="font-serif text-lg sm:text-xl text-[#F9F5EC] font-semibold mb-2 group-hover:text-[#F3E5AB] transition-colors">
                 {item.title}
               </h3>

@@ -9,7 +9,7 @@ export const TeamContactSection: React.FC = () => {
 
   return (
     <section id="contact" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E1218]/50 via-[#1F0B10]/70 to-[#150608] shadow-[0_15px_40px_rgba(0,0,0,0.5)] text-center">
+      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#8E0A1C]/50 via-[#7A0815]/70 to-[#3D030B] shadow-[0_15px_40px_rgba(0,0,0,0.5)] text-center">
         
         {/* Header */}
         <div className="flex items-center justify-center gap-3 mb-4">

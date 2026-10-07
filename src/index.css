@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-burgundy-deep: #5C0612;
+    --bg-burgundy-rich: #7A0815;
+    --bg-burgundy-light: #8B0A1A;
+    --gold-primary: #D4A857;
+    --gold-light: #E8C98A;
+    --gold-pale: #F3E5AB;
+    --gold-dark: #9E742E;
+  }
+
+  body {
+    background: radial-gradient(circle at 50% 30%, #7D0917 0%, #5C0612 60%, #3D030B 100%);
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color: #F9F5EC;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #3D030B;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D4A857;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E8C98A;
+  }
+}
+
+/* Typography Helpers */
+.font-script {
+  font-family: 'Pinyon Script', 'Great Vibes', cursive;
+}
+
+.font-greatvibes {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-serif {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-sans {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Luxury Gold Text Gradient */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #F3E5AB 0%, #D4A857 50%, #E8C98A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gold-bright {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3E5AB 30%, #D4A857 70%, #E8C98A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Luxury Borders & Glows */
+.border-gold-subtle {
+  border-color: rgba(212, 168, 87, 0.35);
+}
+
+.border-gold-glow {
+  border-color: #D4A857;
+  box-shadow: 0 0 20px rgba(212, 168, 87, 0.25);
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #E8C98A 0%, #D4A857 50%, #B88934 100%);
+}
+
+.bg-burgundy-card {
+  background: linear-gradient(180deg, rgba(125, 9, 23, 0.75) 0%, rgba(77, 4, 14, 0.85) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Texture pattern for luxury red envelope */
+.bg-envelope-texture {
+  background-color: #8B0A1A;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.025),
+    rgba(255, 255, 255, 0.025) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+/* Shimmer animation */
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 168, 87, 0) 0%,
+    rgba(243, 229, 171, 0.5) 50%,
+    rgba(212, 168, 87, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: goldShimmer 3s infinite;
+}
+
+/* Pulse Glow */
+@keyframes subtlePulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: subtlePulse 4s ease-in-out infinite;
+}
+

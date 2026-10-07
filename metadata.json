@@ -1,0 +1,6 @@
+{
+  "name": "Le Grand Gala Royal - Kinshasa",
+  "description": "Site officiel et billetterie de luxe pour Le Grand Gala Royal de Kinshasa : présentation prestigieuse, réservation, billets personnalisés avec QR code et espace équipe de validation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

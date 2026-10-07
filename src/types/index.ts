@@ -1,0 +1,127 @@
+export type TicketTierId = 'standard' | 'vip' | 'table';
+
+export interface TicketTier {
+  id: TicketTierId;
+  name: string;
+  price: number;
+  subtitle: string;
+  description: string;
+  perks: string[];
+  badge?: string;
+  highlighted?: boolean;
+  availableCount: number;
+  capacityPerTicket: number; // e.g. 1 for standard/vip, 8 for table
+}
+
+export interface ProgramItem {
+  id: string;
+  time: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
+export interface GuestArtist {
+  id: string;
+  name: string;
+  role: string;
+  title: string;
+  bio: string;
+  imageUrl: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  caption: string;
+  imageUrl: string;
+  category: string;
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface PartnerSponsor {
+  id: string;
+  name: string;
+  category: string;
+  logoText: string;
+  tagline?: string;
+}
+
+export interface MobileMoneyAccount {
+  name: string;
+  operator: string;
+  number: string;
+  holder: string;
+  instructions: string;
+}
+
+export type OrderStatus = 'pending' | 'validated' | 'rejected';
+
+export interface IssuedTicket {
+  ticketNumber: string; // e.g. TKT-0147-01
+  ticketIndex: number; // e.g. 1
+  totalTickets: number; // e.g. 2
+  tierId: TicketTierId;
+  tierName: string;
+  attendeeName: string;
+  securityCode: string;
+  qrPayload: string;
+  scanned: boolean;
+  scannedAt?: string;
+  scannedBy?: string;
+}
+
+export interface Order {
+  id: string; // e.g. GALA-0147
+  createdAt: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  payerPhone: string; // "Si tu paies depuis un autre numéro"
+  tierId: TicketTierId;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  status: OrderStatus;
+  paymentReference?: string; // SMS ref MPESA-XXXX
+  validatedAt?: string;
+  notes?: string;
+  tickets: IssuedTicket[];
+}
+
+export interface GalaInfo {
+  name: string;
+  edition: string;
+  theme: string;
+  slogan: string;
+  dateText: string;
+  timeText: string;
+  isoDate: string;
+  venueName: string;
+  venueRoom: string;
+  venueAddress: string;
+  city: string;
+  organizersName: string;
+  organizersBio: string;
+  whatsappNumber: string;
+  contactEmail: string;
+  instagram: string;
+  keyStats: {
+    value: string;
+    label: string;
+    desc: string;
+  }[];
+  dressCode: {
+    title: string;
+    subtitle: string;
+    description: string;
+    colors: { name: string; hex: string; desc: string }[];
+    womenGuidelines: string;
+    menGuidelines: string;
+  };
+}

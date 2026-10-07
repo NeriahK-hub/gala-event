@@ -7,6 +7,7 @@ import { Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
 export const GallerySection: React.FC = () => {
   const { content, t } = useContent();
   const GALLERY_ITEMS = content.gallery;
+  if (GALLERY_ITEMS.length === 0) return null;
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 

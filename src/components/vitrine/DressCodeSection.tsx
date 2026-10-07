@@ -9,7 +9,7 @@ export const DressCodeSection: React.FC = () => {
   return (
     <section id="dresscode" className="relative scroll-mt-20 py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
       {/* Container with gold hairline frame */}
-      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#2E0A0F]/40 via-[#1C0709]/60 to-[#160607]/80 shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden">
+      <div className="relative p-8 sm:p-12 rounded-2xl border border-[#D4A857]/30 bg-gradient-to-b from-[#7A0815]/40 via-[#5A040F]/60 to-[#3D0309]/80 shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden">
         
         {/* Header */}
         <div className="text-center mb-10">

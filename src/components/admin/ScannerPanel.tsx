@@ -96,7 +96,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
           </div>
           <button
             type="submit"
-            className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-sm hover:brightness-110 cursor-pointer"
+            className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
           >
             Vérifier le billet
           </button>

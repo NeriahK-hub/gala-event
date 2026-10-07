@@ -87,14 +87,14 @@ const guestFields: FieldDef<GuestArtist>[] = [
   { key: 'name', label: 'Nom' },
   { key: 'role', label: 'Rôle' },
   { key: 'title', label: 'Titre / fonction' },
-  { key: 'imageUrl', label: 'Lien de la photo (URL)' },
+  { key: 'imageUrl', label: 'Photo', type: 'image' },
   { key: 'bio', label: 'Biographie', type: 'textarea' },
 ];
 
 const galleryFields: FieldDef<GalleryItem>[] = [
   { key: 'title', label: 'Titre' },
   { key: 'category', label: 'Catégorie' },
-  { key: 'imageUrl', label: 'Lien de la photo (URL)' },
+  { key: 'imageUrl', label: 'Photo', type: 'image' },
   { key: 'caption', label: 'Légende', type: 'textarea' },
 ];
 
@@ -181,7 +181,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={onViewSite}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] text-sm font-bold cursor-pointer hover:brightness-110"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold cursor-pointer hover:brightness-110"
         >
           <ExternalLink className="w-4 h-4" /> Voir le site
         </button>

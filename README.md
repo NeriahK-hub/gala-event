@@ -1,6 +1,6 @@
-# Le Grand Gala Royal — Kinshasa
+# Anniversaire Empire Informatique — Soirée Gala
 
-Site officiel et billetterie du Grand Gala Royal : présentation de la soirée, réservation de billets avec paiement Mobile Money, billets à QR code et console d'administration pour l'équipe.
+Site officiel et billetterie de la soirée gala (Kinshasa, 12 décembre 2026) : présentation de la soirée, réservation de billets avec paiement Mobile Money, billets à QR code et console d'administration pour l'équipe.
 
 Organisé par **Empire Informatique**.
 

@@ -19,7 +19,7 @@ export const AboutSection: React.FC = () => {
         {content.galaInfo.keyStats.map((stat, idx) => (
           <div
             key={idx}
-            className="rounded-2xl border border-[#E8C98A]/25 bg-[#160607]/35 px-4 py-6 text-center flex flex-col items-center"
+            className="rounded-2xl border border-[#E8C98A]/25 bg-[#3D0309]/35 px-4 py-6 text-center flex flex-col items-center"
           >
             <span className="font-serif tabular-nums text-3xl sm:text-4xl text-gold-gradient tracking-tight">
               {stat.value}

@@ -36,7 +36,7 @@ export default function App() {
   const [selectedOrderId, setSelectedOrderId] = useState<string>(INITIAL_ORDERS[0].id);
 
   // Pre-selected ticket tier for reservation flow
-  const [selectedTierId, setSelectedTierId] = useState<TicketTierId>('vip');
+  const [selectedTierId, setSelectedTierId] = useState<TicketTierId>('standard');
 
   // Navigation scroll helper for vitrine
   const handleNavigateSection = (sectionId: string) => {
@@ -53,7 +53,7 @@ export default function App() {
   };
 
   // Open reservation flow
-  const handleOpenReservation = (tierId: TicketTierId = 'vip') => {
+  const handleOpenReservation = (tierId: TicketTierId = 'standard') => {
     setSelectedTierId(tierId);
     setActiveView('reservation');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -98,7 +98,7 @@ export default function App() {
         <Header
           isHome={activeView === 'vitrine'}
           onNavigateSection={handleNavigateSection}
-          onOpenReservation={() => handleOpenReservation('vip')}
+          onOpenReservation={() => handleOpenReservation('standard')}
         />
       )}
 
@@ -109,7 +109,7 @@ export default function App() {
           <div className="space-y-4">
             {/* 1. Section d'ouverture avec enveloppe rouge et gant satin or */}
             <HeroSection
-              onReserveClick={() => handleOpenReservation('vip')}
+              onReserveClick={() => handleOpenReservation('standard')}
               onExploreClick={() => handleNavigateSection('about')}
             />
 
@@ -201,7 +201,7 @@ export default function App() {
       </main>
 
       {/* Floating Demo Navigation Switcher (Allows testing all pages with mockData) */}
-      {activeView === 'vitrine' && <FloatingActions onReserve={() => handleOpenReservation('vip')} />}
+      {activeView === 'vitrine' && <FloatingActions onReserve={() => handleOpenReservation('standard')} />}
 
       {SHOW_DEMO_NAV && (
         <DevNavSwitcher

@@ -12,7 +12,7 @@ export const TeamContactSection: React.FC = () => {
 
   return (
     <section id="contact" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto scroll-mt-20">
-      <div className="relative p-8 sm:p-12 rounded-3xl border border-[#E8C98A]/30 bg-[#160607]/45 text-center">
+      <div className="relative p-8 sm:p-12 rounded-3xl border border-[#E8C98A]/30 bg-[#3D0309]/45 text-center">
         <div className="flex justify-center mb-6">
           <EmpireLogo size={112} />
         </div>
@@ -40,24 +40,29 @@ export const TeamContactSection: React.FC = () => {
             <span>{t('contact.whatsapp')}</span>
           </a>
 
-          <a
-            href={`mailto:${galaInfo.contactEmail}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-[#E8C98A]/60 text-[#F3E5AB] hover:bg-[#E8C98A]/10 text-sm font-semibold transition-colors"
-          >
-            <Mail className="w-5 h-5" />
-            <span>{t('contact.email')}</span>
-          </a>
+          {galaInfo.contactEmail && (
+            <a
+              href={`mailto:${galaInfo.contactEmail}`}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-[#E8C98A]/60 text-[#F3E5AB] hover:bg-[#E8C98A]/10 text-sm font-semibold transition-colors"
+            >
+              <Mail className="w-5 h-5" />
+              <span>{t('contact.email')}</span>
+            </a>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-6 border-t border-[#E8C98A]/20 text-sm text-[#F3E5AB]">
-          <div className="flex items-center gap-2">
-            <Instagram className="w-4 h-4 text-[#E8C98A]" />
-            <span>{galaInfo.instagram}</span>
-          </div>
+          {galaInfo.instagram && (
+            <div className="flex items-center gap-2">
+              <Instagram className="w-4 h-4 text-[#E8C98A]" />
+              <span>{galaInfo.instagram}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-[#E8C98A]" />
             <span>{galaInfo.whatsappNumber}</span>
           </div>
+          {t('contact.extra') && <p className="w-full text-center text-[#E8C98A]">{t('contact.extra')}</p>}
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-[#E8C98A]" />
             <span>{t('contact.cities')}</span>

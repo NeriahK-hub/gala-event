@@ -82,7 +82,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     return () => clearTimeout(id);
   }, [toast]);
 
-  const totalCapacity = 450;
   const validated = orders.filter((o) => o.status === 'validated');
   const pending = orders.filter((o) => o.status === 'pending');
   const soldTickets = validated.reduce((acc, o) => acc + o.quantity, 0);
@@ -216,7 +215,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const currentLabel = NAV.find((n) => n.id === tab)?.label;
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] text-[#F9F5EC]">
+    <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] text-[#F9F5EC] bg-[#12070A] relative z-[5]">
       {/* Menu latéral (grand écran) */}
       <aside className="hidden lg:block sticky top-0 h-screen border-r border-white/10 bg-black/50 backdrop-blur-md">{sidebar}</aside>
 
@@ -252,8 +251,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   icon={<Ticket className="w-5 h-5" />}
                   label="Billets vendus"
                   value={String(soldTickets)}
-                  sub={`sur ${totalCapacity} places`}
-                  progress={soldTickets / totalCapacity}
+                  sub={soldTickets > 1 ? 'billets validés' : 'billet validé'}
                 />
                 <Kpi icon={<DollarSign className="w-5 h-5" />} label="Montant encaissé" value={`${revenue} USD`} sub={`${pendingAmount} USD en attente`} />
                 <Kpi icon={<Clock className="w-5 h-5" />} label="À traiter" value={String(pending.length)} sub="commandes à vérifier" tone="amber" />
@@ -310,7 +308,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           </div>
                           <button
                             onClick={() => openValidate(o)}
-                            className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] text-xs font-bold cursor-pointer hover:brightness-110"
+                            className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold cursor-pointer hover:brightness-110"
                           >
                             Valider
                           </button>
@@ -401,7 +399,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <>
                             <button
                               onClick={() => openValidate(order)}
-                              className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] text-sm font-bold hover:brightness-110 cursor-pointer"
+                              className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
                             >
                               Valider
                             </button>
@@ -468,7 +466,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </label>
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-sm hover:brightness-110 cursor-pointer"
+                className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
               >
                 Confirmer la validation
               </button>

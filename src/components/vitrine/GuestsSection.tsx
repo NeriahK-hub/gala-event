@@ -6,6 +6,7 @@ import { SectionHeader } from '../common/SectionHeader';
 
 export const GuestsSection: React.FC = () => {
   const { content, t } = useContent();
+  if (content.guests.length === 0) return null;
 
   return (
     <section id="invites" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto scroll-mt-20">
@@ -24,7 +25,7 @@ const ArtistCard: React.FC<{ artist: GuestArtist; badge: string }> = ({ artist, 
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="group rounded-2xl border border-[#E8C98A]/25 bg-[#160607]/40 overflow-hidden flex flex-col hover:border-[#E8C98A]/70 transition-colors duration-300">
+    <div className="group rounded-2xl border border-[#E8C98A]/25 bg-[#3D0309]/40 overflow-hidden flex flex-col hover:border-[#E8C98A]/70 transition-colors duration-300">
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#3D030B]">
         {artist.imageUrl && !imgError ? (
           <img
@@ -36,7 +37,7 @@ const ArtistCard: React.FC<{ artist: GuestArtist; badge: string }> = ({ artist, 
             className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#1C0709] to-[#3D030B]">
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#5A040F] to-[#3D030B]">
             <UserRound className="w-10 h-10 text-[#E8C98A] mb-2" />
             <span className="font-serif text-lg text-[#E8C98A]">{artist.name}</span>
           </div>

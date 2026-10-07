@@ -12,7 +12,7 @@ import {
 } from '../data/mockData';
 import { DEFAULT_TEXTS } from './textSchema';
 
-const STORAGE_KEY = 'gala-site-content-v1';
+const STORAGE_KEY = 'gala-site-content-v2';
 
 export const createDefaultContent = (): SiteContent => ({
   galaInfo: structuredClone(GALA_INFO),

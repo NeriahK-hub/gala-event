@@ -114,8 +114,8 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
 
       {/* ================= ÉTAT : EN ATTENTE ================= */}
       {isPending && (
-        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#2E0A0F]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#1C0709] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
+        <LuxuryFrame className="p-8 sm:p-12 rounded-2xl border-2 border-[#D4A857]/60 bg-gradient-to-b from-[#7A0815]/70 to-[#3D030B] text-center max-w-2xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+          <div className="w-16 h-16 rounded-full border border-[#D4A857] bg-[#5A040F] flex items-center justify-center text-[#E8C98A] mx-auto mb-6 shadow-lg">
             <Clock className="w-8 h-8 animate-pulse text-[#D4A857]" />
           </div>
 
@@ -197,7 +197,7 @@ export const TicketViewPage: React.FC<TicketViewPageProps> = ({
       {isValidated && (
         <div className="space-y-10 animate-in fade-in duration-500">
           {/* Notification banner */}
-          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#160607]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
+          <div className="p-4 rounded-xl border border-[#D4A857]/50 bg-[#3D0309]/80 max-w-2xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-[#D4A857] shrink-0" />
               <div className="text-xs text-left">
@@ -257,10 +257,10 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
       <div className="absolute inset-2 border border-[#D4A857]/30 rounded-xl pointer-events-none" />
 
       {/* Concave scallops in the ticket corners */}
-      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
-      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
-      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#1C0709] border border-[#D4A857]" />
+      <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
+      <div className="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -left-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
+      <div className="absolute -bottom-3 -right-3 w-7 h-7 rounded-full bg-[#5A040F] border border-[#D4A857]" />
 
       <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
         
@@ -302,8 +302,8 @@ const LuxuryTicketCard: React.FC<LuxuryTicketCardProps> = ({
             </div>
             <div>
               <span className="text-xs uppercase tracking-wider text-stone-400 block">Lieu de Réception</span>
-              <p className="font-semibold text-stone-200">Pullman Grand Hôtel</p>
-              <p className="text-xs text-[#D4A857]">Salon Congo</p>
+              <p className="font-semibold text-stone-200">{GALA_INFO.venueName}</p>
+              <p className="text-xs text-[#D4A857]">{GALA_INFO.city}</p>
             </div>
           </div>
 

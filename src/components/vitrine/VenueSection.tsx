@@ -11,13 +11,13 @@ export const VenueSection: React.FC = () => {
       <SectionHeader
         kicker={t('venue.kicker')}
         title={t('venue.title')}
-        subtitle={`${GALA_INFO.venueRoom} • ${GALA_INFO.venueAddress}, ${GALA_INFO.city}`}
+        subtitle={[GALA_INFO.venueName, GALA_INFO.venueRoom, GALA_INFO.venueAddress, GALA_INFO.city].filter(Boolean).join(' • ')}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Column: Venue Presentation & Practical details */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#2E0A0F]/50 to-[#160607]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
+          <div className="p-7 rounded-2xl border border-[#D4A857]/25 bg-gradient-to-b from-[#7A0815]/50 to-[#3D0309]/80 shadow-[0_10px_25px_rgba(0,0,0,0.4)]">
             <h3 className="font-serif text-2xl text-[#F9F5EC] font-semibold mb-3">
               {t('venue.cardTitle')}
             </h3>
@@ -114,7 +114,7 @@ export const VenueSection: React.FC = () => {
               </text>
             </svg>
 
-            {/* Pullman Pin */}
+            {/* Repère sur la carte */}
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-[#D4A857] flex items-center justify-center text-[#3D030B] shadow-[0_0_25px_rgba(212,168,87,0.8)] animate-bounce">
                 <MapPin className="w-6 h-6" />

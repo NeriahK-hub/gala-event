@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
     { label: t('nav.about'), id: 'about' },
     { label: t('nav.program'), id: 'programme' },
     { label: t('nav.tickets'), id: 'billets' },
-    { label: t('nav.gallery'), id: 'galerie' },
+    ...(content.gallery.length > 0 ? [{ label: t('nav.gallery'), id: 'galerie' }] : []),
     { label: t('nav.contact'), id: 'contact' },
   ];
 
@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0E0506]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#6A0511]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         <button
           onClick={() => handleNavClick('hero')}
@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         >
           <EmpireLogo size={40} className="hidden sm:block" />
           <span className="font-script text-2xl sm:text-3xl text-[#F3E5AB] group-hover:text-white transition-colors whitespace-nowrap">
-            {content.galaInfo.name}
+            {t('nav.brand')}
           </span>
         </button>
 
@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="hidden sm:block">
           <button
             onClick={onOpenReservation}
-            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-xs uppercase tracking-wider hover:brightness-110 transition cursor-pointer whitespace-nowrap"
+            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-xs uppercase tracking-wider hover:brightness-110 transition cursor-pointer whitespace-nowrap"
           >
             {t('nav.cta')}
           </button>
@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="flex items-center gap-2 lg:hidden">
           <button
             onClick={onOpenReservation}
-            className="sm:hidden px-3.5 py-2 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] text-xs font-bold uppercase tracking-wider cursor-pointer"
+            className="sm:hidden px-3.5 py-2 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             {t('nav.cta')}
           </button>
@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#140506]/98 border-b border-[#E8C98A]/25 px-6 py-6 space-y-2 animate-in slide-in-from-top-4 duration-300">
+        <div className="lg:hidden bg-[#5A040F]/98 border-b border-[#E8C98A]/25 px-6 py-6 space-y-2 animate-in slide-in-from-top-4 duration-300">
           {navLinks.map((link) => (
             <button
               key={link.id}
@@ -130,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
                 setMobileMenuOpen(false);
                 onOpenReservation();
               }}
-              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#E8C98A] to-[#C99A45] text-[#3D030B] font-bold text-sm tracking-wide cursor-pointer"
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm tracking-wide cursor-pointer"
             >
               {t('nav.ctaMobile')}
             </button>

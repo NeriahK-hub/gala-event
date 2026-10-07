@@ -1,10 +1,10 @@
 import React from 'react';
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2 } from 'lucide-react';
 
 const inputCls =
   'w-full px-3.5 py-2.5 rounded-lg border border-white/15 bg-black/25 text-sm text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20 transition';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'lines' | 'color';
+export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'lines' | 'color' | 'image';
 
 export interface FieldDef<T> {
   key: keyof T & string;
@@ -50,6 +50,75 @@ export const TextInput: React.FC<TextFieldProps> = ({ label, value, onChange, mu
   </Field>
 );
 
+// Redimensionne une image importée (1200 px max, JPEG) pour qu'elle tienne dans le stockage du navigateur
+const fileToDataUrl = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('lecture'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('image'));
+      img.onload = () => {
+        const scale = Math.min(1, 1200 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+const ImageField: React.FC<{ label: string; value: string; onChange: (v: string) => void }> = ({ label, value, onChange }) => {
+  const [error, setError] = React.useState('');
+  return (
+    <Field label={label} hint="Colle un lien, ou importe une image depuis ton appareil.">
+      <div className="flex flex-col sm:flex-row gap-3">
+        {value && <img src={value} alt="" className="h-20 w-20 rounded-lg object-cover border border-white/15 shrink-0" />}
+        <div className="flex-1 space-y-2">
+          <input
+            type="text"
+            value={value.startsWith('data:') ? '(image importée)' : value}
+            readOnly={value.startsWith('data:')}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="https://…"
+            className={inputCls}
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
+              <ImagePlus className="w-4 h-4" /> Importer une image
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = '';
+                  if (!f) return;
+                  try {
+                    setError('');
+                    onChange(await fileToDataUrl(f));
+                  } catch {
+                    setError("Impossible de lire cette image.");
+                  }
+                }}
+              />
+            </label>
+            {value && (
+              <button type="button" onClick={() => onChange('')} className="text-xs text-stone-400 hover:text-red-300 underline underline-offset-4 cursor-pointer">
+                Retirer l'image
+              </button>
+            )}
+          </div>
+          {error && <p className="text-xs text-red-300">{error}</p>}
+        </div>
+      </div>
+    </Field>
+  );
+};
+
 // Édition d'un objet à partir d'une liste de champs
 interface ObjectFieldsProps<T> {
   item: T;
@@ -65,7 +134,7 @@ export function ObjectFields<T extends object>({ item, fields, onChange }: Objec
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {fields.map((f) => {
         const type = f.type ?? 'text';
-        const wide = type === 'textarea' || type === 'lines';
+        const wide = type === 'textarea' || type === 'lines' || type === 'image';
         const raw = get(f.key);
         return (
           <div key={f.key} className={wide ? 'sm:col-span-2' : ''}>
@@ -79,6 +148,8 @@ export function ObjectFields<T extends object>({ item, fields, onChange }: Objec
                 />
                 {f.label}
               </label>
+            ) : type === 'image' ? (
+              <ImageField label={f.label} value={String(raw ?? '')} onChange={(v) => set(f.key, v)} />
             ) : type === 'lines' ? (
               <Field label={f.label} hint={f.hint ?? 'Une ligne par élément'}>
                 <textarea

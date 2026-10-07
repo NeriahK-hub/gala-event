@@ -18,7 +18,7 @@ export const FaqSection: React.FC = () => {
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-[#E8C98A]/25 bg-[#160607]/35 overflow-hidden"
+              className="rounded-2xl border border-[#E8C98A]/25 bg-[#3D0309]/35 overflow-hidden"
             >
               <button
                 onClick={() => setOpenId(isOpen ? null : item.id)}

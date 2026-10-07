@@ -18,12 +18,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenAdmin, 
     { label: t('footer.linkAbout'), onClick: () => onNavigateSection('about') },
     { label: t('footer.linkProgram'), onClick: () => onNavigateSection('programme') },
     { label: t('footer.linkTickets'), onClick: () => onNavigateSection('billets') },
-    { label: t('footer.linkGallery'), onClick: () => onNavigateSection('galerie') },
+    ...(content.gallery.length > 0 ? [{ label: t('footer.linkGallery'), onClick: () => onNavigateSection('galerie') }] : []),
     { label: t('footer.linkMyTickets'), onClick: onOpenMyTickets, accent: true },
   ];
 
   return (
-    <footer className="relative border-t border-[#E8C98A]/25 bg-[#0F0405] text-[#F9F5EC] pt-16 pb-24 sm:pb-12 px-4 sm:px-6 lg:px-8">
+    <footer className="relative border-t border-[#E8C98A]/25 bg-[#4A030C] text-[#F9F5EC] pt-16 pb-24 sm:pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
         <EmpireLogo size={88} className="mb-5" />
 

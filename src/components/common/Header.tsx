@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReservation, isHome = true }) => {
-  const { content, t } = useContent();
+  const { content, t, isSectionVisible: show } = useContent();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>('');
 
@@ -22,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
     { label: t('nav.tickets'), id: 'billets' },
     ...(content.gallery.length > 0 ? [{ label: t('nav.gallery'), id: 'galerie' }] : []),
     { label: t('nav.contact'), id: 'contact' },
-  ];
+  ].filter((l) => show(l.id));
 
   // Met en évidence la section visible à l'écran (la dernière dont le haut a dépassé 35 % de la hauteur)
   useEffect(() => {

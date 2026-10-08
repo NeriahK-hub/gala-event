@@ -10,15 +10,15 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenAdmin, onOpenMyTickets }) => {
-  const { content, t } = useContent();
+  const { content, t, isSectionVisible: show } = useContent();
   const { galaInfo } = content;
 
   const links = [
     { label: t('footer.linkHome'), onClick: () => onNavigateSection('hero') },
-    { label: t('footer.linkAbout'), onClick: () => onNavigateSection('about') },
-    { label: t('footer.linkProgram'), onClick: () => onNavigateSection('programme') },
-    { label: t('footer.linkTickets'), onClick: () => onNavigateSection('billets') },
-    ...(content.gallery.length > 0 ? [{ label: t('footer.linkGallery'), onClick: () => onNavigateSection('galerie') }] : []),
+    ...(show('about') ? [{ label: t('footer.linkAbout'), onClick: () => onNavigateSection('about') }] : []),
+    ...(show('programme') ? [{ label: t('footer.linkProgram'), onClick: () => onNavigateSection('programme') }] : []),
+    ...(show('billets') ? [{ label: t('footer.linkTickets'), onClick: () => onNavigateSection('billets') }] : []),
+    ...(content.gallery.length > 0 && show('galerie') ? [{ label: t('footer.linkGallery'), onClick: () => onNavigateSection('galerie') }] : []),
     { label: t('footer.linkMyTickets'), onClick: onOpenMyTickets },
   ];
 

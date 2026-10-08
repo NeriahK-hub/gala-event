@@ -15,6 +15,11 @@ import {
   LayoutDashboard,
   ListOrdered,
   Menu,
+  RotateCcw,
+  Settings,
+  Trash2,
+  Lock,
+  BellRing,
   ScanLine,
   Search,
   Ticket,
@@ -25,6 +30,8 @@ import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { ContentEditor } from './ContentEditor';
+import { SettingsPanel } from './SettingsPanel';
+import { lockAdmin } from '../../lib/adminLock';
 import { Modal } from './Modal';
 import { AddOrderModal } from './AddOrderModal';
 import { buildTicketLink } from '../../lib/ticketLink';
@@ -35,17 +42,21 @@ interface AdminDashboardProps {
   orders: Order[];
   onUpdateOrder: (updatedOrder: Order) => void;
   onAddOrder: (order: Order) => void;
+  onDeleteOrder: (orderId: string) => void;
+  onImportOrders: (orders: Order[]) => void;
   onBackToHome: () => void;
   onOpenOrderTickets: (orderId: string) => void;
+  onLock: () => void;
 }
 
-type Tab = 'overview' | 'orders' | 'scanner' | 'content';
+type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings';
 
 const NAV: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'overview', label: 'Vue d\'ensemble', icon: <LayoutDashboard className="w-5 h-5" /> },
   { id: 'orders', label: 'Commandes', icon: <ListOrdered className="w-5 h-5" /> },
   { id: 'scanner', label: 'Contrôle d\'entrée', icon: <ScanLine className="w-5 h-5" /> },
   { id: 'content', label: 'Contenu du site', icon: <FileEdit className="w-5 h-5" /> },
+  { id: 'settings', label: 'Réglages', icon: <Settings className="w-5 h-5" /> },
 ];
 
 const STATUS_STYLES: Record<OrderStatus, { label: string; cls: string; icon: React.ReactNode }> = {
@@ -70,8 +81,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   orders,
   onUpdateOrder,
   onAddOrder,
+  onDeleteOrder,
+  onImportOrders,
   onBackToHome,
   onOpenOrderTickets,
+  onLock,
 }) => {
   const { content } = useContent();
   const [tab, setTab] = useState<Tab>('overview');
@@ -87,6 +101,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [showAdd, setShowAdd] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rejectingOrder, setRejectingOrder] = useState<Order | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
 
   const notify = (message: string) => setToast(message);
   useEffect(() => {
@@ -159,6 +174,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     return `https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
 
+  const reminderUrl = (order: Order) => {
+    const message = `Bonjour ${order.customerName},\n\nJe reviens vers toi pour ta commande ${order.id} (${order.quantity} × ${tierName(order.tierId)}, ${order.totalAmount} $). Dès que ton paiement est confirmé, je t'envoie ton lien d'invitations.`;
+    return `https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+  };
+
+  const restoreOrder = (order: Order) => {
+    onUpdateOrder({ ...order, status: 'pending', notes: undefined });
+    notify(`Commande ${order.id} remise en attente`);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingOrder) return;
+    onDeleteOrder(deletingOrder.id);
+    notify(`Commande ${deletingOrder.id} supprimée`);
+    setDeletingOrder(null);
+  };
+
+  const lock = () => {
+    lockAdmin();
+    onLock();
+    onBackToHome();
+  };
+
   const copyLink = async (order: Order) => {
     if (await copyText(buildTicketLink(order))) {
       setCopied(true);
@@ -221,7 +259,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         ))}
       </nav>
 
-      <div className="p-3 border-t border-white/10">
+      <div className="p-3 border-t border-white/10 space-y-1">
+        <button
+          onClick={lock}
+          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm text-stone-300 hover:bg-white/5 cursor-pointer"
+        >
+          <Lock className="w-5 h-5" />
+          <span>Verrouiller</span>
+        </button>
         <button
           onClick={onBackToHome}
           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm text-stone-300 hover:bg-white/5 cursor-pointer"
@@ -447,6 +492,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <div className="flex items-center gap-2 md:justify-end">
                         {order.status === 'pending' && (
                           <>
+                            <a
+                              href={reminderUrl(order)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Relancer le client sur WhatsApp"
+                              aria-label="Relancer le client sur WhatsApp"
+                              className="p-2.5 rounded-lg border border-white/20 text-stone-100 hover:bg-white/10"
+                            >
+                              <BellRing className="w-4 h-4" />
+                            </a>
                             <button
                               onClick={() => openValidate(order)}
                               className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
@@ -460,6 +515,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               Refuser
                             </button>
                           </>
+                        )}
+                        {order.status === 'rejected' && (
+                          <button
+                            onClick={() => restoreOrder(order)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+                          >
+                            <RotateCcw className="w-4 h-4" /> Remettre en attente
+                          </button>
                         )}
                         {order.status === 'validated' && (
                           <>
@@ -480,6 +543,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             </button>
                           </>
                         )}
+                        <button
+                          onClick={() => setDeletingOrder(order)}
+                          title="Supprimer la commande"
+                          aria-label={`Supprimer la commande ${order.id}`}
+                          className="p-2.5 rounded-lg text-stone-500 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </li>
                   ))}
@@ -491,6 +562,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {tab === 'scanner' && <ScannerPanel orders={orders} onUpdateOrder={onUpdateOrder} />}
 
           {tab === 'content' && <ContentEditor onViewSite={onBackToHome} notify={notify} />}
+
+          {tab === 'settings' && <SettingsPanel orders={orders} onImportOrders={onImportOrders} onLock={lock} notify={notify} />}
         </motion.main>
       </div>
 
@@ -607,6 +680,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </button>
             <button onClick={confirmReject} className="flex-1 py-3 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-400 cursor-pointer">
               Refuser la commande
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {deletingOrder && (
+        <Modal onClose={() => setDeletingOrder(null)} title={`Supprimer ${deletingOrder.id} ?`} kicker="Confirmation">
+          <p className="text-sm text-stone-200 leading-relaxed mb-6">
+            La commande de <strong>{deletingOrder.customerName}</strong> sera effacée définitivement
+            {deletingOrder.status === 'validated' ? ' et les billets déjà envoyés ne seront plus reconnus à l\'entrée' : ''}. Pense à télécharger une sauvegarde avant.
+          </p>
+          <div className="flex gap-3">
+            <button onClick={() => setDeletingOrder(null)} className="flex-1 py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
+              Annuler
+            </button>
+            <button onClick={confirmDelete} className="flex-1 py-3 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-400 cursor-pointer">
+              Supprimer
             </button>
           </div>
         </Modal>

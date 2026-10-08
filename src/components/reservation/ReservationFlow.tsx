@@ -36,7 +36,7 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
   onOrderCreated,
   onViewTicket,
 }) => {
-  const { content } = useContent();
+  const { content, t } = useContent();
   const TICKET_TIERS = content.tiers;
   const GALA_INFO = content.galaInfo;
 
@@ -121,6 +121,29 @@ Code commande :
   }, [step]);
 
   const stepLabels = ['Billet', 'Coordonnées', 'Confirmation'];
+
+  // Ventes fermées depuis l'admin (une commande déjà passée reste consultable à l'étape 3)
+  if (!content.settings.salesOpen && step !== 3) {
+    return (
+      <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 max-w-xl mx-auto text-center">
+        <h1 className="font-serif text-3xl sm:text-4xl text-white mb-4">{t('tickets.closedTitle')}</h1>
+        <p className="text-white/80 leading-relaxed mb-8">{t('tickets.closedText')}</p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href={`https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold text-sm"
+          >
+            <WhatsAppIcon className="w-5 h-5" /> Écrire sur WhatsApp
+          </a>
+          <button onClick={onBackToHome} className="px-6 py-3.5 rounded-full border border-white/30 text-white text-sm font-semibold cursor-pointer hover:bg-white/10">
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 sm:pt-28 pb-32 sm:pb-20 px-4 sm:px-6 max-w-5xl mx-auto">

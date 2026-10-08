@@ -86,6 +86,8 @@ export const TEXT_FIELDS: TextField[] = [
   f('tickets.perksLabel', 'tickets', 'Titre de la liste d\'avantages', 'Ce qui est inclus'),
   f('tickets.cta', 'tickets', 'Bouton de chaque billet', 'Réserver ce billet'),
   f('tickets.remaining', 'tickets', 'Mention places restantes (après le nombre)', 'places restantes'),
+  f('tickets.closedTitle', 'tickets', 'Ventes fermées : titre', 'Les ventes sont fermées'),
+  f('tickets.closedText', 'tickets', 'Ventes fermées : message', 'La billetterie n\'est pas ouverte pour le moment. Écris-nous sur WhatsApp si tu as une question.', true),
   f('tickets.perPerson', 'tickets', 'Mention « par personne »', 'Par personne'),
   f('tickets.perTable', 'tickets', 'Mention « par table »', 'Par table (8 pers.)'),
 

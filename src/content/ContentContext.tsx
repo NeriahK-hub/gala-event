@@ -34,6 +34,7 @@ const normalizeDeep = <T,>(value: T): T => {
 const STORAGE_KEY = 'gala-site-content-v2';
 
 export const createDefaultContent = (): SiteContent => ({
+  settings: { salesOpen: true, hiddenSections: [] },
   galaInfo: structuredClone(GALA_INFO),
   texts: { ...DEFAULT_TEXTS },
   tiers: structuredClone(TICKET_TIERS),
@@ -57,6 +58,7 @@ export const mergeContent = (saved: Partial<SiteContent> | null | undefined): Si
       dressCode: { ...base.galaInfo.dressCode, ...(saved.galaInfo?.dressCode ?? {}) },
     },
     texts: { ...base.texts, ...(saved.texts ?? {}) },
+    settings: { ...base.settings, ...(saved.settings ?? {}) },
   };
 };
 
@@ -71,6 +73,8 @@ const loadContent = (): SiteContent => {
 
 interface ContentContextValue {
   content: SiteContent;
+  /** true si la section de la vitrine est affichée */
+  isSectionVisible: (id: string) => boolean;
   /** Renvoie le texte modifiable associé à la clef */
   t: (key: string) => string;
   setContent: (updater: (prev: SiteContent) => SiteContent) => void;
@@ -126,6 +130,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const value = useMemo<ContentContextValue>(
     () => ({
       content: display,
+      isSectionVisible: (id: string) => !display.settings.hiddenSections.includes(id),
       t: (key: string) => display.texts[key] ?? frTypo(DEFAULT_TEXTS[key] ?? ''),
       setContent,
       replaceContent,

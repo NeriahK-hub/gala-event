@@ -18,7 +18,10 @@ import { TeamContactSection } from './components/vitrine/TeamContactSection';
 import { Footer } from './components/common/Footer';
 import { ReservationFlow } from './components/reservation/ReservationFlow';
 import { TicketViewPage } from './components/tickets/TicketViewPage';
+import { useContent } from './content/ContentContext';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminGate } from './components/admin/AdminGate';
+import { isAdminUnlocked } from './lib/adminLock';
 import { FloatingActions } from './components/common/FloatingActions';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 import { decodeTicketToken, loadMyTickets, saveMyTicket } from './lib/ticketLink';
@@ -54,12 +57,15 @@ const loadMyOrderIds = (): string[] => {
 type Viewed = { kind: 'local' | 'unlocked'; id: string } | null;
 
 export default function App() {
+  const { isSectionVisible: show } = useContent();
   // Current active view
   const [activeView, setActiveView] = useState<ActiveView>(TICKET_TOKEN ? 'tickets' : 'vitrine');
 
   // Commandes (enregistrées dans ce navigateur, sauf en mode démo)
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [myOrderIds, setMyOrderIds] = useState<string[]>(loadMyOrderIds);
+  // Code d'accès de l'espace équipe (ignoré en mode démo)
+  const [adminOpen, setAdminOpen] = useState<boolean>(() => SHOW_DEMO_NAV || isAdminUnlocked());
 
   // Invitations débloquées par un lien sur cet appareil
   const [unlockedTokens, setUnlockedTokens] = useState<string[]>(() => {
@@ -132,6 +138,16 @@ export default function App() {
     setOrders((prev) => [order, ...prev]);
   };
 
+  const handleDeleteOrder = (orderId: string) => {
+    setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    setMyOrderIds((prev) => prev.filter((id) => id !== orderId));
+  };
+
+  // Import d'une sauvegarde : les commandes importées remplacent celles qui ont le même numéro
+  const handleImportOrders = (incoming: Order[]) => {
+    setOrders((prev) => [...incoming, ...prev.filter((o) => !incoming.some((i) => i.id === o.id))]);
+  };
+
   // Update order status (from admin or ticket page toggle)
   const handleUpdateOrder = (updatedOrder: Order) => {
     setOrders((prev) =>
@@ -198,37 +214,37 @@ export default function App() {
             />
 
             {/* 2. Compte à rebours */}
-            <CountdownSection />
+            {show('countdown') && <CountdownSection />}
 
             {/* 3. Le gala */}
-            <AboutSection />
+            {show('about') && <AboutSection />}
 
             {/* 4. Au programme */}
-            <ProgramSection />
+            {show('programme') && <ProgramSection />}
 
             {/* 5. Invités et artistes */}
-            <GuestsSection />
+            {show('invites') && <GuestsSection />}
 
             {/* 6. Les billets */}
-            <TicketsSection onSelectTier={handleOpenReservation} />
+            {show('billets') && <TicketsSection onSelectTier={handleOpenReservation} />}
 
             {/* 7. Dress code */}
-            <DressCodeSection />
+            {show('dresscode') && <DressCodeSection />}
 
             {/* 8. Galerie */}
-            <GallerySection />
+            {show('galerie') && <GallerySection />}
 
             {/* 9. Le lieu */}
-            <VenueSection />
+            {show('lieu') && <VenueSection />}
 
             {/* 10. Partenaires et sponsors */}
-            <SponsorsSection />
+            {show('sponsors') && <SponsorsSection />}
 
             {/* 11. Questions fréquentes */}
-            <FaqSection />
+            {show('faq') && <FaqSection />}
 
             {/* 12. L'équipe et contact */}
-            <TeamContactSection />
+            {show('contact') && <TeamContactSection />}
 
             {/* 13. Pied de page */}
             <Footer
@@ -272,15 +288,21 @@ export default function App() {
         )}
 
         {/* ================= 4. ESPACE ÉQUIPE (ADMIN & SCANNER) ================= */}
-        {activeView === 'admin' && (
+        {activeView === 'admin' && !adminOpen && (
+          <AdminGate onUnlock={() => setAdminOpen(true)} onBackToHome={() => setActiveView('vitrine')} />
+        )}
+        {activeView === 'admin' && adminOpen && (
           <AdminDashboard
             orders={orders}
             onUpdateOrder={handleUpdateOrder}
             onAddOrder={handleAddOrder}
+            onDeleteOrder={handleDeleteOrder}
+            onImportOrders={handleImportOrders}
             onBackToHome={() => {
               setActiveView('vitrine');
             }}
             onOpenOrderTickets={handleViewTicket}
+            onLock={() => setAdminOpen(false)}
           />
         )}
         </motion.div>

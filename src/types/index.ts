@@ -128,7 +128,15 @@ export interface GalaInfo {
   };
 }
 
+export interface SiteSettings {
+  /** Billetterie ouverte : si false, la réservation affiche un message « ventes fermées » */
+  salesOpen: boolean;
+  /** Identifiants des sections de la vitrine masquées */
+  hiddenSections: string[];
+}
+
 export interface SiteContent {
+  settings: SiteSettings;
   galaInfo: GalaInfo;
   texts: Record<string, string>;
   tiers: TicketTier[];

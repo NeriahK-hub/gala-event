@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AlertCircle,
   ArrowLeft,
@@ -14,6 +14,7 @@ import { IssuedTicket, Order, OrderStatus } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { QRCodeSvg } from './QRCodeSvg';
 import { Reveal } from '../common/Reveal';
+import { downloadInvitation, renderInvitation } from '../../lib/invitationImage';
 
 interface TicketViewPageProps {
   /** Commande à afficher ; null = liste « Mes billets » */
@@ -78,7 +79,7 @@ const MyTickets: React.FC<{
             <div className="w-12 h-12 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center mb-4">
               <Ticket className="w-6 h-6" />
             </div>
-            <h2 className="font-serif text-2xl font-semibold mb-2">Tes invitations arrivent par lien</h2>
+            <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Tes invitations arrivent par lien</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
               Une fois ton paiement confirmé, l'équipe t'envoie un lien sur WhatsApp. Ouvre-le : tes invitations avec QR code s'affichent ici, prêtes à être présentées à l'entrée.
             </p>
@@ -131,6 +132,7 @@ const ReservationDetails: React.FC<{
   const info = content.galaInfo;
   const [index, setIndex] = useState(0);
   const [shared, setShared] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const status = order.status;
   const whatsappUrl = `https://wa.me/${digits(info.whatsappNumber)}?text=${encodeURIComponent(
@@ -139,6 +141,20 @@ const ReservationDetails: React.FC<{
 
   const ticket: IssuedTicket | undefined = order.tickets[index];
   const place = [info.venueName, info.city].filter(Boolean).join(', ');
+
+  const price = order.tickets.length ? order.unitPrice || order.totalAmount / order.tickets.length : 0;
+
+  const download = async (list: IssuedTicket[]) => {
+    setDownloading(true);
+    try {
+      for (let i = 0; i < list.length; i++) {
+        await downloadInvitation({ ticket: list[i], info, price });
+        if (i < list.length - 1) await new Promise((r) => setTimeout(r, 450));
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const share = async () => {
     const text = `Mon billet pour ${info.name} — ${info.dateText}. Commande ${order.id}.`;
@@ -167,7 +183,7 @@ const ReservationDetails: React.FC<{
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="font-serif text-2xl text-white">Détails de la réservation</h1>
+          <h1 className="font-sans font-bold tracking-tight text-2xl text-white">Détails de la réservation</h1>
         </div>
 
         {isDemo() && (
@@ -194,7 +210,7 @@ const ReservationDetails: React.FC<{
             <span className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-3">
               Paiement en cours de vérification
             </span>
-            <h2 className="font-serif text-2xl font-semibold mb-2">Ton billet arrive bientôt</h2>
+            <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Ton billet arrive bientôt</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
               Continue la conversation WhatsApp avec l'équipe pour finaliser le paiement. Dès qu'il est confirmé, tu reçois un lien : en cliquant dessus, tes invitations avec QR code s'affichent.
             </p>
@@ -218,7 +234,7 @@ const ReservationDetails: React.FC<{
         {status === 'rejected' && (
           <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl text-center">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
-            <h2 className="font-serif text-2xl font-semibold mb-2">Réservation non validée</h2>
+            <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Réservation non validée</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
               {order.notes || "Nous n'avons pas pu retrouver ton paiement Mobile Money."}
             </p>
@@ -310,6 +326,17 @@ const ReservationDetails: React.FC<{
               </p>
             </Reveal>
 
+            <InvitationPreview ticket={ticket} info={info} price={price} />
+            {order.tickets.length > 1 && (
+              <button
+                onClick={() => download(order.tickets)}
+                disabled={downloading}
+                className="w-full text-sm text-white/80 hover:text-white underline underline-offset-4 cursor-pointer print:hidden disabled:opacity-60"
+              >
+                Télécharger les {order.tickets.length} invitations
+              </button>
+            )}
+
             <p className="flex gap-2 text-xs text-white/90 leading-relaxed px-1">
               <Info className="w-4 h-4 shrink-0 mt-0.5 text-[#FFD9A0]" />
               <span>
@@ -328,10 +355,11 @@ const ReservationDetails: React.FC<{
                 <MessageCircle className="w-4 h-4" /> Aide
               </a>
               <button
-                onClick={() => window.print()}
-                className="py-3.5 rounded-xl bg-[#2A1014] text-white font-semibold hover:bg-black inline-flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                onClick={() => download([ticket])}
+                disabled={downloading}
+                className="py-3.5 rounded-xl bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold hover:brightness-110 inline-flex items-center justify-center gap-2 cursor-pointer shadow-lg disabled:opacity-60"
               >
-                <Download className="w-4 h-4" /> Télécharger
+                <Download className="w-4 h-4" /> {downloading ? 'Création…' : 'Télécharger'}
               </button>
             </div>
           </div>
@@ -358,3 +386,33 @@ const Row: React.FC<{ k: string; v: string; mono?: boolean; strong?: boolean }> 
     <dd className={`text-right ${mono ? 'font-mono' : ''} ${strong ? 'font-bold text-[#D8590B]' : ''}`}>{v}</dd>
   </div>
 );
+
+// Aperçu de l'invitation qui sera téléchargée
+const InvitationPreview: React.FC<{ ticket: IssuedTicket; info: ReturnType<typeof useContent>['content']['galaInfo']; price: number }> = ({
+  ticket,
+  info,
+  price,
+}) => {
+  const [src, setSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setSrc(null);
+    renderInvitation({ ticket, info, price })
+      .then((c) => !cancelled && setSrc(c.toDataURL('image/png')))
+      .catch(() => !cancelled && setSrc(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [ticket, info, price]);
+
+  return (
+    <Reveal immediate delay={0.35} className="rounded-2xl overflow-hidden shadow-xl bg-black/30 print:hidden">
+      {src ? (
+        <img src={src} alt={`Invitation ${ticket.ticketNumber}`} className="w-full h-auto block" />
+      ) : (
+        <div className="aspect-[3/1] w-full animate-pulse bg-white/10" aria-hidden="true" />
+      )}
+    </Reveal>
+  );
+};

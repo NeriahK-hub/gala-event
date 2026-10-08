@@ -12,63 +12,56 @@ export const TeamContactSection: React.FC = () => {
   )}`;
 
   return (
-    <section id="contact" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto scroll-mt-20">
-      <Reveal className="relative p-8 sm:p-12 rounded-3xl border border-[#E8C98A]/30 bg-[#3D0309]/45 text-center">
+    <section id="contact" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto scroll-mt-20">
+      <Reveal className="rounded-[2rem] bg-white/10 ring-1 ring-white/15 p-8 sm:p-14 text-center">
         <div className="flex justify-center mb-6">
-          <EmpireLogo size={112} />
+          <EmpireLogo size={96} />
         </div>
 
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#D4A857]/70" />
-          <span className="text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold">{t('contact.kicker')}</span>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#D4A857]/70" />
-        </div>
-
-        <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4">
+        <p className="text-sm sm:text-base font-semibold text-[#FFB43A] mb-3">{t('contact.kicker')}</p>
+        <h2 className="font-sans font-bold tracking-tight text-white text-4xl sm:text-5xl leading-[1.05] text-balance">
           {galaInfo.organizersName}
         </h2>
+        <p className="mt-4 text-lg text-white/70 leading-relaxed max-w-xl mx-auto text-balance">{galaInfo.organizersBio}</p>
 
-        <p className="text-stone-100/90 text-base leading-relaxed max-w-2xl mx-auto mb-10">{galaInfo.organizersBio}</p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+        <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold text-sm shadow-lg hover:bg-[#20ba59] transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59] transition-colors"
           >
             <MessageCircle className="w-5 h-5" />
-            <span>{t('contact.whatsapp')}</span>
+            {t('contact.whatsapp')}
           </a>
-
           {galaInfo.contactEmail && (
             <a
               href={`mailto:${galaInfo.contactEmail}`}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-[#E8C98A]/60 text-[#F3E5AB] hover:bg-[#E8C98A]/10 text-sm font-semibold transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full ring-1 ring-white/40 text-white font-semibold hover:bg-white/10 transition-colors"
             >
               <Mail className="w-5 h-5" />
-              <span>{t('contact.email')}</span>
+              {t('contact.email')}
             </a>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-6 border-t border-[#E8C98A]/20 text-sm text-[#F3E5AB]">
+        <ul className="mt-10 pt-8 border-t border-white/15 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-base text-white/75">
           {galaInfo.instagram && (
-            <div className="flex items-center gap-2">
-              <Instagram className="w-4 h-4 text-[#E8C98A]" />
-              <span>{galaInfo.instagram}</span>
-            </div>
+            <li className="inline-flex items-center gap-2">
+              <Instagram className="w-4 h-4 text-[#FFB43A]" />
+              {galaInfo.instagram}
+            </li>
           )}
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-[#E8C98A]" />
-            <span>{galaInfo.whatsappNumber}</span>
-          </div>
-          {t('contact.extra') && <p className="w-full text-center text-[#E8C98A]">{t('contact.extra')}</p>}
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#E8C98A]" />
-            <span>{t('contact.cities')}</span>
-          </div>
-        </div>
+          <li className="inline-flex items-center gap-2">
+            <Phone className="w-4 h-4 text-[#FFB43A]" />
+            {galaInfo.whatsappNumber}
+          </li>
+          <li className="inline-flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-[#FFB43A]" />
+            {t('contact.cities')}
+          </li>
+        </ul>
+        {t('contact.extra') && <p className="mt-3 text-sm text-white/55">{t('contact.extra')}</p>}
       </Reveal>
     </section>
   );

@@ -8,19 +8,11 @@ interface SectionHeaderProps {
 }
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ kicker, title, subtitle }) => (
-  <Reveal className="text-center mb-14 sm:mb-16">
-    <div className="flex items-center justify-center gap-3 mb-4">
-      <div className="h-px w-10 sm:w-12 bg-gradient-to-r from-transparent to-[#D4A857]/70" />
-      <span className="text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold">{kicker}</span>
-      <div className="h-px w-10 sm:w-12 bg-gradient-to-l from-transparent to-[#D4A857]/70" />
-    </div>
-    <h2 className="font-serif font-medium text-4xl sm:text-5xl text-[#F3E5AB] tracking-tight mb-4 text-balance">
+  <Reveal className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
+    <p className="text-sm sm:text-base font-semibold text-[#FFB43A] mb-3">{kicker}</p>
+    <h2 className="font-sans font-bold tracking-tight text-white text-4xl sm:text-5xl leading-[1.05] text-balance">
       {title}
     </h2>
-    {subtitle && (
-      <p className="font-serif italic text-base sm:text-lg text-[#F3E5AB]/90 max-w-xl mx-auto text-balance">
-        {subtitle}
-      </p>
-    )}
+    {subtitle && <p className="mt-4 text-lg sm:text-xl text-white/75 text-balance">{subtitle}</p>}
   </Reveal>
 );

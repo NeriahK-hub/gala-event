@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Check, Crown } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { TicketTierId } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { SectionHeader } from '../common/SectionHeader';
@@ -11,88 +11,79 @@ interface TicketsSectionProps {
 
 export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) => {
   const { content, t } = useContent();
+  const count = content.tiers.length;
 
   return (
-    <section id="billets" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto scroll-mt-20">
+    <section id="billets" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto scroll-mt-20">
       <SectionHeader kicker={t('tickets.kicker')} title={t('tickets.title')} subtitle={t('tickets.subtitle')} />
 
-      <div className={`grid grid-cols-1 gap-8 items-stretch ${content.tiers.length === 1 ? 'max-w-md mx-auto' : content.tiers.length === 2 ? 'lg:grid-cols-2 max-w-4xl mx-auto' : 'lg:grid-cols-3'}`}>
-        {content.tiers.map((tier, tierIndex) => {
-          const isVip = !!tier.highlighted;
-
+      <div
+        className={`grid grid-cols-1 gap-5 items-stretch mx-auto ${
+          count === 1 ? 'max-w-md' : count === 2 ? 'lg:grid-cols-2 max-w-4xl' : 'lg:grid-cols-3'
+        }`}
+      >
+        {content.tiers.map((tier, i) => {
+          const featured = !!tier.highlighted;
           return (
             <Reveal
               key={tier.id}
-              delay={tierIndex * 0.1}
-              className={`relative rounded-2xl flex flex-col justify-between transition-all duration-300 ${
-                isVip
-                  ? 'border-2 border-[#E8C98A] bg-[#3D0309]/60 shadow-[0_0_35px_rgba(232,201,138,0.2)] lg:-translate-y-3'
-                  : 'border border-[#E8C98A]/30 bg-[#3D0309]/35 hover:border-[#E8C98A]/60'
+              delay={i * 0.1}
+              className={`rounded-[2rem] p-7 sm:p-9 flex flex-col ${
+                featured
+                  ? 'bg-white text-[#2A1014] shadow-[0_30px_70px_rgba(0,0,0,0.35)]'
+                  : 'bg-white/10 text-white ring-1 ring-white/15'
               }`}
             >
-              {tier.badge && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold tracking-widest uppercase shadow-md">
-                    <Crown className="w-3.5 h-3.5" />
-                    <span>{tier.badge}</span>
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mb-2">
+                <p className={`text-sm font-semibold ${featured ? 'text-[#D8590B]' : 'text-[#FFB43A]'}`}>{tier.subtitle}</p>
+                {tier.badge && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#F2761B] text-white text-xs font-bold">{tier.badge}</span>
+                )}
+              </div>
+              <h3 className="font-sans font-bold tracking-tight text-2xl sm:text-3xl">{tier.name}</h3>
 
-              <div className="p-7 sm:p-8 border-b border-[#E8C98A]/20">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#E8C98A] font-semibold mb-2">{tier.subtitle}</p>
-                <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-[#F9F5EC] mb-4">{tier.name}</h3>
+              <p className="mt-6 flex items-baseline gap-2">
+                <span className="font-sans font-bold tracking-tight text-6xl sm:text-7xl leading-none tabular-nums">
+                  {tier.price}
+                  <span className="text-3xl sm:text-4xl ml-1">$</span>
+                </span>
+                <span className={`text-sm ${featured ? 'text-[#8B6B70]' : 'text-white/60'}`}>
+                  {tier.capacityPerTicket > 1 ? t('tickets.perTable') : t('tickets.perPerson')}
+                </span>
+              </p>
 
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="font-serif text-5xl sm:text-6xl text-gold-gradient tracking-tight tabular-nums">
-                    {tier.price}
-                  </span>
-                  <div className="flex flex-col text-left">
-                    <span className="text-sm font-semibold uppercase text-[#E8C98A]">USD</span>
-                    <span className="text-xs text-[#E8C98A]/90">
-                      {tier.capacityPerTicket > 1 ? t('tickets.perTable') : t('tickets.perPerson')}
+              <p className={`mt-5 text-base leading-relaxed ${featured ? 'text-[#6B4A4F]' : 'text-white/70'}`}>
+                {tier.description}
+              </p>
+
+              <ul className={`mt-6 pt-6 border-t space-y-3 flex-1 ${featured ? 'border-[#EFE5D6]' : 'border-white/15'}`}>
+                {tier.perks.map((perk, p) => (
+                  <li key={p} className="flex items-start gap-3 text-base">
+                    <span
+                      className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                        featured ? 'bg-[#F2761B]/15 text-[#D8590B]' : 'bg-white/15 text-[#FFB43A]'
+                      }`}
+                    >
+                      <Check className="w-3 h-3" strokeWidth={3} />
                     </span>
-                  </div>
-                </div>
+                    <span>{perk}</span>
+                  </li>
+                ))}
+              </ul>
 
-                <p className="text-sm text-stone-100/90 leading-relaxed">{tier.description}</p>
-              </div>
+              <button
+                onClick={() => onSelectTier(tier.id)}
+                className="mt-8 w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.3)] hover:brightness-110 transition cursor-pointer"
+              >
+                {t('tickets.cta')}
+                <ArrowRight className="w-5 h-5" />
+              </button>
 
-              <div className="p-7 sm:p-8 flex-1 flex flex-col justify-between">
-                <div className="space-y-3 mb-8">
-                  <p className="text-xs uppercase tracking-wider text-[#E8C98A] font-semibold mb-4">
-                    {t('tickets.perksLabel')}
-                  </p>
-                  {tier.perks.map((perk, pIdx) => (
-                    <div key={pIdx} className="flex items-start gap-3 text-sm text-stone-100">
-                      <div className="w-5 h-5 rounded-full border border-[#E8C98A]/60 flex items-center justify-center shrink-0 mt-0.5 text-[#E8C98A] bg-[#E8C98A]/10">
-                        <Check className="w-3 h-3" />
-                      </div>
-                      <span className="leading-snug">{perk}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div>
-                  <button
-                    onClick={() => onSelectTier(tier.id)}
-                    className={`w-full py-3.5 px-6 rounded-full font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-                      isVip
-                        ? 'bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] shadow-[0_8px_24px_rgba(232,201,138,0.25)] hover:brightness-110'
-                        : 'border border-[#E8C98A] text-[#F3E5AB] hover:bg-[#E8C98A] hover:text-[#3D030B]'
-                    }`}
-                  >
-                    <span>{t('tickets.cta')}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  {tier.availableCount > 0 && (
-                    <p className="text-center text-xs text-[#E8C98A] mt-2">
-                      {tier.availableCount} {t('tickets.remaining')}
-                    </p>
-                  )}
-                </div>
-              </div>
+              {tier.availableCount > 0 && (
+                <p className={`text-center text-sm mt-3 ${featured ? 'text-[#8B6B70]' : 'text-white/60'}`}>
+                  {tier.availableCount} {t('tickets.remaining')}
+                </p>
+              )}
             </Reveal>
           );
         })}

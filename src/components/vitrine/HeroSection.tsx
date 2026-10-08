@@ -35,7 +35,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserveClick, onExpl
         <Reveal immediate><EmpireLogo size={76} className="mb-4" /></Reveal>
 
         <Reveal immediate delay={0.05}>
-        <p className="inline-flex items-center gap-2 mb-2 text-xs sm:text-sm uppercase tracking-[0.18em] text-[#FFD9A0] font-semibold">
+        <p className="inline-flex items-center gap-2 mb-2 text-xs sm:text-sm text-[#FFD9A0] font-semibold">
           {info.edition}
         </p>
         </Reveal>

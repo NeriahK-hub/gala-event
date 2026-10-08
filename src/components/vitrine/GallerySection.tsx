@@ -31,7 +31,7 @@ export const GallerySection: React.FC = () => {
   };
 
   return (
-    <section id="galerie" className="relative scroll-mt-20 py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+    <section id="galerie" className="relative scroll-mt-20 py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <SectionHeader kicker={t('gallery.kicker')} title={t('gallery.title')} subtitle={t('gallery.subtitle')} />
 
       {/* Photo Grid */}
@@ -40,7 +40,7 @@ export const GallerySection: React.FC = () => {
           <div
             key={item.id}
             onClick={() => handleOpenPhoto(item, index)}
-            className="group relative rounded-xl border border-[#D4A857]/25 overflow-hidden aspect-[4/3] cursor-pointer shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:border-[#D4A857] transition-all duration-500"
+            className="group relative rounded-3xl ring-1 ring-white/15 overflow-hidden aspect-[4/3] cursor-pointer shadow-[0_10px_20px_rgba(0,0,0,0.4)] transition-all duration-500"
           >
             <img
               loading="lazy"
@@ -65,7 +65,7 @@ export const GallerySection: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="font-serif text-lg font-semibold text-[#F9F5EC] group-hover:text-[#F3E5AB] transition-colors leading-tight">
+                <h3 className="font-sans font-bold tracking-tight text-lg text-white leading-tight">
                   {item.title}
                 </h3>
                 <p className="text-xs text-stone-300 line-clamp-1 mt-1">
@@ -125,7 +125,7 @@ export const GallerySection: React.FC = () => {
 
             {/* Caption Footer */}
             <div className="p-5 border-t border-[#D4A857]/20 bg-[#3D030B]">
-              <h4 className="font-serif text-xl text-[#F9F5EC] font-semibold">
+              <h4 className="font-sans font-bold tracking-tight text-xl text-white">
                 {selectedPhoto.title}
               </h4>
               <p className="text-xs sm:text-sm text-stone-300 mt-1">

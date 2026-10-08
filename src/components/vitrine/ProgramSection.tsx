@@ -7,28 +7,27 @@ export const ProgramSection: React.FC = () => {
   const { content, t } = useContent();
 
   return (
-    <section id="programme" className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto scroll-mt-20">
+    <section id="programme" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto scroll-mt-20">
       <SectionHeader kicker={t('program.kicker')} title={t('program.title')} subtitle={t('program.subtitle')} />
 
-      <div className="relative border-l border-[#E8C98A]/40 ml-4 sm:ml-32 md:ml-40 space-y-10 sm:space-y-12">
+      <ol className="space-y-3 sm:space-y-4">
         {content.program.map((item, i) => (
-          <Reveal key={item.id} delay={i * 0.08} className="relative pl-8 sm:pl-10 group">
-            <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-[#E8C98A] bg-[#5A040F] group-hover:bg-[#E8C98A] group-hover:scale-125 transition-all duration-300" />
-
-            <div className="sm:absolute sm:-left-36 sm:top-0 sm:text-right sm:w-28 mb-1 sm:mb-0">
-              <span className="font-serif tabular-nums text-2xl text-gold-gradient tracking-wide block">{item.time}</span>
-              <span className="text-xs uppercase tracking-widest text-[#E8C98A] font-medium">{item.category}</span>
+          <Reveal
+            key={item.id}
+            delay={i * 0.08}
+            className="rounded-3xl bg-white/10 ring-1 ring-white/15 p-6 sm:p-8 grid sm:grid-cols-[170px_1fr] gap-x-8 gap-y-2 items-start"
+          >
+            <div>
+              <p className="font-sans font-bold tracking-tight text-white text-2xl sm:text-3xl leading-none">{item.time}</p>
+              <p className="text-sm font-semibold text-[#FFB43A] mt-2">{item.category}</p>
             </div>
-
-            <div className="p-5 sm:p-6 rounded-2xl border border-[#E8C98A]/20 bg-[#3D0309]/40 hover:border-[#E8C98A]/50 transition-colors">
-              <h3 className="font-serif text-xl text-[#F9F5EC] font-semibold mb-2 group-hover:text-[#F3E5AB] transition-colors">
-                {item.title}
-              </h3>
-              <p className="text-sm text-stone-100/90 leading-relaxed">{item.description}</p>
+            <div>
+              <h3 className="font-sans font-bold tracking-tight text-white text-xl sm:text-2xl">{item.title}</h3>
+              <p className="text-base text-white/70 leading-relaxed mt-2">{item.description}</p>
             </div>
           </Reveal>
         ))}
-      </div>
+      </ol>
     </section>
   );
 };

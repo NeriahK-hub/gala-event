@@ -8,19 +8,21 @@ export const SponsorsSection: React.FC = () => {
   if (content.sponsors.length === 0) return null;
 
   return (
-    <section className="relative py-14 sm:py-16 px-4 sm:px-6 lg:px-8 border-y border-[#E8C98A]/20 bg-[#3D0309]/30">
-      <div className="max-w-6xl mx-auto text-center">
-        <p className="text-xs uppercase tracking-[0.18em] text-[#E8C98A] font-semibold mb-8">{t('sponsors.title')}</p>
+    <section className="relative py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto text-center">
+        <Reveal>
+          <p className="text-sm sm:text-base font-semibold text-white/60 mb-8">{t('sponsors.title')}</p>
+        </Reveal>
 
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
           {content.sponsors.map((sponsor, i) => (
             <Reveal
               key={sponsor.id}
-              delay={i * 0.08}
-              className="min-w-[200px] p-4 rounded-xl border border-[#E8C98A]/20 bg-[#3D0309]/30 hover:border-[#E8C98A]/50 transition-colors flex flex-col items-center justify-center text-center"
+              delay={i * 0.07}
+              className="min-w-[200px] rounded-2xl bg-white/10 ring-1 ring-white/15 px-6 py-5 flex flex-col items-center justify-center text-center"
             >
-              <span className="font-serif tracking-widest text-sm font-semibold text-[#F3E5AB]">{sponsor.logoText}</span>
-              <span className="text-xs uppercase tracking-wider text-[#E8C98A]/90 mt-1">{sponsor.category}</span>
+              <span className="font-sans font-bold tracking-tight text-white text-base sm:text-lg">{sponsor.logoText}</span>
+              <span className="text-sm text-white/60 mt-1">{sponsor.category}</span>
             </Reveal>
           ))}
         </div>

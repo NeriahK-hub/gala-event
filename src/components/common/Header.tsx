@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
           className="flex items-center gap-3 text-left group cursor-pointer"
         >
           <EmpireLogo size={40} className="hidden sm:block" />
-          <span className="font-script text-2xl sm:text-3xl text-[#F3E5AB] group-hover:text-white transition-colors whitespace-nowrap">
+          <span className="font-sans font-bold tracking-tight text-lg sm:text-xl text-white whitespace-nowrap">
             {t('nav.brand')}
           </span>
         </button>
@@ -76,8 +76,8 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
                 key={link.id}
                 onClick={() => handleNavClick(link.id)}
                 aria-current={isActive ? 'true' : undefined}
-                className={`text-xs font-semibold uppercase tracking-[0.1em] transition-colors relative py-1.5 cursor-pointer whitespace-nowrap ${
-                  isActive ? 'text-white' : 'text-[#E8C98A] hover:text-white'
+                className={`text-sm font-medium transition-colors relative py-1.5 cursor-pointer whitespace-nowrap ${
+                  isActive ? 'text-white' : 'text-white/70 hover:text-white'
                 }`}
               >
                 {link.label}
@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="hidden sm:block">
           <button
             onClick={onOpenReservation}
-            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-xs uppercase tracking-wider hover:brightness-110 transition cursor-pointer whitespace-nowrap"
+            className="px-5 py-2.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 transition cursor-pointer whitespace-nowrap"
           >
             {t('nav.cta')}
           </button>

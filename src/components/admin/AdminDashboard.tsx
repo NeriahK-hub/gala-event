@@ -28,6 +28,7 @@ import { ContentEditor } from './ContentEditor';
 import { Modal } from './Modal';
 import { AddOrderModal } from './AddOrderModal';
 import { buildTicketLink } from '../../lib/ticketLink';
+import { copyText } from '../../lib/clipboard';
 import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 interface AdminDashboardProps {
@@ -159,11 +160,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const copyLink = async (order: Order) => {
-    try {
-      await navigator.clipboard.writeText(buildTicketLink(order));
+    if (await copyText(buildTicketLink(order))) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
-    } catch {
+    } else {
       notify('Copie impossible : sélectionne le lien et copie-le à la main');
     }
   };

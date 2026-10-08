@@ -201,20 +201,11 @@ const ReservationDetails: React.FC<{
       `Bonjour ${firstName(t.attendeeName)}, voici ton invitation pour ${info.name} (${info.dateText}).\n\nOuvre ce lien pour voir ton billet :\n${guestLink(t)}\n\nMontre le code à l'entrée.`
     )}`;
 
-  const shareTicket = async () => {
-    if (!ticket) return;
-    const text = `Voici mon billet pour ${info.name} (${info.dateText}). Ticket ${ticket.ticketNumber}.`;
-    try {
-      if (navigator.share) await navigator.share({ title: info.name, text });
-      else {
-        await navigator.clipboard.writeText(text);
-        setSaveMessage('Texte copié, tu peux le coller dans WhatsApp.');
-        setTimeout(() => setSaveMessage(''), 4000);
-      }
-    } catch {
-      // partage annulé
-    }
-  };
+  // Partager = ouvrir WhatsApp avec un message prêt (marche partout, même sans partage natif)
+  const shareUrl = (t: IssuedTicket) =>
+    `https://wa.me/?text=${encodeURIComponent(
+      `Voici mon billet pour ${info.name} (${info.dateText}).\n\nOuvre ce lien pour le voir :\n${guestLink(t)}`
+    )}`;
 
   const card = 'rounded-[2rem] bg-[#FBF8F2] text-[#2A1014] shadow-2xl';
 
@@ -427,12 +418,14 @@ const ReservationDetails: React.FC<{
 
               <div className={many ? '' : 'grid grid-cols-2 gap-3'}>
                 {!many && (
-                  <button
-                    onClick={shareTicket}
-                    className="py-3.5 rounded-full ring-1 ring-white/40 text-white font-semibold hover:bg-white/10 inline-flex items-center justify-center gap-2 cursor-pointer"
+                  <a
+                    href={shareUrl(ticket)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-3.5 rounded-full ring-1 ring-white/40 text-white font-semibold hover:bg-white/10 inline-flex items-center justify-center gap-2"
                   >
                     <Share2 className="w-5 h-5" /> Partager
-                  </button>
+                  </a>
                 )}
                 <a
                   href={whatsappUrl}

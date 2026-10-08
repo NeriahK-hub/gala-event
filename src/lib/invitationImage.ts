@@ -186,3 +186,42 @@ export const downloadInvitation = async (data: InvitationData) => {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 };
+
+export type SaveResult = 'shared' | 'downloaded' | 'cancelled';
+
+// Sur téléphone : ouvre la feuille de partage (le client choisit « Enregistrer l'image » ou WhatsApp).
+// Sur ordinateur (ou si le partage n'est pas possible) : télécharge les fichiers.
+export const saveInvitations = async (list: InvitationData[]): Promise<SaveResult> => {
+  const files = await Promise.all(
+    list.map(
+      async (d) =>
+        new File([await canvasToBlob(await renderInvitation(d))], `invitation-${d.ticket.ticketNumber}.png`, {
+          type: 'image/png',
+        })
+    )
+  );
+
+  const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+  const isPhone = window.matchMedia?.('(pointer: coarse)').matches;
+  if (isPhone && nav.canShare?.({ files })) {
+    try {
+      await nav.share({ files, title: 'Mon invitation' });
+      return 'shared';
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return 'cancelled';
+    }
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const url = URL.createObjectURL(files[i]);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = files[i].name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    if (i < files.length - 1) await new Promise((r) => setTimeout(r, 450));
+  }
+  return 'downloaded';
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { INITIAL_ORDERS } from './data/mockData';
 import { Order, TicketTierId, OrderStatus } from './types';
@@ -118,7 +118,6 @@ export default function App() {
   const handleOpenReservation = (tierId: TicketTierId = 'standard') => {
     setSelectedTierId(tierId);
     setActiveView('reservation');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // When a new order is completed in reservation flow
@@ -150,8 +149,12 @@ export default function App() {
   const handleViewTicket = (orderId: string) => {
     setViewed({ kind: 'local', id: orderId });
     setActiveView('tickets');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // À chaque changement de page : on repart tout en haut, tout de suite (pas de défilement qui s'arrête au milieu)
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeView, viewed?.id]);
 
   // Commande affichée + liste « Mes billets » de cet appareil
   const currentTicketOrder: Order | null =
@@ -232,12 +235,10 @@ export default function App() {
               onNavigateSection={handleNavigateSection}
               onOpenAdmin={() => {
                 setActiveView('admin');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onOpenMyTickets={() => {
                 setViewed(null);
                 setActiveView('tickets');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
           </div>
@@ -249,7 +250,6 @@ export default function App() {
             initialTierId={selectedTierId}
             onBackToHome={() => {
               setActiveView('vitrine');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOrderCreated={handleOrderCreated}
             onViewTicket={handleViewTicket}
@@ -266,7 +266,6 @@ export default function App() {
             onShowList={() => setViewed(null)}
             onBackToHome={() => {
               setActiveView('vitrine');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onUpdateOrderStatus={handleUpdateOrderStatus}
           />
@@ -280,7 +279,6 @@ export default function App() {
             onAddOrder={handleAddOrder}
             onBackToHome={() => {
               setActiveView('vitrine');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOpenOrderTickets={handleViewTicket}
           />
@@ -297,7 +295,6 @@ export default function App() {
           onChangeView={(view) => {
             if (view === 'tickets' && !viewed && orders[0]) setViewed({ kind: 'local', id: orders[0].id });
             setActiveView(view);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           selectedOrderId={viewed?.id}
         />

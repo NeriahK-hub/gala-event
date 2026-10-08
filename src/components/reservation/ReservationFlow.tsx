@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
 import { AnimatedNumber } from '../common/Reveal';
@@ -13,15 +13,15 @@ import {
   ArrowRight,
   Minus,
   Plus,
-  Smartphone,
-  Zap,
-  MessageCircle,
+  Link2,
+  QrCode,
   Info,
   CreditCard,
   ShieldCheck,
   CheckCircle,
   HelpCircle,
 } from 'lucide-react';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 interface ReservationFlowProps {
   initialTierId?: TicketTierId;
@@ -70,15 +70,16 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
   const buildWhatsAppUrl = (order: Order) => {
     const message = `Bonjour, je voudrais réserver pour ${GALA_INFO.name}.
 
-• Commande : ${order.id}
-• Nom : ${order.customerName}
-• Téléphone : ${order.customerPhone}
-• Billets : ${order.quantity} × ${currentTier.name}
-• Total : ${order.totalAmount} USD
+*Commande* : ${order.id}
+*Nom* : ${order.customerName}
+*Téléphone* : ${order.customerPhone}
+*Billets* : ${order.quantity} × ${currentTier.name}
+*Total* : ${order.totalAmount} USD
 
 Peux-tu me dire comment payer ? Merci !
 
-Code commande : ${encodeOrderRequest(order)}`;
+Code commande :
+\`\`\`${encodeOrderRequest(order)}\`\`\``;
     return `https://wa.me/${GALA_INFO.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
 
@@ -113,6 +114,11 @@ Code commande : ${encodeOrderRequest(order)}`;
     // Ouvre WhatsApp tout de suite (le clic sur « Confirmer » autorise l'ouverture)
     window.open(buildWhatsAppUrl(newOrder), '_blank', 'noopener,noreferrer');
   };
+
+  // Chaque étape s'ouvre en haut de page
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [step]);
 
   const stepLabels = ['Billet', 'Coordonnées', 'Confirmation'];
 
@@ -188,47 +194,57 @@ Code commande : ${encodeOrderRequest(order)}`;
                           setSelectedTierId(tier.id);
                         }
                       }}
-                      className={`rounded-3xl p-5 sm:p-6 cursor-pointer transition-all duration-300 ${
+                      className={`rounded-[2rem] p-6 sm:p-8 cursor-pointer transition-all duration-300 ${
                         isSelected
                           ? 'bg-white text-[#2A1014] shadow-[0_18px_50px_rgba(0,0,0,0.35)] ring-2 ring-[#FFB43A]'
                           : 'bg-white/10 text-white hover:bg-white/15 ring-1 ring-white/15'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className={`text-xs font-semibold ${isSelected ? 'text-[#D8590B]' : 'text-[#FFB43A]'}`}>
-                              {tier.subtitle}
-                            </span>
-                            {tier.badge && (
-                              <span className="px-2 py-0.5 rounded-full bg-[#F2761B] text-white text-[11px] font-bold">{tier.badge}</span>
-                            )}
-                          </div>
-                          <h3 className="font-sans text-xl sm:text-2xl font-bold tracking-tight">{tier.name}</h3>
-                          <p className={`text-sm mt-1.5 leading-relaxed ${isSelected ? 'text-[#6B4A4F]' : 'text-white/70'}`}>
-                            {tier.description}
-                          </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`text-sm font-semibold ${isSelected ? 'text-[#D8590B]' : 'text-[#FFB43A]'}`}>
+                            {tier.subtitle}
+                          </span>
+                          {tier.badge && (
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#F2761B] text-white text-xs font-bold">{tier.badge}</span>
+                          )}
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="font-sans font-bold text-3xl sm:text-4xl tracking-tight tabular-nums leading-none">
-                            {tier.price}
-                            <span className="text-lg ml-0.5">$</span>
-                          </p>
-                          <p className={`text-xs mt-1 ${isSelected ? 'text-[#8B6B70]' : 'text-white/60'}`}>
-                            {tier.capacityPerTicket > 1 ? `${tier.capacityPerTicket} places` : 'par personne'}
-                          </p>
-                        </div>
+                        {/* Indicateur de sélection */}
+                        <span
+                          aria-hidden="true"
+                          className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                            isSelected ? 'bg-[#F2761B] text-white' : 'ring-2 ring-white/40'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-3.5 h-3.5" strokeWidth={3.5} />}
+                        </span>
                       </div>
+
+                      <h3 className="mt-2 font-sans text-2xl sm:text-3xl font-bold tracking-tight">{tier.name}</h3>
+
+                      <p className="mt-4 flex items-baseline gap-2">
+                        <span className="font-sans font-bold tracking-tight text-5xl sm:text-6xl leading-none tabular-nums">
+                          {tier.price}
+                          <span className="text-3xl sm:text-4xl ml-1">$</span>
+                        </span>
+                        <span className={`text-sm ${isSelected ? 'text-[#8B6B70]' : 'text-white/60'}`}>
+                          {tier.capacityPerTicket > 1 ? `pour ${tier.capacityPerTicket} places` : 'par personne'}
+                        </span>
+                      </p>
+
+                      <p className={`mt-4 text-base leading-relaxed ${isSelected ? 'text-[#6B4A4F]' : 'text-white/70'}`}>
+                        {tier.description}
+                      </p>
 
                       {isSelected && tier.perks.length > 0 && (
                         <motion.ul
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                          className="mt-5 pt-5 border-t border-[#EFE5D6] space-y-2.5"
+                          className="mt-6 pt-6 border-t border-[#EFE5D6] space-y-3.5"
                         >
                           {tier.perks.map((perk, i) => (
-                            <li key={i} className="flex items-start gap-3 text-sm text-[#2A1014]">
+                            <li key={i} className="flex items-start gap-3 text-base text-[#2A1014]">
                               <span className="mt-0.5 w-5 h-5 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center shrink-0">
                                 <Check className="w-3 h-3" strokeWidth={3} />
                               </span>
@@ -241,10 +257,20 @@ Code commande : ${encodeOrderRequest(order)}`;
                   );
                 })}
 
-                <ul className="flex flex-wrap gap-x-6 gap-y-2 pt-3 text-sm text-white/75">
-                  <li className="inline-flex items-center gap-2"><Smartphone className="w-4 h-4 text-[#FFB43A]" /> Paiement guidé sur WhatsApp</li>
-                  <li className="inline-flex items-center gap-2"><Zap className="w-4 h-4 text-[#FFB43A]" /> Invitations débloquées par lien</li>
-                  <li className="inline-flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-[#FFB43A]" /> QR code personnel</li>
+                <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-3">
+                  {[
+                    { icon: <WhatsAppIcon className="w-5 h-5" />, title: 'Paiement sur WhatsApp', text: "L'équipe te guide" },
+                    { icon: <Link2 className="w-5 h-5" />, title: "Lien d'invitations", text: 'Envoyé après paiement' },
+                    { icon: <QrCode className="w-5 h-5" />, title: 'QR code personnel', text: 'Un par billet' },
+                  ].map((c) => (
+                    <li key={c.title} className="flex items-center gap-3 rounded-2xl bg-white/10 ring-1 ring-white/10 px-4 py-3">
+                      <span className="w-10 h-10 rounded-full bg-white/10 text-[#FFB43A] flex items-center justify-center shrink-0">{c.icon}</span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-white leading-tight">{c.title}</span>
+                        <span className="block text-sm text-white/60 leading-tight mt-0.5">{c.text}</span>
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
@@ -371,32 +397,32 @@ Code commande : ${encodeOrderRequest(order)}`;
               {/* Full Name */}
               <div className="space-y-2">
                 <label className="text-sm text-white/90 font-semibold block">
-                  Nom Complet du Titulaire <span className="text-red-400">*</span>
+                  Nom complet <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Princesse Kalubi Banza"
+                  placeholder="Ex. Marie Kabongo"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-base focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
-                <span className="text-xs text-stone-400">
-                  Ce nom sera inscrit sur l'invitation officielle de gala.
+                <span className="text-sm text-white/55 block">
+                  Ce nom sera inscrit sur ton invitation.
                 </span>
               </div>
 
               {/* Email */}
               <div className="space-y-2">
                 <label className="text-sm text-white/90 font-semibold block">
-                  Adresse Courriel (Optionnel)
+                  Adresse e-mail (facultatif)
                 </label>
                 <input
                   type="email"
-                  placeholder="Ex: kalubi@prestige.cd"
+                  placeholder="Ex. marie@exemple.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-base focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
               </div>
 
@@ -408,12 +434,12 @@ Code commande : ${encodeOrderRequest(order)}`;
                 <input
                   type="tel"
                   required
-                  placeholder="Ex: +243 81 555 1234"
+                  placeholder="Ex. +243 81 555 1234"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-sm focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-white/20 bg-white/10 text-white placeholder-white/40 text-base focus:border-[#FFB43A] focus:outline-none focus:ring-2 focus:ring-[#FFB43A]/30"
                 />
-                <span className="text-xs text-stone-400">
+                <span className="text-sm text-white/55 block">
                   L'équipe te répond sur ce numéro et t'envoie ton lien d'invitations.
                 </span>
               </div>
@@ -421,25 +447,20 @@ Code commande : ${encodeOrderRequest(order)}`;
             </div>
 
             {/* Visible Order Recap */}
-            <div className="p-5 rounded-3xl border border-white/15 bg-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <span className="text-xs uppercase tracking-wider text-[#D4A857]">
-                  Récapitulatif de la commande :
-                </span>
-                <p className="font-serif text-lg text-[#F9F5EC] font-semibold">
-                  {quantity}x {currentTier.name} ({currentTier.price}$ / unité)
-                </p>
-                <p className="text-xs text-stone-300">
-                  Accès pour {quantity * currentTier.capacityPerTicket} personne(s) à la soirée gala
-                </p>
-              </div>
-
-              <div className="text-right">
-                <span className="text-xs uppercase tracking-wider text-[#D4A857]/80 block">
-                  Total à payer :
-                </span>
-                <span className="font-sans font-bold tracking-tight text-3xl text-white tabular-nums">
-                  {totalAmount} USD
+            <div className="rounded-3xl bg-white/10 ring-1 ring-white/15 p-6 sm:p-7">
+              <p className="text-sm font-semibold text-white/60">Ta commande</p>
+              <p className="mt-3 font-sans font-bold tracking-tight text-xl sm:text-2xl text-white">
+                {quantity} × {currentTier.name}
+              </p>
+              <p className="mt-1 text-sm sm:text-base text-white/60">
+                {currentTier.price} $ par billet • {quantity * currentTier.capacityPerTicket}{' '}
+                {quantity * currentTier.capacityPerTicket > 1 ? 'personnes' : 'personne'} à la soirée gala
+              </p>
+              <div className="mt-5 pt-5 border-t border-white/15 flex items-baseline justify-between gap-4">
+                <span className="text-base font-semibold text-white">Total à payer</span>
+                <span className="font-sans font-bold tracking-tight text-4xl text-white tabular-nums">
+                  {totalAmount}
+                  <span className="text-2xl ml-1">$</span>
                 </span>
               </div>
             </div>
@@ -459,7 +480,7 @@ Code commande : ${encodeOrderRequest(order)}`;
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
               >
                 <span>Continuer sur WhatsApp</span>
-                <MessageCircle className="w-5 h-5" />
+                <WhatsAppIcon className="w-5 h-5" />
               </button>
             </div>
           </form>
@@ -474,13 +495,13 @@ Code commande : ${encodeOrderRequest(order)}`;
               transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
               className="w-16 h-16 rounded-full bg-[#25D366] text-[#052e16] flex items-center justify-center mx-auto shadow-[0_12px_30px_rgba(37,211,102,0.35)]"
             >
-              <MessageCircle className="w-8 h-8" />
+              <WhatsAppIcon className="w-8 h-8" />
             </motion.div>
 
             <div>
               <span className="text-sm text-[#FFB43A] font-semibold block mb-1">Commande enregistrée</span>
               <h2 className="font-sans font-bold tracking-tight text-white text-3xl sm:text-4xl">
-                Dernière étape : WhatsApp
+                Dernière étape&nbsp;: WhatsApp
               </h2>
               <p className="text-base text-white/75 max-w-md mx-auto mt-2">
                 Envoie ta commande à l'équipe pour finaliser le paiement. Si WhatsApp ne s'est pas ouvert, utilise le bouton ci-dessous.
@@ -493,7 +514,7 @@ Code commande : ${encodeOrderRequest(order)}`;
               rel="noopener noreferrer"
               className="w-full max-w-md mx-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#25D366] text-[#052e16] font-bold text-base shadow-[0_12px_30px_rgba(37,211,102,0.35)] hover:bg-[#20ba59] transition-colors"
             >
-              <MessageCircle className="w-5 h-5" />
+              <WhatsAppIcon className="w-5 h-5" />
               <span>Ouvrir WhatsApp</span>
             </a>
 
@@ -555,15 +576,12 @@ const TicketPreview: React.FC<{ name: string; badge: string; dateText: string; q
           <p className="text-sm text-white/80 mt-1">{dateText}</p>
         </div>
         <div className="mx-5 border-t border-dashed border-white/35" />
-        <div className="p-5 pt-5 flex items-center justify-between">
+        <div className="p-5 pt-5">
           <div>
             <p className="text-xs text-white/70">Billet</p>
             <p className="text-sm font-semibold">{badge}</p>
             <p className="text-xs text-[#FFD9A0] mt-0.5">× {quantity}</p>
           </div>
-          <span className="h-14 w-24 rounded-xl bg-white flex items-center justify-center px-3">
-            <img src="/ticket-logo.png" alt="" className="max-h-9 w-full object-contain" />
-          </span>
         </div>
       </div>
     </div>

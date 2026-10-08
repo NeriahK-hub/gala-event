@@ -6,7 +6,6 @@ import {
   Clock,
   Download,
   Info,
-  MessageCircle,
   Ticket,
   Share2,
 } from 'lucide-react';
@@ -15,6 +14,7 @@ import { useContent } from '../../content/ContentContext';
 import { QRCodeSvg } from './QRCodeSvg';
 import { Reveal } from '../common/Reveal';
 import { downloadInvitation, renderInvitation } from '../../lib/invitationImage';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 interface TicketViewPageProps {
   /** Commande à afficher ; null = liste « Mes billets » */
@@ -81,7 +81,7 @@ const MyTickets: React.FC<{
             </div>
             <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Tes invitations arrivent par lien</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
-              Une fois ton paiement confirmé, l'équipe t'envoie un lien sur WhatsApp. Ouvre-le : tes invitations avec QR code s'affichent ici, prêtes à être présentées à l'entrée.
+              Une fois ton paiement confirmé, l'équipe t'envoie un lien sur WhatsApp. Ouvre-le&nbsp;: tes invitations avec QR code s'affichent ici, prêtes à être présentées à l'entrée.
             </p>
             <a
               href={`https://wa.me/${digits(content.galaInfo.whatsappNumber)}`}
@@ -89,7 +89,7 @@ const MyTickets: React.FC<{
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
             >
-              <MessageCircle className="w-5 h-5" /> Écrire à l'équipe
+              <WhatsAppIcon className="w-5 h-5" /> Écrire à l'équipe
             </a>
           </div>
         ) : (
@@ -210,7 +210,7 @@ const ReservationDetails: React.FC<{
             </span>
             <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Ton billet arrive bientôt</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">
-              Continue la conversation WhatsApp avec l'équipe pour finaliser le paiement. Dès qu'il est confirmé, tu reçois un lien : en cliquant dessus, tes invitations avec QR code s'affichent.
+              Continue la conversation WhatsApp avec l'équipe pour finaliser le paiement. Dès qu'il est confirmé, tu reçois un lien&nbsp;: en cliquant dessus, tes invitations avec QR code s'affichent.
             </p>
             <dl className="rounded-2xl bg-white border border-[#EFE5D6] p-4 text-sm text-left space-y-2 mb-5">
               <Row k="Commande" v={order.id} mono />
@@ -223,7 +223,7 @@ const ReservationDetails: React.FC<{
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
             >
-              <MessageCircle className="w-5 h-5" /> Contacter l'équipe
+              <WhatsAppIcon className="w-5 h-5" /> Contacter l'équipe
             </a>
           </div>
         )}
@@ -242,7 +242,7 @@ const ReservationDetails: React.FC<{
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59]"
             >
-              <MessageCircle className="w-5 h-5" /> Régulariser sur WhatsApp
+              <WhatsAppIcon className="w-5 h-5" /> Régulariser sur WhatsApp
             </a>
           </div>
         )}
@@ -350,7 +350,7 @@ const ReservationDetails: React.FC<{
                 rel="noopener noreferrer"
                 className="py-3.5 rounded-xl border-2 border-white/70 text-white text-center font-semibold hover:bg-white/10 inline-flex items-center justify-center gap-2"
               >
-                <MessageCircle className="w-4 h-4" /> Aide
+                <WhatsAppIcon className="w-4 h-4" /> Aide
               </a>
               <button
                 onClick={() => download([ticket])}

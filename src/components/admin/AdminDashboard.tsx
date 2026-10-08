@@ -14,7 +14,6 @@ import {
   FileEdit,
   LayoutDashboard,
   ListOrdered,
-  MessageCircle,
   Menu,
   ScanLine,
   Search,
@@ -29,6 +28,7 @@ import { ContentEditor } from './ContentEditor';
 import { Modal } from './Modal';
 import { AddOrderModal } from './AddOrderModal';
 import { buildTicketLink } from '../../lib/ticketLink';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 interface AdminDashboardProps {
   orders: Order[];
@@ -154,7 +154,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const whatsAppUrl = (order: Order) => {
-    const message = `Bonjour ${order.customerName},\n\nTon paiement est bien confirmé. Voici ton lien pour accéder à tes ${order.quantity > 1 ? `${order.quantity} invitations` : 'invitation'} avec QR code :\n\n${buildTicketLink(order)}\n\nPrésente le QR code à l'entrée le ${content.galaInfo.dateText}. À très bientôt !`;
+    const message = `Bonjour ${order.customerName},\n\nTon paiement est bien confirmé. Voici ton lien pour accéder à tes ${order.quantity > 1 ? `${order.quantity} invitations` : 'invitation'} avec QR code :\n\n${buildTicketLink(order)}\n\n_Ouvre ce lien depuis ton téléphone._\nPrésente le QR code à l'entrée le ${content.galaInfo.dateText}. À très bientôt !`;
     return `https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
   };
 
@@ -525,7 +525,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 type="submit"
                 className="w-full py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
               >
-                Paiement reçu : générer le lien
+                Paiement reçu&nbsp;: générer le lien
               </button>
             </form>
           ) : (
@@ -565,7 +565,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold text-sm hover:bg-[#20ba59]"
               >
-                <MessageCircle className="w-5 h-5" /> Envoyer le lien sur WhatsApp
+                <WhatsAppIcon className="w-5 h-5" /> Envoyer le lien sur WhatsApp
               </a>
               <a
                 href={buildTicketLink(validatingOrder)}

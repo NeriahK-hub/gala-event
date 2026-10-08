@@ -1,8 +1,9 @@
 import React from 'react';
-import { Instagram, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { Reveal } from '../common/Reveal';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 export const TeamContactSection: React.FC = () => {
   const { content, t } = useContent();
@@ -31,7 +32,7 @@ export const TeamContactSection: React.FC = () => {
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#25D366] text-[#052e16] font-bold hover:bg-[#20ba59] transition-colors"
           >
-            <MessageCircle className="w-5 h-5" />
+            <WhatsAppIcon className="w-5 h-5" />
             {t('contact.whatsapp')}
           </a>
           {galaInfo.contactEmail && (

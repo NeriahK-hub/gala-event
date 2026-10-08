@@ -46,9 +46,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
   }, [isHome]);
 
   const handleNavClick = (id: string) => {
-    onNavigateSection(id);
-    setMobileMenuOpen(false);
+    if (mobileMenuOpen) {
+      // On referme d'abord le menu : lancer le défilement pendant sa fermeture l'annule sur mobile
+      setMobileMenuOpen(false);
+      window.setTimeout(() => onNavigateSection(id), 380);
+    } else {
+      onNavigateSection(id);
+    }
   };
+
 
   return (
     <motion.header

@@ -13,7 +13,6 @@ import {
   ArrowRight,
   Minus,
   Plus,
-  QrCode,
   Smartphone,
   Zap,
   MessageCircle,
@@ -562,8 +561,8 @@ const TicketPreview: React.FC<{ name: string; badge: string; dateText: string; q
             <p className="text-sm font-semibold">{badge}</p>
             <p className="text-xs text-[#FFD9A0] mt-0.5">× {quantity}</p>
           </div>
-          <span className="w-14 h-14 rounded-xl bg-white/90 text-[#5A040F] flex items-center justify-center">
-            <QrCode className="w-9 h-9" />
+          <span className="h-14 w-24 rounded-xl bg-white flex items-center justify-center px-3">
+            <img src="/ticket-logo.png" alt="" className="max-h-9 w-full object-contain" />
           </span>
         </div>
       </div>

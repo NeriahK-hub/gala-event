@@ -121,7 +121,7 @@ export const TEXT_FIELDS: TextField[] = [
   f('venue.gpsUrl', 'venue', 'Lien Google Maps', 'https://maps.google.com/?q=Kinshasa'),
 
   // Partenaires
-  f('sponsors.title', 'sponsors', 'Titre', 'Une organisation'),
+  f('sponsors.title', 'sponsors', 'Titre', 'Partenaires & collaborateurs'),
 
   // FAQ
   f('faq.kicker', 'faq', 'Petit titre', 'Aide'),

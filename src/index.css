@@ -194,3 +194,20 @@ p, li, dd, h1, h2, h3 {
 h1, h2, h3 {
   text-wrap: balance;
 }
+
+/* Bandeau de logos qui défile (partenaires) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur, 40s) linear infinite;
+}
+.marquee-reverse {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}

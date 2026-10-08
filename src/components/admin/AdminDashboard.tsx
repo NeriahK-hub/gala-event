@@ -18,7 +18,7 @@ import {
   Menu,
   ScanLine,
   Search,
-  TicketCheck,
+  Ticket,
   XCircle,
 } from 'lucide-react';
 import { Order, OrderStatus } from '../../types';
@@ -275,7 +275,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <Kpi
-                  icon={<TicketCheck className="w-5 h-5" />}
+                  icon={<Ticket className="w-5 h-5" />}
                   label="Billets vendus"
                   value={String(soldTickets)}
                   sub={soldTickets > 1 ? 'billets validés' : 'billet validé'}

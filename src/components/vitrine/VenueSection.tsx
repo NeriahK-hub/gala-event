@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ExternalLink, MapPin, Phone, Shirt, TicketCheck } from 'lucide-react';
+import { Clock, ExternalLink, MapPin, Phone, Shirt, Ticket } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { SectionHeader } from '../common/SectionHeader';
 import { Reveal } from '../common/Reveal';
@@ -10,7 +10,7 @@ export const VenueSection: React.FC = () => {
 
   const items = [
     { icon: <Clock className="w-5 h-5" />, title: t('venue.info1.title'), text: t('venue.info1.text') },
-    { icon: <TicketCheck className="w-5 h-5" />, title: t('venue.info2.title'), text: t('venue.info2.text') },
+    { icon: <Ticket className="w-5 h-5" />, title: t('venue.info2.title'), text: t('venue.info2.text') },
     { icon: <Shirt className="w-5 h-5" />, title: t('venue.info3.title'), text: t('venue.info3.text') },
     { icon: <Phone className="w-5 h-5" />, title: t('venue.info4.title'), text: t('venue.info4.text') },
   ];

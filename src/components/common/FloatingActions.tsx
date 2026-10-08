@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUp, TicketCheck } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
+import { TicketIcon } from './TicketIcon';
 import { useContent } from '../../content/ContentContext';
 
 interface FloatingActionsProps {
@@ -35,7 +36,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({ onReserve }) =
           onClick={onReserve}
           className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm shadow-lg cursor-pointer"
         >
-          <TicketCheck className="w-5 h-5" />
+          <TicketIcon className="w-11 h-[1.15rem]" />
           <span>{t('nav.ctaMobile')}</span>
         </button>
       </div>

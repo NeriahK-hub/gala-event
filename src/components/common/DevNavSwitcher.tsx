@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, TicketCheck, QrCode, Shield, Layers } from 'lucide-react';
+import { Globe, Ticket, QrCode, Shield, Layers } from 'lucide-react';
 
 export type ActiveView = 'vitrine' | 'reservation' | 'tickets' | 'admin';
 
@@ -16,7 +16,7 @@ export const DevNavSwitcher: React.FC<DevNavSwitcherProps> = ({
 }) => {
   const views: { id: ActiveView; label: string; icon: React.ReactNode }[] = [
     { id: 'vitrine', label: '1. Vitrine', icon: <Globe className="w-3.5 h-3.5" /> },
-    { id: 'reservation', label: '2. Réservation', icon: <TicketCheck className="w-3.5 h-3.5" /> },
+    { id: 'reservation', label: '2. Réservation', icon: <Ticket className="w-3.5 h-3.5" /> },
     { id: 'tickets', label: '3. Billets (Client)', icon: <QrCode className="w-3.5 h-3.5" /> },
     { id: 'admin', label: '4. Espace Équipe', icon: <Shield className="w-3.5 h-3.5" /> },
   ];

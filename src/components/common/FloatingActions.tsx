@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUp, Ticket } from 'lucide-react';
+import { ArrowUp, TicketCheck } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 
 interface FloatingActionsProps {
@@ -35,7 +35,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({ onReserve }) =
           onClick={onReserve}
           className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm shadow-lg cursor-pointer"
         >
-          <Ticket className="w-5 h-5" />
+          <TicketCheck className="w-5 h-5" />
           <span>{t('nav.ctaMobile')}</span>
         </button>
       </div>

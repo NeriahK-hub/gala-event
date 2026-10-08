@@ -186,3 +186,11 @@ button:not(:disabled):active,
 a[class*='rounded-full']:active {
   scale: 0.97;
 }
+
+/* Coupures de lignes plus propres : évite les mots ou signes isolés en fin/début de ligne */
+p, li, dd, h1, h2, h3 {
+  text-wrap: pretty;
+}
+h1, h2, h3 {
+  text-wrap: balance;
+}

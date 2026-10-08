@@ -7,7 +7,7 @@ import {
   Download,
   Info,
   MessageCircle,
-  Ticket,
+  TicketCheck,
   Share2,
 } from 'lucide-react';
 import { IssuedTicket, Order, OrderStatus } from '../../types';
@@ -77,7 +77,7 @@ const MyTickets: React.FC<{
         {savedOrders.length === 0 ? (
           <div className="rounded-3xl bg-[#FBF8F2] text-[#2A1014] p-6 sm:p-8 shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-[#F2761B]/15 text-[#D8590B] flex items-center justify-center mb-4">
-              <Ticket className="w-6 h-6" />
+              <TicketCheck className="w-6 h-6" />
             </div>
             <h2 className="font-sans text-2xl font-bold tracking-tight mb-2">Tes invitations arrivent par lien</h2>
             <p className="text-sm text-[#6B4A4F] leading-relaxed mb-5">

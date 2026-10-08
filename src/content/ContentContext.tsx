@@ -11,6 +11,26 @@ import {
 } from '../data/mockData';
 import { DEFAULT_TEXTS } from './textSchema';
 
+const NBSP = '\u00A0';
+
+// Typographie française : espace insécable avant : ; ! ? $ et à l'intérieur des guillemets « »
+// (évite qu'un « : » ou un « $ » se retrouve seul au début d'une ligne)
+const frTypo = (text: string): string => {
+  if (/^(https?:|data:|mailto:)/.test(text)) return text;
+  return text
+    .replace(/ ([:;!?$»%])/g, NBSP + '$1')
+    .replace(/(«) /g, '$1' + NBSP);
+};
+
+const normalizeDeep = <T,>(value: T): T => {
+  if (typeof value === 'string') return frTypo(value) as unknown as T;
+  if (Array.isArray(value)) return value.map(normalizeDeep) as unknown as T;
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, normalizeDeep(v)])) as T;
+  }
+  return value;
+};
+
 const STORAGE_KEY = 'gala-site-content-v2';
 
 export const createDefaultContent = (): SiteContent => ({
@@ -101,16 +121,18 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setContentState(createDefaultContent());
   }, []);
 
+  const display = useMemo(() => normalizeDeep(content), [content]);
+
   const value = useMemo<ContentContextValue>(
     () => ({
-      content,
-      t: (key: string) => content.texts[key] ?? DEFAULT_TEXTS[key] ?? '',
+      content: display,
+      t: (key: string) => display.texts[key] ?? frTypo(DEFAULT_TEXTS[key] ?? ''),
       setContent,
       replaceContent,
       resetAll,
       isCustomized,
     }),
-    [content, setContent, replaceContent, resetAll, isCustomized]
+    [display, setContent, replaceContent, resetAll, isCustomized]
   );
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

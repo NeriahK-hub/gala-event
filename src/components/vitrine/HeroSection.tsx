@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ChevronDown, MapPin, Phone, Ticket } from 'lucide-react';
+import { Calendar, ChevronDown, MapPin, Phone, TicketCheck } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { Reveal } from '../common/Reveal';
@@ -101,7 +101,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserveClick, onExpl
             onClick={onReserveClick}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-extrabold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
           >
-            <Ticket className="w-5 h-5" />
+            <TicketCheck className="w-5 h-5" />
             {t('hero.cta')}
           </button>
           <a

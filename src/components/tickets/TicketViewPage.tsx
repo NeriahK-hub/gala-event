@@ -142,13 +142,11 @@ const ReservationDetails: React.FC<{
   const ticket: IssuedTicket | undefined = order.tickets[index];
   const place = [info.venueName, info.city].filter(Boolean).join(', ');
 
-  const price = order.tickets.length ? order.unitPrice || order.totalAmount / order.tickets.length : 0;
-
   const download = async (list: IssuedTicket[]) => {
     setDownloading(true);
     try {
       for (let i = 0; i < list.length; i++) {
-        await downloadInvitation({ ticket: list[i], info, price });
+        await downloadInvitation({ ticket: list[i], info });
         if (i < list.length - 1) await new Promise((r) => setTimeout(r, 450));
       }
     } finally {
@@ -326,7 +324,7 @@ const ReservationDetails: React.FC<{
               </p>
             </Reveal>
 
-            <InvitationPreview ticket={ticket} info={info} price={price} />
+            <InvitationPreview ticket={ticket} info={info} />
             {order.tickets.length > 1 && (
               <button
                 onClick={() => download(order.tickets)}
@@ -388,23 +386,19 @@ const Row: React.FC<{ k: string; v: string; mono?: boolean; strong?: boolean }> 
 );
 
 // Aperçu de l'invitation qui sera téléchargée
-const InvitationPreview: React.FC<{ ticket: IssuedTicket; info: ReturnType<typeof useContent>['content']['galaInfo']; price: number }> = ({
-  ticket,
-  info,
-  price,
-}) => {
+const InvitationPreview: React.FC<{ ticket: IssuedTicket; info: ReturnType<typeof useContent>['content']['galaInfo'] }> = ({ ticket, info }) => {
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setSrc(null);
-    renderInvitation({ ticket, info, price })
+    renderInvitation({ ticket, info })
       .then((c) => !cancelled && setSrc(c.toDataURL('image/png')))
       .catch(() => !cancelled && setSrc(null));
     return () => {
       cancelled = true;
     };
-  }, [ticket, info, price]);
+  }, [ticket, info]);
 
   return (
     <Reveal immediate delay={0.35} className="rounded-2xl overflow-hidden shadow-xl bg-black/30 print:hidden">

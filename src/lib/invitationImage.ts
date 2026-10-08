@@ -13,7 +13,6 @@ const SCRIPT = '"Great Vibes", "Pinyon Script", cursive';
 interface InvitationData {
   ticket: IssuedTicket;
   info: GalaInfo;
-  price: number;
 }
 
 const loadFonts = async () => {
@@ -55,7 +54,7 @@ const fitText = (
   ctx.restore();
 };
 
-export const renderInvitation = async ({ ticket, info, price }: InvitationData): Promise<HTMLCanvasElement> => {
+export const renderInvitation = async ({ ticket, info }: InvitationData): Promise<HTMLCanvasElement> => {
   await loadFonts();
   const canvas = document.createElement('canvas');
   canvas.width = W;
@@ -169,37 +168,6 @@ export const renderInvitation = async ({ ticket, info, price }: InvitationData):
   ctx.font = `600 32px ${SANS}`;
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillText(`${info.dateText}  •  ${info.city}`, x0 + 2, py + 76);
-
-  // bloc orange : prix
-  const bw = 430;
-  const bh = 134;
-  const bx = 1934 - bw;
-  const by = 556;
-  const orange = ctx.createLinearGradient(bx, by, bx, by + bh);
-  orange.addColorStop(0, '#FFA82E');
-  orange.addColorStop(1, '#F2851A');
-  ctx.fillStyle = orange;
-  ctx.fillRect(bx, by, bw, bh);
-
-  ctx.fillStyle = '#FFFFFF';
-  ctx.textBaseline = 'middle';
-  ctx.font = `800 96px ${SANS}`;
-  const priceText = `${price}$`;
-  const priceW = ctx.measureText(priceText).width;
-  ctx.fillText(priceText, bx + 24, by + bh / 2 + 4);
-
-  // petit texte : la taille s'adapte pour rester dans le bloc
-  const textX = bx + 24 + priceW + 20;
-  const maxW = bx + bw - 14 - textX;
-  const lines = ['Billet nominatif', 'Soirée de Gala', `${ticket.ticketIndex}/${ticket.totalTickets}`];
-  let size = 28;
-  do {
-    ctx.font = `700 ${size}px ${SANS}`;
-    size -= 1;
-  } while (size > 14 && Math.max(...lines.map((l) => ctx.measureText(l).width)) > maxW);
-  ctx.fillStyle = '#3D0A04';
-  lines.forEach((l, i) => ctx.fillText(l, textX, by + 36 + i * (size + 8)));
-  ctx.textBaseline = 'alphabetic';
 
   return canvas;
 };

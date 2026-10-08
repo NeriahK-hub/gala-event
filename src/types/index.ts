@@ -49,6 +49,8 @@ export interface PartnerSponsor {
   name: string;
   category: string;
   logoText: string;
+  /** Logo ou image de la structure (lien ou image importée) */
+  logoUrl?: string;
   tagline?: string;
 }
 

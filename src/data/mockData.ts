@@ -89,9 +89,9 @@ export const GUEST_ARTISTS: GuestArtist[] = [];
 export const GALLERY_ITEMS: GalleryItem[] = [];
 
 export const PARTNERS_SPONSORS: PartnerSponsor[] = [
-  { id: 'sp-1', name: 'Empire Informatique', category: 'Organisateur', logoText: 'EMPIRE INFORMATIQUE' },
-  { id: 'sp-2', name: 'Université de Kinshasa', category: 'Partenaire', logoText: 'UNIVERSITÉ DE KINSHASA' },
-  { id: 'sp-3', name: 'Manasse Design', category: 'Design graphique', logoText: 'MANASSE DESIGN' },
+  { id: 'sp-1', name: 'Empire Informatique', category: 'Organisateur', logoText: 'Empire Informatique', logoUrl: '/logo-empire.png' },
+  { id: 'sp-2', name: 'Université de Kinshasa', category: 'Partenaire', logoText: 'Université de Kinshasa', logoUrl: '/partners/universite-de-kinshasa.png' },
+  { id: 'sp-3', name: 'Manasse Design', category: 'Design graphique', logoText: 'Manasse Design', logoUrl: '/partners/manasse-design.svg' },
 ];
 
 export const FAQ_ITEMS: FaqItem[] = [

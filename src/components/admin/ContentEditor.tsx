@@ -98,6 +98,7 @@ const galleryFields: FieldDef<GalleryItem>[] = [
 
 const sponsorFields: FieldDef<PartnerSponsor>[] = [
   { key: 'logoText', label: 'Nom affiché' },
+  { key: 'logoUrl', label: 'Logo ou image', type: 'image' },
   { key: 'category', label: 'Catégorie' },
   { key: 'name', label: 'Nom complet (interne)' },
 ];

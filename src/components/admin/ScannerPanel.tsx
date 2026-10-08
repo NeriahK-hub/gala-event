@@ -109,7 +109,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
 
         {testable.length > 0 && (
           <div className="mt-5">
-            <p className="text-xs text-stone-400 mb-2">Billets de démonstration (un clic remplit le champ) :</p>
+            <p className="text-xs text-stone-400 mb-2">Billets de démonstration (un clic remplit le champ)&nbsp;:</p>
             <div className="flex flex-wrap gap-2">
               {testable.map(({ ticket }) => (
                 <button

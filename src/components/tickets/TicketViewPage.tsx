@@ -186,7 +186,7 @@ const ReservationDetails: React.FC<{
 
         {isDemo() && (
           <div className="mb-4 flex items-center gap-2 p-1.5 rounded-full bg-black/40 text-xs print:hidden">
-            <span className="px-2 text-[#FFD9A0]">Démo :</span>
+            <span className="px-2 text-[#FFD9A0]">Démo&nbsp;:</span>
             {(['pending', 'validated', 'rejected'] as OrderStatus[]).map((s) => (
               <button
                 key={s}
@@ -320,7 +320,7 @@ const ReservationDetails: React.FC<{
                 )}
               </div>
               <p className="mt-3 text-xs text-[#8B6B70]">
-                Code de sécurité : <span className="font-mono font-semibold text-[#2A1014]">{ticket.securityCode}</span>
+                Code de sécurité&nbsp;: <span className="font-mono font-semibold text-[#2A1014]">{ticket.securityCode}</span>
               </p>
             </Reveal>
 
@@ -338,7 +338,7 @@ const ReservationDetails: React.FC<{
             <p className="flex gap-2 text-xs text-white/90 leading-relaxed px-1">
               <Info className="w-4 h-4 shrink-0 mt-0.5 text-[#FFD9A0]" />
               <span>
-                <strong className="text-[#FFD9A0]">À savoir :</strong> présente simplement ce QR code à l'entrée. Un seul passage par billet.
+                <strong className="text-[#FFD9A0]">À savoir&nbsp;:</strong> présente simplement ce QR code à l'entrée. Un seul passage par billet.
               </span>
             </p>
 

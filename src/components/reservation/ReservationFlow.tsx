@@ -531,7 +531,7 @@ Code commande :
             {/* Comment ça se passe ensuite */}
             <ol className="max-w-md mx-auto text-left space-y-4">
               {[
-                ['Tu envoies ta commande', "Le message est déjà prêt : il suffit de l'envoyer sur WhatsApp."],
+                ['Tu envoies ta commande', "Le message est déjà prêt\u00A0: il suffit de l'envoyer sur WhatsApp."],
                 ["Tu paies avec l'équipe", "Elle t'indique comment payer et confirme ton paiement dans la conversation."],
                 ['Tu reçois ton lien', "Un clic dessus et tes invitations avec QR code s'affichent."],
               ].map(([title, text], i) => (

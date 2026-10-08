@@ -83,18 +83,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserveClick, onExpl
           )}
         </Reveal>
 
-        <Reveal immediate delay={0.48} className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm sm:text-base text-[#FFE9C2] mb-6">
-          <span className="inline-flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#FFB43A]" />
-            <span className="font-semibold">{info.dateText}</span>
-            {info.timeText && <span className="text-[#FFD9A0]">({info.timeText})</span>}
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#FFB43A]" />
+        <Reveal
+          immediate
+          delay={0.48}
+          className="flex flex-col sm:flex-row items-center sm:items-start justify-center gap-3 sm:gap-x-10 text-base text-[#FFE9C2] mb-7 px-2"
+        >
+          <p className="flex items-start gap-2.5 text-left max-w-full">
+            <Calendar className="w-5 h-5 mt-0.5 text-[#FFB43A] shrink-0" />
             <span>
-              {[info.venueName, info.city].filter(Boolean).join(', ')}
+              <span className="font-semibold">{info.dateText}</span>
+              {info.timeText && <span className="block sm:inline sm:ml-2 text-[#FFD9A0]">({info.timeText})</span>}
             </span>
-          </span>
+          </p>
+          <p className="flex items-start gap-2.5 text-left max-w-full">
+            <MapPin className="w-5 h-5 mt-0.5 text-[#FFB43A] shrink-0" />
+            <span>{[info.venueName, info.city].filter(Boolean).join(', ')}</span>
+          </p>
         </Reveal>
 
         <Reveal immediate delay={0.56} className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">

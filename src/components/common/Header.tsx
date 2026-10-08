@@ -62,14 +62,14 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="fixed top-0 left-0 right-0 z-50 bg-[#6A0511]/90 backdrop-blur-md border-b border-[#E8C98A]/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 min-[380px]:gap-4">
         <button
           onClick={() => handleNavClick('hero')}
           aria-label="Retour en haut de la page"
           className="flex items-center gap-3 text-left group cursor-pointer"
         >
           <EmpireLogo size={40} className="hidden sm:block" />
-          <span className="font-sans font-bold tracking-tight text-lg sm:text-xl text-white whitespace-nowrap">
+          <span className="font-sans font-bold tracking-tight text-base min-[380px]:text-lg sm:text-xl text-white whitespace-nowrap">
             {t('nav.brand')}
           </span>
         </button>
@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="flex items-center gap-2 lg:hidden">
           <button
             onClick={onOpenReservation}
-            className="sm:hidden px-3.5 py-2 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold uppercase tracking-wider cursor-pointer"
+            className="sm:hidden max-[339px]:hidden px-3 min-[380px]:px-3.5 py-2 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             {t('nav.cta')}
           </button>

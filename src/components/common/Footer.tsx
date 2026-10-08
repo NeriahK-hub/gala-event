@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenAdmin, 
   ];
 
   return (
-    <footer className="relative bg-black/30 text-white pt-16 sm:pt-20 pb-28 sm:pb-12 px-4 sm:px-6 lg:px-8">
+    <footer className="relative bg-black/30 text-white pt-16 sm:pt-20 pb-32 sm:pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 pb-10 border-b border-white/15">
           <EmpireLogo size={72} />

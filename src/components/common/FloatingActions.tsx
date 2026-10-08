@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
 import { TicketIcon } from './TicketIcon';
 import { useContent } from '../../content/ContentContext';
@@ -31,15 +32,22 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({ onReserve }) =
         <ArrowUp className="w-5 h-5" />
       </button>
 
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-gradient-to-t from-[#4A030C] via-[#4A030C]/95 to-transparent">
+      {/* Bouton flottant (mobile) : respecte la zone sûre de l'iPhone, aucun bandeau derrière */}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="sm:hidden fixed inset-x-4 z-40 pointer-events-none"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+      >
         <button
           onClick={onReserve}
-          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm shadow-lg cursor-pointer"
+          className="pointer-events-auto mx-auto flex w-full max-w-sm items-center justify-center gap-2.5 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_14px_34px_rgba(0,0,0,0.45)] ring-1 ring-white/25 cursor-pointer"
         >
           <TicketIcon className="w-11 h-[1.15rem]" />
           <span>{t('nav.ctaMobile')}</span>
         </button>
-      </div>
+      </motion.div>
     </>
   );
 };

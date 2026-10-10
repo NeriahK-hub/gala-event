@@ -7,17 +7,17 @@ import { WhatsAppIcon } from '../common/WhatsAppIcon';
 import { useAdminAuth } from './AdminAuth';
 import { Modal } from './Modal';
 
-const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
+const panel = 'rounded-2xl border border-white/[0.07] bg-white/[0.025]';
 const field =
-  'w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20';
+  'w-full px-3.5 py-3 rounded-lg border border-white/10 bg-black/20 text-sm text-stone-100 placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10';
 const btn = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm cursor-pointer';
-const primary = `${btn} bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold hover:brightness-110`;
+const primary = `${btn} bg-[#E6C78A] text-[#2B1B0A] font-bold hover:bg-[#EFD6A2]`;
 const ghost = `${btn} border border-white/20 text-stone-100 hover:bg-white/10`;
 
 const ROLE_BADGE: Record<AdminRole, string> = {
   super: 'bg-violet-500/15 text-violet-200 border-violet-400/30',
-  owner: 'bg-[#E8C98A]/15 text-[#F3E5AB] border-[#E8C98A]/30',
-  admin: 'bg-white/10 text-stone-200 border-white/15',
+  owner: 'bg-[#E6C78A]/10 text-stone-100 border-[#E8C98A]/30',
+  admin: 'bg-white/10 text-stone-200 border-white/10',
 };
 
 const scanUrl = (token: string) => `${window.location.origin}${window.location.pathname}?scan=${token}`;
@@ -81,7 +81,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
       <section className={`${panel} p-5 sm:p-6`}>
         <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
           <div>
-            <h2 className="font-semibold text-[#F3E5AB] flex items-center gap-2">
+            <h2 className="font-semibold text-stone-100 flex items-center gap-2">
               <Users className="w-4 h-4" /> Comptes de la console
             </h2>
             <p className="text-sm text-stone-400 mt-1">
@@ -104,7 +104,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
           {accounts.map((a) => (
             <li key={a.id} className="py-4">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                <p className={`font-semibold ${a.active ? 'text-[#F9F5EC]' : 'text-stone-500 line-through'}`}>{a.name}</p>
+                <p className={`font-semibold ${a.active ? 'text-stone-100' : 'text-stone-500 line-through'}`}>{a.name}</p>
                 <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${ROLE_BADGE[a.role]}`}>{ROLE_LABELS[a.role]}</span>
                 {a.id === current?.id && <span className="text-xs text-emerald-300">C'est toi</span>}
                 {!a.active && <span className="text-xs text-red-300">Suspendu</span>}
@@ -147,7 +147,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
                         aria-pressed={on}
                         onClick={() => togglePermission(a, p.id)}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors disabled:cursor-default cursor-pointer ${
-                          on ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200' : 'border-white/15 text-stone-500 hover:text-stone-300'
+                          on ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200' : 'border-white/10 text-stone-500 hover:text-stone-300'
                         }`}
                       >
                         {on && <Check className="w-3.5 h-3.5" />}
@@ -166,7 +166,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
 
       {/* ===== Liens de scan ===== */}
       <section className={`${panel} p-5 sm:p-6`}>
-        <h2 className="font-semibold text-[#F3E5AB] flex items-center gap-2">
+        <h2 className="font-semibold text-stone-100 flex items-center gap-2">
           <ScanLine className="w-4 h-4" /> Liens de contrôle d'entrée
         </h2>
         <p className="text-sm text-stone-400 mt-1 mb-4">
@@ -187,8 +187,8 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
             {scanLinks.map((l) => (
               <li key={l.id} className="rounded-xl bg-black/25 p-4">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <Link2 className="w-4 h-4 text-[#E8C98A]" />
-                  <p className={`font-semibold ${l.active ? 'text-[#F9F5EC]' : 'text-stone-500 line-through'}`}>{l.label}</p>
+                  <Link2 className="w-4 h-4 text-[#E6C78A]" />
+                  <p className={`font-semibold ${l.active ? 'text-stone-100' : 'text-stone-500 line-through'}`}>{l.label}</p>
                   <span className="text-xs text-stone-400">
                     {l.scanCount} entrée{l.scanCount > 1 ? 's' : ''}
                     {l.lastUsedAt ? ` · dernier scan ${l.lastUsedAt}` : ''}
@@ -224,7 +224,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
 
       {/* ===== Historique ===== */}
       <section className={`${panel} p-5 sm:p-6`}>
-        <h2 className="font-semibold text-[#F3E5AB] flex items-center gap-2 mb-4">
+        <h2 className="font-semibold text-stone-100 flex items-center gap-2 mb-4">
           <History className="w-4 h-4" /> Historique des actions
         </h2>
         {activity.length === 0 ? (
@@ -235,7 +235,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
               <li key={e.id} className="flex gap-3 text-sm">
                 <span className="shrink-0 w-32 text-xs text-stone-500 tabular-nums pt-0.5">{e.at}</span>
                 <p className="text-stone-300">
-                  <strong className="text-[#F9F5EC] font-semibold">{e.actor}</strong> {e.action.charAt(0).toLowerCase() + e.action.slice(1)}
+                  <strong className="text-stone-100 font-semibold">{e.actor}</strong> {e.action.charAt(0).toLowerCase() + e.action.slice(1)}
                 </p>
               </li>
             ))}
@@ -268,16 +268,16 @@ const CreateAccountModal: React.FC<{ role: AdminRole; onClose: () => void; notif
     <Modal onClose={onClose} title={role === 'owner' ? 'Créer l\'admin n°1' : 'Ajouter un admin'} kicker="Nouveau compte">
       <form onSubmit={submit} className="space-y-4">
         <label className="block">
-          <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Nom</span>
+          <span className="block text-xs font-semibold text-[#E6C78A] mb-1.5">Nom</span>
           <input autoFocus value={name} onChange={(e) => { setName(e.target.value); setError(''); }} placeholder="Ex. Christelle" className={field} />
         </label>
         <label className="block">
-          <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Code d'accès (à lui transmettre)</span>
+          <span className="block text-xs font-semibold text-[#E6C78A] mb-1.5">Code d'accès (à lui transmettre)</span>
           <input value={code} onChange={(e) => { setCode(e.target.value); setError(''); }} placeholder="Au moins 4 caractères" autoComplete="off" className={`${field} font-mono`} />
         </label>
         {role === 'admin' ? (
           <fieldset>
-            <legend className="text-xs font-semibold text-[#E8C98A] mb-2">Ce qu'il peut faire</legend>
+            <legend className="text-xs font-semibold text-[#E6C78A] mb-2">Ce qu'il peut faire</legend>
             <div className="space-y-2">
               {ALL_PERMISSIONS.map((p) => (
                 <label key={p.id} className="flex items-start gap-3 rounded-lg bg-black/25 p-3 cursor-pointer">
@@ -285,10 +285,10 @@ const CreateAccountModal: React.FC<{ role: AdminRole; onClose: () => void; notif
                     type="checkbox"
                     checked={perms.includes(p.id)}
                     onChange={() => setPerms((cur) => (cur.includes(p.id) ? cur.filter((x) => x !== p.id) : [...cur, p.id]))}
-                    className="mt-0.5 w-4 h-4 accent-[#F2761B]"
+                    className="mt-0.5 w-4 h-4 accent-[#E6C78A]"
                   />
                   <span>
-                    <span className="block text-sm text-[#F9F5EC]">{p.label}</span>
+                    <span className="block text-sm text-stone-100">{p.label}</span>
                     <span className="block text-xs text-stone-400">{p.hint}</span>
                   </span>
                 </label>

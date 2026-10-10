@@ -3,9 +3,9 @@ import { useAdminAuth } from './AdminAuth';
 import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2 } from 'lucide-react';
 
 const inputCls =
-  'w-full px-3.5 py-2.5 rounded-lg border border-white/15 bg-black/25 text-sm text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20 transition';
+  'w-full px-3.5 py-2.5 rounded-lg border border-white/10 bg-black/25 text-sm text-stone-100 placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10 transition';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'lines' | 'color' | 'image';
+export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'lines' | 'color' | 'image' | 'datetime';
 
 export interface FieldDef<T> {
   key: keyof T & string;
@@ -22,7 +22,7 @@ interface FieldProps {
 
 export const Field: React.FC<FieldProps> = ({ label, hint, children }) => (
   <label className="block">
-    <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">{label}</span>
+    <span className="block text-xs font-semibold text-[#E6C78A] mb-1.5">{label}</span>
     {children}
     {hint && <span className="block text-xs text-stone-400 mt-1">{hint}</span>}
   </label>
@@ -78,7 +78,7 @@ const ImageField: React.FC<{ label: string; value: string; onChange: (v: string)
   return (
     <Field label={label} hint="Colle un lien, ou importe une image depuis ton appareil.">
       <div className="flex flex-col sm:flex-row gap-3">
-        {value && <img src={value} alt="" className="h-20 w-20 rounded-lg object-cover border border-white/15 shrink-0" />}
+        {value && <img src={value} alt="" className="h-20 w-20 rounded-lg object-cover border border-white/10 shrink-0" />}
         <div className="flex-1 space-y-2">
           <input
             type="text"
@@ -141,7 +141,7 @@ export function ObjectFields<T extends object>({ item, fields, onChange }: Objec
         return (
           <div key={f.key} className={wide ? 'sm:col-span-2' : ''}>
             {type === 'checkbox' ? (
-              <label className="flex items-center gap-2.5 text-sm text-[#F9F5EC] cursor-pointer pt-6">
+              <label className="flex items-center gap-2.5 text-sm text-stone-100 cursor-pointer pt-6">
                 <input
                   type="checkbox"
                   checked={!!raw}
@@ -163,6 +163,15 @@ export function ObjectFields<T extends object>({ item, fields, onChange }: Objec
               </Field>
             ) : type === 'textarea' ? (
               <TextInput label={f.label} value={String(raw ?? '')} onChange={(v) => set(f.key, v)} multiline hint={f.hint} />
+            ) : type === 'datetime' ? (
+              <Field label={f.label} hint={f.hint}>
+                <input
+                  type="datetime-local"
+                  value={String(raw ?? '').slice(0, 16)}
+                  onChange={(e) => e.target.value && set(f.key, `${e.target.value}:00`)}
+                  className={inputCls}
+                />
+              </Field>
             ) : type === 'number' ? (
               <Field label={f.label} hint={f.hint}>
                 <input
@@ -180,7 +189,7 @@ export function ObjectFields<T extends object>({ item, fields, onChange }: Objec
                     type="color"
                     value={String(raw ?? '#000000')}
                     onChange={(e) => set(f.key, e.target.value)}
-                    className="h-10 w-12 rounded-lg border border-white/15 bg-transparent cursor-pointer"
+                    className="h-10 w-12 rounded-lg border border-white/10 bg-transparent cursor-pointer"
                   />
                   <input type="text" value={String(raw ?? '')} onChange={(e) => set(f.key, e.target.value)} className={inputCls} />
                 </div>
@@ -229,12 +238,12 @@ export function ListEditor<T extends object>({
       {items.map((item, index) => (
         <details
           key={(item as { id?: string }).id ?? index}
-          className="group rounded-xl border border-white/10 bg-black/20 open:bg-black/30"
+          className="group rounded-xl border border-white/10 bg-black/20 open:bg-black/20"
           open={items.length <= 3}
         >
           <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none">
-            <span className="text-sm font-semibold text-[#F9F5EC] truncate">
-              <span className="text-[#E8C98A] mr-2 tabular-nums">{index + 1}.</span>
+            <span className="text-sm font-semibold text-stone-100 truncate">
+              <span className="text-[#E6C78A] mr-2 tabular-nums">{index + 1}.</span>
               {title(item, index) || 'Sans titre'}
             </span>
             <span className="flex items-center gap-1 shrink-0" onClick={(e) => e.preventDefault()}>
@@ -293,7 +302,7 @@ export function ListEditor<T extends object>({
         <button
           type="button"
           onClick={() => onChange([...items, createItem()])}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-[#E8C98A]/60 text-sm font-semibold text-[#F3E5AB] hover:bg-[#E8C98A]/10 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-[#E8C98A]/60 text-sm font-semibold text-stone-100 hover:bg-[#E8C98A]/10 transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           {addLabel}

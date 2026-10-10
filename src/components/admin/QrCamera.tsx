@@ -98,7 +98,7 @@ export const QrCamera: React.FC<QrCameraProps> = ({ onDetected, paused = false, 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
           <button
             onClick={() => { setError(''); setOn(true); }}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm cursor-pointer hover:brightness-110"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#E6C78A] text-[#2B1B0A] font-bold text-sm cursor-pointer hover:bg-[#EFD6A2]"
           >
             <Camera className="w-5 h-5" /> Activer la caméra
           </button>

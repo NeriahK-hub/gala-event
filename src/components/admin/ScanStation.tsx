@@ -23,12 +23,12 @@ export const ScanStation: React.FC<ScanStationProps> = ({ token, orders, onUpdat
 
   if (!link || !link.active) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-[#12070A] text-[#F9F5EC] relative z-[5]">
-        <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.03] p-7 text-center">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-[#16110F] text-stone-100 relative z-[5]">
+        <div className="w-full max-w-sm rounded-2xl border border-white/[0.07] bg-white/[0.025] p-7 text-center">
           <span className="mx-auto mb-4 w-12 h-12 rounded-full bg-red-500/15 text-red-300 flex items-center justify-center">
             <ShieldOff className="w-6 h-6" />
           </span>
-          <h1 className="font-serif text-2xl mb-2">{link ? 'Lien désactivé' : 'Lien de scan non reconnu'}</h1>
+          <h1 className="font-semibold tracking-tight text-xl mb-2">{link ? 'Lien désactivé' : 'Lien de scan non reconnu'}</h1>
           <p className="text-sm text-stone-400">
             {link
               ? 'Ce lien de contrôle a été désactivé par l\'organisateur. Demande-lui un nouveau lien.'
@@ -52,7 +52,7 @@ export const ScanStation: React.FC<ScanStationProps> = ({ token, orders, onUpdat
   };
 
   return (
-    <div className="min-h-screen bg-[#12070A] text-[#F9F5EC] relative z-[5] pb-10">
+    <div className="min-h-screen bg-[#16110F] text-stone-100 relative z-[5] pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-3 px-4 h-16 border-b border-white/10 bg-black/60 backdrop-blur-md">
         <EmpireLogo size={36} />
         <div className="min-w-0 flex-1">
@@ -76,14 +76,14 @@ export const ScanStation: React.FC<ScanStationProps> = ({ token, orders, onUpdat
         >
           <p className="text-xs text-stone-400 text-center">Le QR code ne passe pas ? Saisis le numéro du billet&nbsp;:</p>
           <div className="relative">
-            <QrCode className="w-5 h-5 text-[#E8C98A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <QrCode className="w-5 h-5 text-[#E6C78A] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="TKT-0001-01"
               aria-label="Numéro ou code du billet"
               autoCapitalize="characters"
-              className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/15 bg-black/30 text-base font-mono text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
+              className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/10 bg-black/20 text-base font-mono text-stone-100 placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10"
             />
           </div>
           <button type="submit" className="w-full py-3.5 rounded-xl border border-white/20 text-sm font-semibold hover:bg-white/10 cursor-pointer">

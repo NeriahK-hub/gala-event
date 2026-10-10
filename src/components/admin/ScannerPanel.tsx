@@ -20,6 +20,10 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
     [orders]
   );
 
+  const validTickets = allTickets.filter(({ order }) => order.status === 'validated');
+  const totalValid = validTickets.length;
+  const scannedCount = validTickets.filter(({ ticket }) => ticket.scanned).length;
+
   const recentScans = allTickets
     .filter(({ ticket }) => ticket.scanned)
     .sort((a, b) => (b.ticket.scannedAt ?? '').localeCompare(a.ticket.scannedAt ?? ''))
@@ -41,13 +45,10 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-        <div className="flex items-center gap-3 mb-1">
-          <ScanLine className="w-6 h-6 text-[#E8C98A]" />
-          <h2 className="font-serif text-2xl text-[#F9F5EC]">Contrôle d'entrée</h2>
-        </div>
-        <p className="text-sm text-stone-300 mb-6">
-          Scanne le QR code, ou saisis le numéro du billet (ex. TKT-0001-01) ou son code de sécurité. Un billet valide est marqué « scanné » tout de suite.
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 sm:p-6">
+        <QrCamera onDetected={runScan} paused={!!outcome} className="aspect-[4/3] sm:aspect-[16/9] mb-5" />
+        <p className="text-sm text-stone-400 mb-3">
+          Le QR code ne passe pas ? Saisis le numéro du billet (ex. TKT-0001-01) ou son code de sécurité.
         </p>
 
         <form
@@ -58,19 +59,18 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
           className="flex flex-col sm:flex-row gap-3"
         >
           <div className="relative flex-1">
-            <QrCode className="w-5 h-5 text-[#E8C98A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <QrCode className="w-5 h-5 text-[#E6C78A] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              autoFocus
               placeholder="TKT-0001-01 ou GALA-1001-A"
               aria-label="Numéro ou code du billet"
-              className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/15 bg-black/30 text-base font-mono text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
+              className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/10 bg-black/20 text-base font-mono text-stone-100 placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
+            className="px-6 py-3.5 rounded-xl bg-[#E6C78A] text-[#2B1B0A] font-bold text-sm hover:bg-[#EFD6A2] cursor-pointer"
           >
             Vérifier le billet
           </button>
@@ -84,7 +84,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
                 <button
                   key={ticket.ticketNumber}
                   onClick={() => setCode(ticket.ticketNumber)}
-                  className="px-3 py-1.5 rounded-lg border border-white/15 text-xs font-mono text-stone-200 hover:border-[#E8C98A] hover:text-[#F3E5AB] cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg border border-white/10 text-xs font-mono text-stone-200 hover:border-[#E8C98A] hover:text-stone-100 cursor-pointer"
                 >
                   {ticket.ticketNumber}
                   {ticket.scanned ? ' · déjà scanné' : ''}
@@ -94,11 +94,22 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
           </div>
         )}
 
-        <QrCamera onDetected={runScan} paused={!!outcome} className="mt-8 aspect-[4/3] sm:aspect-[16/9]" />
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-        <h3 className="text-sm font-semibold text-[#E8C98A] mb-4">Derniers billets scannés</h3>
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <span className="w-10 h-10 rounded-xl bg-emerald-400/10 text-emerald-300 flex items-center justify-center">
+            <ScanLine className="w-5 h-5" />
+          </span>
+          <div>
+            <p className="text-2xl font-semibold text-stone-50 tabular-nums leading-none">
+              {scannedCount}
+              <span className="text-base text-stone-500"> / {totalValid}</span>
+            </p>
+            <p className="text-xs text-stone-400 mt-1">entrées sur les billets vendus</p>
+          </div>
+        </div>
+        <h3 className="text-sm font-semibold text-stone-300 mb-3">Derniers billets scannés</h3>
         {recentScans.length === 0 ? (
           <p className="text-sm text-stone-400">Aucune entrée pour le moment.</p>
         ) : (
@@ -107,7 +118,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
               <li key={ticket.ticketNumber} className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-sm text-[#F9F5EC] truncate">{ticket.attendeeName}</p>
+                  <p className="text-sm text-stone-100 truncate">{ticket.attendeeName}</p>
                   <p className="text-xs text-stone-400 font-mono">
                     {ticket.ticketNumber} · {ticket.scannedAt}
                   </p>
@@ -164,7 +175,7 @@ export const ResultOverlay: React.FC<{ outcome: ScanOutcome; onClose: () => void
         </div>
         <div>
           <p className="text-xs uppercase tracking-widest font-bold opacity-80">{theme.label}</p>
-          <h3 className="font-serif text-4xl font-bold mt-1">{theme.title}</h3>
+          <h3 className="font-semibold tracking-tight text-3xl font-bold mt-1">{theme.title}</h3>
         </div>
         <dl className="rounded-2xl bg-black/40 p-5 text-left space-y-2 text-sm">
           {rows.map(([k, v]) => (

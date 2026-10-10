@@ -30,6 +30,8 @@ import { Order, OrderStatus } from '../../types';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
+import { OverviewPanel, Avatar } from './OverviewPanel';
+import { panel } from './ui';
 import { ContentEditor } from './ContentEditor';
 import { SettingsPanel } from './SettingsPanel';
 import { TeamPanel } from './TeamPanel';
@@ -55,14 +57,23 @@ interface AdminDashboardProps {
 type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings' | 'team';
 
 // perm : droit nécessaire ; 'manager' = admin n°1 et super admin uniquement
-const NAV: { id: Tab; label: string; icon: React.ReactNode; perm?: AdminPermission | 'manager' }[] = [
-  { id: 'overview', label: 'Vue d\'ensemble', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { id: 'orders', label: 'Commandes', icon: <ListOrdered className="w-5 h-5" />, perm: 'orders' },
-  { id: 'scanner', label: 'Contrôle d\'entrée', icon: <ScanLine className="w-5 h-5" />, perm: 'scanner' },
-  { id: 'content', label: 'Contenu du site', icon: <FileEdit className="w-5 h-5" />, perm: 'content' },
-  { id: 'settings', label: 'Réglages', icon: <Settings className="w-5 h-5" />, perm: 'settings' },
-  { id: 'team', label: 'Équipe & accès', icon: <Users className="w-5 h-5" />, perm: 'manager' },
+const NAV: { id: Tab; label: string; short: string; icon: React.ReactNode; perm?: AdminPermission | 'manager' }[] = [
+  { id: 'overview', label: 'Vue d\'ensemble', short: 'Accueil', icon: <LayoutDashboard className="w-5 h-5" /> },
+  { id: 'orders', label: 'Commandes', short: 'Ventes', icon: <ListOrdered className="w-5 h-5" />, perm: 'orders' },
+  { id: 'scanner', label: 'Contrôle d\'entrée', short: 'Scanner', icon: <ScanLine className="w-5 h-5" />, perm: 'scanner' },
+  { id: 'content', label: 'Contenu du site', short: 'Site', icon: <FileEdit className="w-5 h-5" />, perm: 'content' },
+  { id: 'settings', label: 'Réglages', short: 'Réglages', icon: <Settings className="w-5 h-5" />, perm: 'settings' },
+  { id: 'team', label: 'Équipe & accès', short: 'Équipe', icon: <Users className="w-5 h-5" />, perm: 'manager' },
 ];
+
+const TAB_HINTS: Record<Tab, string> = {
+  overview: 'Ce qui se passe et ce qu\'il reste à faire',
+  orders: 'Valide les paiements et envoie les liens d\'invitations',
+  scanner: 'Vérifie les billets à l\'entrée',
+  content: 'Modifie les textes et les images du site',
+  settings: 'Ventes, sections du site, compte à rebours et sauvegardes',
+  team: 'Comptes, liens de scan et historique',
+};
 
 const STATUS_STYLES: Record<OrderStatus, { label: string; cls: string; icon: React.ReactNode }> = {
   validated: { label: 'Validée', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
@@ -80,7 +91,6 @@ const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
   );
 };
 
-const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
 
 const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   orders,
@@ -243,85 +253,143 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     window.scrollTo({ top: 0 });
   };
 
-  const sidebar = (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">
-        <EmpireLogo size={44} />
-        <div className="min-w-0">
-          <p className="font-serif text-lg text-[#F9F5EC] leading-tight truncate">Console équipe</p>
-          <p className="text-xs text-stone-400 truncate">{current ? `${current.name} · ${ROLE_LABELS[current.role]}` : ''}</p>
-        </div>
-      </div>
+  const GROUPS: { title: string; ids: Tab[] }[] = [
+    { title: 'Billetterie', ids: ['overview', 'orders', 'scanner'] },
+    { title: 'Site', ids: ['content', 'settings'] },
+    { title: 'Administration', ids: ['team'] },
+  ];
 
-      <nav className="flex-1 p-3 space-y-1" aria-label="Navigation de la console">
-        {nav.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => goTab(item.id)}
-            aria-current={tab === item.id ? 'page' : undefined}
-            className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-              tab === item.id ? 'bg-[#E8C98A]/15 text-[#F3E5AB]' : 'text-stone-300 hover:bg-white/5'
-            }`}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-            {item.id === 'orders' && pending.length > 0 && (
-              <span className="ml-auto min-w-6 h-6 px-1.5 rounded-full bg-amber-400 text-amber-950 text-xs font-bold flex items-center justify-center">
-                {pending.length}
-              </span>
-            )}
-          </button>
-        ))}
-      </nav>
+  const navButton = (item: (typeof NAV)[number]) => (
+    <button
+      key={item.id}
+      onClick={() => goTab(item.id)}
+      aria-current={tab === item.id ? 'page' : undefined}
+      className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors cursor-pointer ${
+        tab === item.id ? 'bg-white/[0.07] text-stone-50 font-semibold' : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+      }`}
+    >
+      {tab === item.id && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[#E6C78A]" />}
+      <span className={tab === item.id ? 'text-[#E6C78A]' : ''}>{item.icon}</span>
+      <span>{item.label}</span>
+      {item.id === 'orders' && pending.length > 0 && (
+        <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-[#E6C78A] text-[#2B1B0A] text-[11px] font-bold flex items-center justify-center">
+          {pending.length}
+        </span>
+      )}
+    </button>
+  );
 
-      <div className="p-3 border-t border-white/10 space-y-1">
-        <button
-          onClick={lock}
-          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm text-stone-300 hover:bg-white/5 cursor-pointer"
-        >
-          <Lock className="w-5 h-5" />
-          <span>Verrouiller</span>
-        </button>
-        <button
-          onClick={onBackToHome}
-          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm text-stone-300 hover:bg-white/5 cursor-pointer"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Retour au site</span>
-        </button>
+  const userCard = current && (
+    <div className="flex items-center gap-3 rounded-2xl bg-white/[0.04] p-3">
+      <Avatar name={current.name} size="sm" />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-stone-100 truncate">{current.name}</p>
+        <p className="text-xs text-stone-500 truncate">{ROLE_LABELS[current.role]}</p>
       </div>
+      <button onClick={lock} title="Verrouiller la console" aria-label="Verrouiller la console" className="p-2 rounded-lg text-stone-400 hover:text-stone-100 hover:bg-white/10 cursor-pointer">
+        <Lock className="w-4 h-4" />
+      </button>
     </div>
   );
 
-  const currentLabel = nav.find((n) => n.id === tab)?.label;
+  const current_ = nav.find((n) => n.id === tab);
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] text-[#F9F5EC] bg-[#12070A] relative z-[5]">
-      {/* Menu latéral (grand écran) */}
-      <aside className="hidden lg:block sticky top-0 h-screen border-r border-white/10 bg-black/50 backdrop-blur-md">{sidebar}</aside>
-
-      {/* Menu latéral (mobile) */}
-      {menuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="w-72 max-w-[85vw] bg-[#0E0506] border-r border-white/10 shadow-2xl">{sidebar}</div>
-          <button aria-label="Fermer le menu" onClick={() => setMenuOpen(false)} className="flex-1 bg-black/60 cursor-pointer" />
+    <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr] text-stone-200 bg-[#16110F] relative z-[5]">
+      {/* Menu latéral (ordinateur) */}
+      <aside className="hidden lg:flex flex-col sticky top-0 h-screen border-r border-white/[0.06] bg-[#120E0C]">
+        <div className="flex items-center gap-3 px-5 h-[72px]">
+          <EmpireLogo size={38} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-stone-100 leading-tight truncate">Console équipe</p>
+            <p className="text-xs text-stone-500 truncate">{content.galaInfo.name}</p>
+          </div>
         </div>
-      )}
-
-      <div className="min-w-0">
-        <header className="sticky top-0 z-30 flex items-center gap-3 px-4 sm:px-8 h-16 border-b border-white/10 bg-black/50 backdrop-blur-md">
-          <button
-            onClick={() => setMenuOpen(true)}
-            aria-label="Ouvrir le menu"
-            className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-white/10 cursor-pointer"
-          >
-            <Menu className="w-6 h-6" />
+        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-5" aria-label="Navigation de la console">
+          {GROUPS.map((g) => {
+            const items = nav.filter((n) => g.ids.includes(n.id));
+            if (!items.length) return null;
+            return (
+              <div key={g.title}>
+                <p className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-stone-600">{g.title}</p>
+                <div className="space-y-0.5">{items.map(navButton)}</div>
+              </div>
+            );
+          })}
+        </nav>
+        <div className="p-3 space-y-2">
+          <button onClick={onBackToHome} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] cursor-pointer">
+            <ArrowLeft className="w-5 h-5" /> Retour au site
           </button>
-          <h1 className="font-serif text-xl sm:text-2xl text-[#F9F5EC]">{currentLabel}</h1>
-          <div className="ml-auto flex items-center gap-2 text-xs text-stone-400">
-            <span className="hidden sm:inline">{content.galaInfo.dateText}</span>
+          {userCard}
+        </div>
+      </aside>
+
+      <div className="min-w-0 pb-24 lg:pb-0">
+        <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#16110F]/85 backdrop-blur-xl">
+          <div className="flex items-center gap-3 px-4 sm:px-8 h-16 lg:h-[72px] max-w-6xl">
+            <span className="lg:hidden"><EmpireLogo size={32} /></span>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-semibold text-stone-50 truncate">{current_?.label}</h1>
+              <p className="hidden sm:block text-xs text-stone-500 truncate">{current_ ? TAB_HINTS[current_.id] : ''}</p>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={onBackToHome}
+                className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/10 text-xs text-stone-300 hover:bg-white/[0.06] cursor-pointer"
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> Voir le site
+              </button>
+              <div className="relative lg:hidden">
+                <button onClick={() => setMenuOpen((v) => !v)} aria-label="Mon compte" aria-expanded={menuOpen} className="cursor-pointer">
+                  {current && <Avatar name={current.name} size="sm" />}
+                </button>
+                {menuOpen && (
+                  <>
+                    <button aria-label="Fermer" onClick={() => setMenuOpen(false)} className="fixed inset-0 z-40 cursor-default" />
+                    <div className="absolute right-0 top-11 z-50 w-60 rounded-2xl border border-white/10 bg-[#1F1916] p-2 shadow-2xl">
+                      <p className="px-3 pt-2 text-sm font-semibold text-stone-100">{current?.name}</p>
+                      <p className="px-3 pb-2 text-xs text-stone-500">{current ? ROLE_LABELS[current.role] : ''}</p>
+                      <button onClick={onBackToHome} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-300 hover:bg-white/[0.06] cursor-pointer">
+                        <ArrowLeft className="w-4 h-4" /> Retour au site
+                      </button>
+                      <button onClick={lock} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-300 hover:bg-white/[0.06] cursor-pointer">
+                        <Lock className="w-4 h-4" /> Verrouiller
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </header>
+
+        {/* Onglets en bas (téléphone) */}
+        <nav
+          aria-label="Navigation de la console"
+          className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-[#16110F]/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
+        >
+          <div className="flex">
+            {nav.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => goTab(item.id)}
+                aria-current={tab === item.id ? 'page' : undefined}
+                className={`relative flex-1 min-w-0 flex flex-col items-center gap-1 pt-2.5 pb-2 text-[10px] font-medium cursor-pointer ${
+                  tab === item.id ? 'text-[#E6C78A]' : 'text-stone-500'
+                }`}
+              >
+                {item.icon}
+                <span className="truncate max-w-full px-0.5">{item.short}</span>
+                {item.id === 'orders' && pending.length > 0 && (
+                  <span className="absolute top-1.5 left-1/2 ml-2 min-w-4 h-4 px-1 rounded-full bg-[#E6C78A] text-[#2B1B0A] text-[10px] font-bold flex items-center justify-center">
+                    {pending.length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </nav>
 
         <motion.main
           key={tab}
@@ -330,82 +398,16 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="p-4 sm:p-8 max-w-6xl"
         >
-          {/* ============ VUE D'ENSEMBLE ============ */}
           {tab === 'overview' && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                <Kpi
-                  icon={<Ticket className="w-5 h-5" />}
-                  label="Billets vendus"
-                  value={String(soldTickets)}
-                  sub={soldTickets > 1 ? 'billets validés' : 'billet validé'}
-                />
-                <Kpi icon={<DollarSign className="w-5 h-5" />} label="Montant encaissé" value={`${revenue} USD`} sub={`${pendingAmount} USD en attente`} />
-                <Kpi icon={<Clock className="w-5 h-5" />} label="À traiter" value={String(pending.length)} sub="commandes à vérifier" tone="amber" />
-                <Kpi
-                  icon={<ScanLine className="w-5 h-5" />}
-                  label="Entrées scannées"
-                  value={String(scannedCount)}
-                  sub={soldTickets ? `${Math.round((scannedCount / soldTickets) * 100)} % des billets vendus` : 'Aucun billet vendu'}
-                  tone="green"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <section className={`${panel} p-6`}>
-                  <h2 className="font-semibold text-[#F3E5AB] mb-5">Ventes par formule</h2>
-                  <ul className="space-y-5">
-                    {revenueByTier.map(({ tier, amount, count }) => (
-                      <li key={tier.id}>
-                        <div className="flex items-baseline justify-between text-sm mb-1.5">
-                          <span className="text-stone-100">{tier.name}</span>
-                          <span className="text-stone-300 tabular-nums">
-                            {count} × — <strong className="text-[#F3E5AB]">{amount} USD</strong>
-                          </span>
-                        </div>
-                        <div className="h-2.5 rounded-full bg-white/10 overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#C99A45] to-[#E8C98A] transition-all duration-500"
-                            style={{ width: `${(amount / maxTierAmount) * 100}%` }}
-                          />
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-
-                <section className={`${panel} p-6`}>
-                  <div className="flex items-center justify-between mb-5">
-                    <h2 className="font-semibold text-[#F3E5AB]">Commandes à traiter</h2>
-                    {can('orders') && <button onClick={() => { setStatusFilter('pending'); goTab('orders'); }} className="text-xs text-[#E8C98A] underline underline-offset-4 cursor-pointer">
-                      Tout voir
-                    </button>}
-                  </div>
-                  {pending.length === 0 ? (
-                    <p className="text-sm text-stone-400 py-6 text-center">Tout est à jour. Aucune commande en attente.</p>
-                  ) : (
-                    <ul className="space-y-3">
-                      {pending.slice(0, 4).map((o) => (
-                        <li key={o.id} className="flex items-center gap-3 rounded-xl bg-black/25 p-3.5">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-[#F9F5EC] truncate">{o.customerName}</p>
-                            <p className="text-xs text-stone-400 truncate">
-                              {o.id} · {o.quantity} × {tierName(o.tierId)} · {o.totalAmount} USD
-                            </p>
-                          </div>
-                          {canValidate && <button
-                            onClick={() => openValidate(o)}
-                            className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold cursor-pointer hover:brightness-110"
-                          >
-                            Valider
-                          </button>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </section>
-              </div>
-            </div>
+            <OverviewPanel
+              orders={orders}
+              onAddOrder={() => setShowAdd(true)}
+              onValidate={openValidate}
+              onGo={(id, opts) => {
+                if (opts?.pendingOnly) setStatusFilter('pending');
+                goTab(id);
+              }}
+            />
           )}
 
           {/* ============ COMMANDES ============ */}
@@ -413,14 +415,14 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
             <div className="space-y-5">
               <div className={`${panel} p-4 flex flex-col lg:flex-row gap-4 lg:items-center`}>
                 <div className="relative flex-1 max-w-md">
-                  <Search className="w-4 h-4 text-[#E8C98A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-[#E6C78A] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="search"
                     placeholder="Rechercher un nom, un code ou un numéro"
                     aria-label="Rechercher une commande"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-white/15 bg-black/30 text-sm text-[#F9F5EC] placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-white/10 bg-black/20 text-sm text-stone-100 placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10"
                   />
                 </div>
 
@@ -439,7 +441,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                       aria-selected={statusFilter === id}
                       onClick={() => setStatusFilter(id)}
                       className={`px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                        statusFilter === id ? 'bg-[#E8C98A] text-[#3D030B] font-bold' : 'text-stone-300 hover:bg-white/10'
+                        statusFilter === id ? 'bg-white/[0.1] text-stone-50 font-semibold' : 'text-stone-300 hover:bg-white/10'
                       }`}
                     >
                       {label} <span className="opacity-70">({count})</span>
@@ -450,13 +452,13 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                 <div className="lg:ml-auto flex flex-wrap gap-2">
                   <button
                     onClick={() => setShowAdd(true)}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#E6C78A] text-[#2B1B0A] text-sm font-bold hover:bg-[#EFD6A2] cursor-pointer"
                   >
                     <Plus className="w-4 h-4" /> Ajouter une commande
                   </button>
                   <button
                     onClick={exportCsv}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
                   >
                     <Download className="w-4 h-4" /> Exporter en CSV
                   </button>
@@ -466,13 +468,13 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
               {filteredOrders.length === 0 ? (
                 orders.length === 0 ? (
                   <div className={`${panel} p-10 text-center`}>
-                    <p className="font-serif text-2xl text-[#F9F5EC] mb-2">Aucune commande pour le moment</p>
+                    <p className="font-semibold tracking-tight text-xl text-stone-100 mb-2">Aucune commande pour le moment</p>
                     <p className="text-sm text-stone-300 max-w-md mx-auto mb-6">
                       Quand un client commande, son message arrive sur ton WhatsApp. Colle-le ici pour créer la commande, valide le paiement, puis envoie-lui son lien d'invitations.
                     </p>
                     <button
                       onClick={() => setShowAdd(true)}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold cursor-pointer hover:brightness-110"
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#E6C78A] text-[#2B1B0A] font-bold cursor-pointer hover:bg-[#EFD6A2]"
                     >
                       <Plus className="w-4 h-4" /> Ajouter une commande
                     </button>
@@ -484,24 +486,30 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                 <ul className="space-y-3">
                   {filteredOrders.map((order) => (
                     <li key={order.id} className={`${panel} p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4`}>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                          <button
-                            onClick={() => onOpenOrderTickets(order.id)}
-                            title="Voir les billets de cette commande"
-                            className="font-mono font-bold text-[#F3E5AB] hover:underline cursor-pointer"
-                          >
-                            {order.id}
-                          </button>
-                          <StatusBadge status={order.status} />
-                          {order.payerPhone !== order.customerPhone && (
-                            <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300">Payé par un tiers</span>
-                          )}
+                      <div className="min-w-0 flex-1 flex items-start gap-3.5">
+                        <Avatar name={order.customerName} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                            <p className="text-stone-50 font-semibold">{order.customerName}</p>
+                            <StatusBadge status={order.status} />
+                            {order.payerPhone !== order.customerPhone && (
+                              <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300/90">Payé par un tiers</span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-sm text-stone-400">
+                            {order.quantity} billet{order.quantity > 1 ? 's' : ''} · <strong className="text-stone-200 font-semibold">{order.totalAmount} $</strong> · {order.customerPhone}
+                          </p>
+                          <p className="mt-0.5 text-xs text-stone-500">
+                            <button
+                              onClick={() => onOpenOrderTickets(order.id)}
+                              title="Voir les billets de cette commande"
+                              className="font-mono hover:text-stone-300 hover:underline cursor-pointer"
+                            >
+                              {order.id}
+                            </button>
+                            {order.createdAt ? ` · ${order.createdAt}` : ''}
+                          </p>
                         </div>
-                        <p className="mt-1.5 text-[#F9F5EC] font-semibold">{order.customerName}</p>
-                        <p className="text-sm text-stone-400">
-                          {order.quantity} × {tierName(order.tierId)} · <strong className="text-stone-200">{order.totalAmount} USD</strong> · Payeur {order.payerPhone}
-                        </p>
                       </div>
 
                       <div className="flex items-center gap-2 md:justify-end">
@@ -513,14 +521,15 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                               rel="noopener noreferrer"
                               title="Relancer le client sur WhatsApp"
                               aria-label="Relancer le client sur WhatsApp"
-                              className="p-2.5 rounded-lg border border-white/20 text-stone-100 hover:bg-white/10"
+                              className="inline-flex items-center gap-2 p-2.5 xl:px-3.5 rounded-lg border border-white/10 text-sm text-stone-200 hover:bg-white/[0.06]"
                             >
                               <BellRing className="w-4 h-4" />
+                              <span className="hidden xl:inline">Relancer</span>
                             </a>
                             {canValidate && <>
                             <button
                               onClick={() => openValidate(order)}
-                              className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
+                              className="px-4 py-2.5 rounded-lg bg-[#E6C78A] text-[#2B1B0A] text-sm font-bold hover:bg-[#EFD6A2] cursor-pointer"
                             >
                               Valider
                             </button>
@@ -536,7 +545,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                         {order.status === 'rejected' && canValidate && (
                           <button
                             onClick={() => restoreOrder(order)}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
                           >
                             <RotateCcw className="w-4 h-4" /> Remettre en attente
                           </button>
@@ -554,7 +563,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                             </button>
                             <button
                               onClick={() => onOpenOrderTickets(order.id)}
-                              className="px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
+                              className="px-4 py-2.5 rounded-lg border border-white/10 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
                             >
                               Aperçu
                             </button>
@@ -595,7 +604,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
         >
           {!isValidationSuccess ? (
             <form onSubmit={confirmValidation} className="space-y-5">
-              <dl className="rounded-xl bg-black/30 p-4 text-sm space-y-2">
+              <dl className="rounded-xl bg-black/20 p-4 text-sm space-y-2">
                 <Row k="Client" v={validatingOrder.customerName} />
                 <Row k="Téléphone" v={validatingOrder.customerPhone} mono />
                 <Row k="Billets" v={`${validatingOrder.quantity} × ${tierName(validatingOrder.tierId)}`} />
@@ -605,17 +614,17 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                 Valide seulement une fois le paiement reçu et confirmé avec le client. Un lien d'invitations sera alors généré.
               </p>
               <label className="block">
-                <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Référence du paiement (facultatif)</span>
+                <span className="block text-xs font-semibold text-[#E6C78A] mb-1.5">Référence du paiement (facultatif)</span>
                 <input
                   value={smsReference}
                   onChange={(e) => setSmsReference(e.target.value)}
                   placeholder="Ex. code du SMS de confirmation"
-                  className="w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm font-mono text-[#F9F5EC] focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
+                  className="w-full px-3.5 py-3 rounded-lg border border-white/10 bg-black/20 text-sm font-mono text-stone-100 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10"
                 />
               </label>
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
+                className="w-full py-3.5 rounded-full bg-[#E6C78A] text-[#2B1B0A] font-bold text-sm hover:bg-[#EFD6A2] cursor-pointer"
               >
                 Paiement reçu&nbsp;: générer le lien
               </button>
@@ -632,18 +641,18 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div>
-                <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Lien du client</span>
+                <span className="block text-xs font-semibold text-[#E6C78A] mb-1.5">Lien du client</span>
                 <div className="flex gap-2">
                   <input
                     readOnly
                     value={buildTicketLink(validatingOrder)}
                     onFocus={(e) => e.currentTarget.select()}
                     aria-label="Lien d'invitations du client"
-                    className="min-w-0 flex-1 px-3 py-2.5 rounded-lg border border-white/15 bg-black/30 text-xs font-mono text-stone-200 truncate"
+                    className="min-w-0 flex-1 px-3 py-2.5 rounded-lg border border-white/10 bg-black/20 text-xs font-mono text-stone-200 truncate"
                   />
                   <button
                     onClick={() => copyLink(validatingOrder)}
-                    className="shrink-0 inline-flex items-center gap-2 px-3.5 rounded-lg border border-white/20 text-sm text-white hover:bg-white/10 cursor-pointer"
+                    className="shrink-0 inline-flex items-center gap-2 px-3.5 rounded-lg border border-white/10 text-sm text-white hover:bg-white/10 cursor-pointer"
                   >
                     {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
                     {copied ? 'Copié' : 'Copier'}
@@ -663,7 +672,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                 href={buildTicketLink(validatingOrder)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full border border-white/10 text-sm text-stone-100 hover:bg-white/10"
               >
                 <ExternalLink className="w-4 h-4" /> Voir comme le client
               </a>
@@ -695,7 +704,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
             La commande de <strong>{rejectingOrder.customerName}</strong> ({rejectingOrder.totalAmount} USD) sera marquée comme refusée : aucun billet ne sera activé.
           </p>
           <div className="flex gap-3">
-            <button onClick={() => setRejectingOrder(null)} className="flex-1 py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
+            <button onClick={() => setRejectingOrder(null)} className="flex-1 py-3 rounded-full border border-white/10 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
               Annuler
             </button>
             <button onClick={confirmReject} className="flex-1 py-3 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-400 cursor-pointer">
@@ -712,7 +721,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
             {deletingOrder.status === 'validated' ? ' et les billets déjà envoyés ne seront plus reconnus à l\'entrée' : ''}. Pense à télécharger une sauvegarde avant.
           </p>
           <div className="flex gap-3">
-            <button onClick={() => setDeletingOrder(null)} className="flex-1 py-3 rounded-full border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
+            <button onClick={() => setDeletingOrder(null)} className="flex-1 py-3 rounded-full border border-white/10 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
               Annuler
             </button>
             <button onClick={confirmDelete} className="flex-1 py-3 rounded-full bg-red-500 text-white text-sm font-bold hover:bg-red-400 cursor-pointer">
@@ -723,34 +732,8 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
       )}
 
       {toast && (
-        <div role="status" className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] px-5 py-3 rounded-full bg-[#F3E5AB] text-[#3D030B] text-sm font-semibold shadow-xl">
+        <div role="status" className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] px-5 py-3 rounded-full bg-stone-100 text-stone-900 text-sm font-semibold shadow-xl">
           {toast}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Kpi: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-  progress?: number;
-  tone?: 'gold' | 'amber' | 'green';
-}> = ({ icon, label, value, sub, progress, tone = 'gold' }) => {
-  const toneCls = { gold: 'text-[#E8C98A] bg-[#E8C98A]/10', amber: 'text-amber-300 bg-amber-400/10', green: 'text-emerald-300 bg-emerald-400/10' }[tone];
-  return (
-    <div className={`${panel} p-5`}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-stone-300">{label}</span>
-        <span className={`p-2 rounded-lg ${toneCls}`}>{icon}</span>
-      </div>
-      <p className="font-serif text-3xl sm:text-4xl text-[#F9F5EC] tabular-nums">{value}</p>
-      <p className="text-xs text-stone-400 mt-1">{sub}</p>
-      {progress !== undefined && (
-        <div className="mt-3 h-1.5 rounded-full bg-white/10 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-[#C99A45] to-[#E8C98A]" style={{ width: `${Math.min(100, progress * 100)}%` }} />
         </div>
       )}
     </div>
@@ -760,7 +743,7 @@ const Kpi: React.FC<{
 const Row: React.FC<{ k: string; v: string; strong?: boolean; mono?: boolean }> = ({ k, v, strong, mono }) => (
   <div className="flex justify-between gap-4">
     <dt className="text-stone-400">{k}</dt>
-    <dd className={`text-right ${strong ? 'font-bold text-[#F3E5AB]' : 'text-stone-100'} ${mono ? 'font-mono' : ''}`}>{v}</dd>
+    <dd className={`text-right ${strong ? 'font-bold text-stone-100' : 'text-stone-100'} ${mono ? 'font-mono' : ''}`}>{v}</dd>
   </div>
 );
 

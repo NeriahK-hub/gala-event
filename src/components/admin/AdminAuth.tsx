@@ -69,7 +69,7 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               onChange={(e) => { setCode(e.target.value); setError(''); }}
               placeholder="Code de l'admin n°1"
               aria-label="Code de l'admin n°1"
-              className="w-full px-4 py-3 rounded-lg border border-white/15 bg-black/30 text-center tracking-[0.25em] text-[#F9F5EC] placeholder:tracking-normal placeholder:text-sm placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20"
+              className="w-full px-4 py-3 rounded-lg border border-white/10 bg-black/20 text-center tracking-[0.25em] text-stone-100 placeholder:tracking-normal placeholder:text-sm placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10"
             />
             {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
             <div className="flex gap-3">

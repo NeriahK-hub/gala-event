@@ -29,7 +29,7 @@ const galaFields: FieldDef<GalaInfo>[] = [
   { key: 'slogan', label: 'Slogan', type: 'textarea' },
   { key: 'dateText', label: 'Date affichée' },
   { key: 'timeText', label: 'Horaires affichés' },
-  { key: 'isoDate', label: 'Date de l\'événement', hint: 'Format AAAA-MM-JJTHH:MM:SS, ex. 2026-12-12T18:00:00. Le compte à rebours de la billetterie se règle dans Réglages.' },
+  { key: 'isoDate', label: 'Date de l\'événement', type: 'datetime', hint: 'Le compte à rebours de la billetterie se règle dans Réglages.' },
   { key: 'city', label: 'Ville' },
   { key: 'venueName', label: 'Nom du lieu' },
   { key: 'venueRoom', label: 'Salle' },
@@ -164,7 +164,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start gap-3 rounded-xl border border-[#E8C98A]/30 bg-[#E8C98A]/10 p-4 text-sm text-[#F3E5AB]">
+      <div className="flex items-start gap-3 rounded-xl border border-[#E8C98A]/30 bg-[#E8C98A]/10 p-4 text-sm text-stone-100">
         <Info className="w-5 h-5 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
           Tes modifications sont <strong>enregistrées automatiquement dans ce navigateur</strong> et visibles tout de suite
@@ -175,7 +175,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={onViewSite}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold cursor-pointer hover:brightness-110"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E6C78A] text-[#2B1B0A] text-sm font-bold cursor-pointer hover:bg-[#EFD6A2]"
         >
           <ExternalLink className="w-4 h-4" /> Voir le site
         </button>
@@ -217,7 +217,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
             value={section}
             onChange={(e) => setSection(e.target.value as SectionId)}
             aria-label="Section à modifier"
-            className="lg:hidden w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm text-[#F9F5EC]"
+            className="lg:hidden w-full px-3.5 py-3 rounded-lg border border-white/10 bg-black/20 text-sm text-stone-100"
           >
             {SECTIONS.map((s) => (
               <option key={s.id} value={s.id}>
@@ -232,7 +232,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
                 onClick={() => setSection(s.id)}
                 className={`text-left px-3.5 py-2.5 rounded-lg text-sm transition-colors cursor-pointer ${
                   section === s.id
-                    ? 'bg-[#E8C98A]/15 text-[#F3E5AB] font-semibold'
+                    ? 'bg-[#E6C78A]/10 text-stone-100 font-semibold'
                     : 'text-stone-300 hover:bg-white/5'
                 }`}
               >
@@ -242,13 +242,13 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
           </nav>
         </div>
 
-        <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-7 space-y-8">
+        <div className="min-w-0 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 sm:p-7 space-y-8">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-serif text-2xl text-[#F9F5EC]">{SECTIONS.find((s) => s.id === section)?.label}</h2>
+            <h2 className="font-semibold tracking-tight text-xl text-stone-100">{SECTIONS.find((s) => s.id === section)?.label}</h2>
             {sectionTexts.length > 0 && (
               <button
                 onClick={() => resetSectionTexts(section)}
-                className="text-xs text-stone-400 hover:text-[#F3E5AB] underline underline-offset-4 cursor-pointer"
+                className="text-xs text-stone-400 hover:text-stone-100 underline underline-offset-4 cursor-pointer"
               >
                 Réinitialiser les textes
               </button>
@@ -259,7 +259,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
             <>
               <ObjectFields item={content.galaInfo} fields={galaFields} onChange={setGala} />
               <div>
-                <h3 className="text-sm font-semibold text-[#E8C98A] mb-3">Chiffres clés (section « Le gala »)</h3>
+                <h3 className="text-sm font-semibold text-[#E6C78A] mb-3">Chiffres clés (section « Le gala »)</h3>
                 <ListEditor
                   items={content.galaInfo.keyStats}
                   onChange={(keyStats) => setGala({ ...content.galaInfo, keyStats })}
@@ -326,7 +326,7 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
                 onChange={(dressCode) => setGala({ ...content.galaInfo, dressCode })}
               />
               <div>
-                <h3 className="text-sm font-semibold text-[#E8C98A] mb-3">Nuancier de couleurs</h3>
+                <h3 className="text-sm font-semibold text-[#E6C78A] mb-3">Nuancier de couleurs</h3>
                 <ListEditor
                   items={content.galaInfo.dressCode.colors}
                   onChange={(colors) => setGala({ ...content.galaInfo, dressCode: { ...content.galaInfo.dressCode, colors } })}

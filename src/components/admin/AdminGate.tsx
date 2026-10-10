@@ -8,7 +8,7 @@ interface AdminGateProps {
 }
 
 const input =
-  'w-full px-4 py-3.5 rounded-xl border border-white/15 bg-black/30 text-center text-lg text-[#F9F5EC] placeholder:text-sm placeholder-stone-500 focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20';
+  'w-full px-4 py-3.5 rounded-xl border border-white/10 bg-black/20 text-center text-lg text-stone-100 placeholder:text-sm placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10';
 
 export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
   const { needsSetup, setupSuper, login } = useTeam();
@@ -30,15 +30,15 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-[#12070A] text-[#F9F5EC] relative z-[5]">
-      <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.03] p-7 text-center">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[#16110F] text-stone-100 relative z-[5]">
+      <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-white/[0.07] bg-white/[0.025] p-7 text-center">
         <div className="flex justify-center mb-4">
           <EmpireLogo size={56} />
         </div>
-        <span className="mx-auto mb-3 w-10 h-10 rounded-full bg-[#E8C98A]/15 text-[#E8C98A] flex items-center justify-center">
+        <span className="mx-auto mb-3 w-10 h-10 rounded-full bg-[#E6C78A]/10 text-[#E6C78A] flex items-center justify-center">
           <Lock className="w-5 h-5" />
         </span>
-        <h1 className="font-serif text-2xl mb-1">{needsSetup ? 'Configuration initiale' : 'Console équipe'}</h1>
+        <h1 className="font-semibold tracking-tight text-xl mb-1">{needsSetup ? 'Configuration initiale' : 'Console équipe'}</h1>
         <p className="text-sm text-stone-400 mb-6">
           {needsSetup
             ? 'Crée le compte super admin (le concepteur du site). Il créera ensuite l\'admin n°1, qui donnera les accès à son équipe.'
@@ -82,7 +82,7 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
 
         <button
           type="submit"
-          className="mt-5 w-full py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 cursor-pointer"
+          className="mt-5 w-full py-3.5 rounded-full bg-[#E6C78A] text-[#2B1B0A] font-bold text-sm hover:bg-[#EFD6A2] cursor-pointer"
         >
           {needsSetup ? 'Créer le super admin' : 'Ouvrir la console'}
         </button>

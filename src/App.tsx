@@ -329,7 +329,9 @@ export default function App() {
       {/* Floating Demo Navigation Switcher (Allows testing all pages with mockData) */}
       {activeView === 'vitrine' && <FloatingActions onReserve={() => handleOpenReservation('standard')} />}
 
+      {/* En mode démo : masqué dans la console sur téléphone (il cacherait les onglets du bas) */}
       {SHOW_DEMO_NAV && (
+        <div className={activeView === 'admin' ? 'hidden lg:block' : ''}>
         <DevNavSwitcher
           activeView={activeView}
           onChangeView={(view) => {
@@ -338,6 +340,7 @@ export default function App() {
           }}
           selectedOrderId={viewed?.id}
         />
+        </div>
       )}
     </div>
   );

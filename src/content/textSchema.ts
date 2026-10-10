@@ -148,7 +148,6 @@ export const TEXT_FIELDS: TextField[] = [
   f('footer.linkGallery', 'footer', 'Lien « Galerie »', 'Galerie'),
   f('footer.linkMyTickets', 'footer', 'Lien « Mes billets »', 'Mes billets'),
   f('footer.copyright', 'footer', 'Mention de droits (après l\'année et le nom)', 'Tous droits réservés.'),
-  f('footer.staff', 'footer', 'Lien équipe', 'Accès équipe & contrôle'),
 ];
 
 export const DEFAULT_TEXTS: Record<string, string> = Object.fromEntries(

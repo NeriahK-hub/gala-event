@@ -22,6 +22,7 @@ import { useContent } from './content/ContentContext';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminGate } from './components/admin/AdminGate';
 import { ScanStation } from './components/admin/ScanStation';
+import { InviteAccept } from './components/admin/InviteAccept';
 import { useTeam } from './team/TeamContext';
 import { FloatingActions } from './components/common/FloatingActions';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
@@ -34,6 +35,10 @@ const SHOW_DEMO_NAV = new URLSearchParams(window.location.search).has('demo');
 const TICKET_TOKEN = new URLSearchParams(window.location.search).get('billet');
 // Lien de contrôle d'entrée attribué à une personne : ?scan=…
 const SCAN_TOKEN = new URLSearchParams(window.location.search).get('scan');
+// Lien personnel d'invitation / de nouveau code pour l'équipe : ?invitation=…
+const INVITE_TOKEN = new URLSearchParams(window.location.search).get('invitation');
+// Console de l'équipe : adresse dédiée ?console (plus de lien sur le site public)
+const OPEN_CONSOLE = new URLSearchParams(window.location.search).has('console');
 
 const ORDERS_KEY = 'gala-orders-v1';
 const MY_ORDERS_KEY = 'gala-my-orders-v1';
@@ -62,13 +67,14 @@ type Viewed = { kind: 'local' | 'unlocked'; id: string } | null;
 export default function App() {
   const { isSectionVisible: show } = useContent();
   // Current active view
-  const [activeView, setActiveView] = useState<ActiveView>(TICKET_TOKEN ? 'tickets' : 'vitrine');
+  const [activeView, setActiveView] = useState<ActiveView>(TICKET_TOKEN ? 'tickets' : OPEN_CONSOLE ? 'admin' : 'vitrine');
 
   // Commandes (enregistrées dans ce navigateur, sauf en mode démo)
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [myOrderIds, setMyOrderIds] = useState<string[]>(loadMyOrderIds);
   // Compte connecté à la console (null = verrouillée)
   const { current: adminAccount } = useTeam();
+  const [inviteDone, setInviteDone] = useState(false);
 
   // Invitations débloquées par un lien sur cet appareil
   const [unlockedTokens, setUnlockedTokens] = useState<string[]>(() => {
@@ -204,6 +210,25 @@ export default function App() {
     return <ScanStation token={SCAN_TOKEN} orders={orders} onUpdateOrder={handleUpdateOrder} />;
   }
 
+  // Lien d'invitation : une fois le code choisi, on ouvre la console (le jeton disparaît de l'adresse)
+  if (INVITE_TOKEN && !inviteDone) {
+    return (
+      <InviteAccept
+        token={INVITE_TOKEN}
+        onDone={() => {
+          window.history.replaceState(null, '', `${window.location.pathname}?console`);
+          setInviteDone(true);
+          setActiveView('admin');
+        }}
+        onBackToHome={() => {
+          window.history.replaceState(null, '', window.location.pathname);
+          setInviteDone(true);
+          setActiveView('vitrine');
+        }}
+      />
+    );
+  }
+
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
 
@@ -268,9 +293,6 @@ export default function App() {
             {/* 13. Pied de page */}
             <Footer
               onNavigateSection={handleNavigateSection}
-              onOpenAdmin={() => {
-                setActiveView('admin');
-              }}
               onOpenMyTickets={() => {
                 setViewed(null);
                 setActiveView('tickets');

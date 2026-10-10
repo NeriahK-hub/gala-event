@@ -1,15 +1,13 @@
 import React from 'react';
-import { ShieldCheck } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from './EmpireLogo';
 
 interface FooterProps {
   onNavigateSection: (sectionId: string) => void;
-  onOpenAdmin: () => void;
   onOpenMyTickets: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenAdmin, onOpenMyTickets }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenMyTickets }) => {
   const { content, t, isSectionVisible: show } = useContent();
   const { galaInfo } = content;
 
@@ -50,13 +48,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateSection, onOpenAdmin, 
             © {new Date().getFullYear()} {galaInfo.name}. {t('contact.presentedBy')} {galaInfo.organizersName}.{' '}
             {t('footer.copyright')}
           </p>
-          <button
-            onClick={onOpenAdmin}
-            className="inline-flex items-center gap-1.5 text-white/55 hover:text-white transition-colors cursor-pointer"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>{t('footer.staff')}</span>
-          </button>
         </div>
       </div>
     </footer>

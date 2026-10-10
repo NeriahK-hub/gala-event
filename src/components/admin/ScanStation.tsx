@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { QrCode, ScanLine, ShieldOff } from 'lucide-react';
 import { Order } from '../../types';
 import { checkTicket, ScanOutcome } from '../../lib/scan';
-import { useTeam } from '../../team/TeamContext';
+import { scanLinkState, useTeam } from '../../team/TeamContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { QrCamera } from './QrCamera';
 import { ResultOverlay } from './ScannerPanel';
@@ -21,16 +21,19 @@ export const ScanStation: React.FC<ScanStationProps> = ({ token, orders, onUpdat
   const [outcome, setOutcome] = useState<ScanOutcome | null>(null);
   const [count, setCount] = useState(0);
 
-  if (!link || !link.active) {
+  const state = link ? scanLinkState(link) : null;
+  if (!link || state !== 'active') {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-[#16110F] text-stone-100 relative z-[5]">
         <div className="w-full max-w-sm rounded-2xl border border-white/[0.07] bg-white/[0.025] p-7 text-center">
           <span className="mx-auto mb-4 w-12 h-12 rounded-full bg-red-500/15 text-red-300 flex items-center justify-center">
             <ShieldOff className="w-6 h-6" />
           </span>
-          <h1 className="font-semibold tracking-tight text-xl mb-2">{link ? 'Lien désactivé' : 'Lien de scan non reconnu'}</h1>
+          <h1 className="font-semibold tracking-tight text-xl mb-2">{state === 'expired' ? 'Lien expiré' : link ? 'Lien désactivé' : 'Lien de scan non reconnu'}</h1>
           <p className="text-sm text-stone-400">
-            {link
+            {state === 'expired'
+              ? 'Ce lien de contrôle n\'est plus valable : l\'événement est terminé ou la date limite est passée.'
+              : link
               ? 'Ce lien de contrôle a été désactivé par l\'organisateur. Demande-lui un nouveau lien.'
               : 'Ce lien n\'existe pas ou n\'est pas reconnu sur cet appareil. Vérifie que tu as bien ouvert le lien complet envoyé par l\'organisateur.'}
           </p>

@@ -180,6 +180,25 @@ export interface ScanLink {
   createdBy: string;
   scanCount: number;
   lastUsedAt?: string;
+  /** Après cette date (AAAA-MM-JJTHH:MM), le lien ne marche plus */
+  expiresAt?: string;
+}
+
+/** Lien personnel à usage unique : créer son compte (invitation) ou choisir un nouveau code (réinitialisation) */
+export interface AdminInvite {
+  id: string;
+  token: string;
+  kind: 'invite' | 'reset';
+  name: string;
+  role: AdminRole;
+  permissions: AdminPermission[];
+  /** Compte concerné (réinitialisation) */
+  accountId?: string;
+  createdAt: string;
+  createdBy: string;
+  /** Horodatage (ms) de fin de validité */
+  expiresAt: number;
+  usedAt?: string;
 }
 
 export interface ActivityEntry {

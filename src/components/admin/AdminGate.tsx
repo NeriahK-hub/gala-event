@@ -23,9 +23,12 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
       if (code !== confirm) return setError('Les deux codes ne sont pas identiques.');
       const res = setupSuper(name, code);
       if (!res.ok) setError(res.error);
-    } else if (!login(code)) {
-      setError('Code incorrect ou compte suspendu.');
-      setCode('');
+    } else {
+      const res = login(code);
+      if (!res.ok) {
+        setError(res.error);
+        setCode('');
+      }
     }
   };
 
@@ -86,7 +89,7 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
         >
           {needsSetup ? 'Créer le super admin' : 'Ouvrir la console'}
         </button>
-        {!needsSetup && <p className="mt-3 text-xs text-stone-500">Code oublié ? Demande à l'admin n°1 de le réinitialiser.</p>}
+        {!needsSetup && <p className="mt-3 text-xs text-stone-500">Code oublié ? Demande à l'admin n°1 un lien pour en choisir un nouveau.</p>}
         <button type="button" onClick={onBackToHome} className="mt-3 inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-white cursor-pointer">
           <ArrowLeft className="w-4 h-4" /> Retour au site
         </button>

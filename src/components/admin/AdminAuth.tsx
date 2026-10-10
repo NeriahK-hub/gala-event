@@ -1,10 +1,9 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { ShieldAlert } from 'lucide-react';
-import { AdminRole, verifyOwnerCode } from '../../lib/adminLock';
+import { useTeam } from '../../team/TeamContext';
 import { Modal } from './Modal';
 
 interface AdminAuthValue {
-  role: AdminRole;
   /** Autorise une suppression : l'admin n°1 passe directement, un membre d'équipe doit saisir le code de l'admin n°1 */
   authorize: (what: string) => Promise<boolean>;
 }
@@ -17,7 +16,8 @@ export const useAdminAuth = (): AdminAuthValue => {
   return ctx;
 };
 
-export const AdminAuthProvider: React.FC<{ role: AdminRole; children: React.ReactNode }> = ({ role, children }) => {
+export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { current, isManager, verifyApprover } = useTeam();
   const [request, setRequest] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ export const AdminAuthProvider: React.FC<{ role: AdminRole; children: React.Reac
 
   const authorize = useCallback(
     (what: string) => {
-      if (role === 'owner') return Promise.resolve(true);
+      if (isManager) return Promise.resolve(true);
       return new Promise<boolean>((resolve) => {
         resolver.current = resolve;
         setCode('');
@@ -33,7 +33,7 @@ export const AdminAuthProvider: React.FC<{ role: AdminRole; children: React.Reac
         setRequest(what);
       });
     },
-    [role]
+    [isManager]
   );
 
   const close = (ok: boolean) => {
@@ -44,7 +44,7 @@ export const AdminAuthProvider: React.FC<{ role: AdminRole; children: React.Reac
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (verifyOwnerCode(code)) close(true);
+    if (verifyApprover(code)) close(true);
     else {
       setError('Code incorrect : seul l\'admin n°1 peut autoriser.');
       setCode('');
@@ -52,14 +52,14 @@ export const AdminAuthProvider: React.FC<{ role: AdminRole; children: React.Reac
   };
 
   return (
-    <AdminAuthContext.Provider value={{ role, authorize }}>
+    <AdminAuthContext.Provider value={{ authorize }}>
       {children}
       {request && (
         <Modal onClose={() => close(false)} title="Autorisation requise" kicker="Admin n°1">
           <form onSubmit={submit} className="space-y-4">
             <div className="flex items-start gap-3 rounded-xl bg-amber-500/10 border border-amber-400/30 p-3.5 text-sm text-amber-100">
               <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
-              <p>Pour supprimer {request}, l'admin n°1 doit saisir son code.</p>
+              <p>{current?.name ?? 'Tu'}, pour supprimer {request}, l'admin n°1 doit saisir son code.</p>
             </div>
             <input
               type="password"

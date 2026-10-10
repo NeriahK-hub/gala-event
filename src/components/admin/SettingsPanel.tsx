@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { Download, KeyRound, Lock, Timer, Upload, Users } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Download, Timer, Upload } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { Order } from '../../types';
-import { AdminRole, hasTeamCode, setOwnerCode, setTeamCode, verifyOwnerCode } from '../../lib/adminLock';
 
 const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
 
@@ -45,59 +44,25 @@ const Row: React.FC<{ title: string; hint?: string; checked: boolean; onChange: 
 );
 
 interface SettingsPanelProps {
-  role: AdminRole;
   orders: Order[];
   onImportOrders: (orders: Order[]) => void;
-  onLock: () => void;
   notify: (message: string) => void;
 }
 
 const field =
   'w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm text-[#F9F5EC] focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20';
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ role, orders, onImportOrders, onLock, notify }) => {
+export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOrders, notify }) => {
   const { content, setContent } = useContent();
   const { salesOpen, hiddenSections, salesDeadline, autoCloseSales } = content.settings;
-  const isOwner = role === 'owner';
-  const [teamCode, setTeamCodeInput] = useState('');
-  const [teamSet, setTeamSet] = useState(hasTeamCode);
-  const fileRef = useRef<HTMLInputElement>(null);
 
-  const [oldCode, setOldCode] = useState('');
-  const [newCode, setNewCode] = useState('');
-  const [codeError, setCodeError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const setSettings = (patch: Partial<typeof content.settings>) =>
     setContent((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
 
   const toggleSection = (id: string, visible: boolean) =>
     setSettings({ hiddenSections: visible ? hiddenSections.filter((s) => s !== id) : [...new Set([...hiddenSections, id])] });
-
-  const changeCode = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verifyOwnerCode(oldCode)) return setCodeError('Le code actuel est incorrect.');
-    if (newCode.length < 4) return setCodeError('Le nouveau code doit faire au moins 4 caractères.');
-    setOwnerCode(newCode);
-    setOldCode('');
-    setNewCode('');
-    setCodeError('');
-    notify('Code d\'accès modifié');
-  };
-
-  const saveTeamCode = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (teamCode.length < 4) return notify('Le code équipe doit faire au moins 4 caractères');
-    setTeamCode(teamCode);
-    setTeamSet(true);
-    setTeamCodeInput('');
-    notify('Code équipe enregistré');
-  };
-
-  const removeTeamCode = () => {
-    setTeamCode(null);
-    setTeamSet(false);
-    notify('Accès équipe retiré');
-  };
 
   const exportBackup = () => {
     const blob = new Blob([JSON.stringify({ app: 'gala-empire', version: 1, exportedAt: new Date().toISOString(), orders }, null, 2)], { type: 'application/json' });
@@ -189,54 +154,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ role, orders, onIm
         </div>
       </section>
 
-      {isOwner && (
-        <section className={`${panel} p-5 sm:p-6`}>
-          <h2 className="font-semibold text-[#F3E5AB] mb-1 flex items-center gap-2">
-            <Users className="w-4 h-4" /> Accès de l'équipe
-          </h2>
-          <p className="text-sm text-stone-400 mb-4">
-            Donne ce code aux autres admins. Ils peuvent gérer les commandes et le contenu, mais pour tout supprimer (commande, élément, image, réinitialisation) ils doivent saisir ton code d'admin n°1.
-          </p>
-          <form onSubmit={saveTeamCode} className="flex flex-col sm:flex-row gap-3">
-            <input type="password" autoComplete="new-password" value={teamCode} onChange={(e) => setTeamCodeInput(e.target.value)} placeholder={teamSet ? 'Nouveau code équipe' : 'Code équipe'} aria-label="Code équipe" className={field} />
-            <button type="submit" className="shrink-0 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
-              {teamSet ? 'Changer le code équipe' : 'Activer l\'accès équipe'}
-            </button>
-            {teamSet && (
-              <button type="button" onClick={removeTeamCode} className="shrink-0 px-4 py-2.5 rounded-lg text-sm text-red-300 hover:bg-red-500/10 cursor-pointer">
-                Retirer l'accès
-              </button>
-            )}
-          </form>
-        </section>
-      )}
-
-      {isOwner ? (
-      <section className={`${panel} p-5 sm:p-6`}>
-        <h2 className="font-semibold text-[#F3E5AB] mb-1 flex items-center gap-2">
-          <KeyRound className="w-4 h-4" /> Code de l'admin n°1
-        </h2>
-        <p className="text-sm text-stone-400 mb-4">Ce code protège la console sur cet appareil.</p>
-        <form onSubmit={changeCode} className="grid sm:grid-cols-2 gap-3">
-          <input type="password" autoComplete="current-password" value={oldCode} onChange={(e) => { setOldCode(e.target.value); setCodeError(''); }} placeholder="Code actuel" aria-label="Code actuel" className={field} />
-          <input type="password" autoComplete="new-password" value={newCode} onChange={(e) => { setNewCode(e.target.value); setCodeError(''); }} placeholder="Nouveau code" aria-label="Nouveau code" className={field} />
-          {codeError && <p role="alert" className="sm:col-span-2 text-sm text-red-300">{codeError}</p>}
-          <div className="sm:col-span-2 flex flex-wrap gap-2">
-            <button type="submit" className="px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">Changer le code</button>
-            <button type="button" onClick={onLock} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-stone-300 hover:bg-white/10 cursor-pointer">
-              <Lock className="w-4 h-4" /> Verrouiller maintenant
-            </button>
-          </div>
-        </form>
-      </section>
-      ) : (
-        <section className={`${panel} p-5 sm:p-6`}>
-          <p className="text-sm text-stone-400">Tu es connecté comme membre de l'équipe. Les codes d'accès sont gérés par l'admin n°1.</p>
-          <button type="button" onClick={onLock} className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-stone-300 hover:bg-white/10 cursor-pointer">
-            <Lock className="w-4 h-4" /> Verrouiller maintenant
-          </button>
-        </section>
-      )}
     </div>
   );
 };

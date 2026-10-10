@@ -1,19 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { AlertTriangle, Camera, CheckCircle2, QrCode, ScanLine, XCircle } from 'lucide-react';
-import { IssuedTicket, Order } from '../../types';
-
-type ScanOutcome =
-  | { kind: 'valid'; ticket: IssuedTicket; order: Order; time: string }
-  | { kind: 'already_used'; ticket: IssuedTicket; order: Order }
-  | { kind: 'not_validated'; ticket: IssuedTicket; order: Order }
-  | { kind: 'unknown'; code: string };
+import { AlertTriangle, CheckCircle2, QrCode, ScanLine, XCircle } from 'lucide-react';
+import { Order } from '../../types';
+import { checkTicket, ScanOutcome } from '../../lib/scan';
+import { QrCamera } from './QrCamera';
+import { useTeam } from '../../team/TeamContext';
 
 interface ScannerPanelProps {
   orders: Order[];
   onUpdateOrder: (order: Order) => void;
 }
 
-const nowTime = () => new Date().toTimeString().slice(0, 8);
 
 export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrder }) => {
   const [code, setCode] = useState('');
@@ -29,43 +25,16 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
     .sort((a, b) => (b.ticket.scannedAt ?? '').localeCompare(a.ticket.scannedAt ?? ''))
     .slice(0, 6);
 
+  const { current, log } = useTeam();
+
   const runScan = (raw: string) => {
-    const q = raw.trim().toLowerCase();
-    if (!q) return;
-    // Le QR code contient « numéro|code de sécurité » : on lit chaque morceau
-    const parts = q.split(/[|\s]+/).filter(Boolean);
-    const found = allTickets.find(({ ticket }) => {
-      const num = ticket.ticketNumber.toLowerCase();
-      const code = ticket.securityCode.toLowerCase();
-      const hasNum = parts.includes(num);
-      const hasCode = parts.includes(code);
-      // Si le QR donne les deux, ils doivent correspondre au même billet (anti-falsification)
-      if (hasNum && parts.some((p) => /^[a-z]{3,5}-\d{4}-[a-z]$/.test(p))) return hasCode;
-      return hasNum || hasCode || ticket.qrPayload.toLowerCase() === q;
-    });
-
-    if (!found) {
-      setOutcome({ kind: 'unknown', code: raw.trim() });
-      return;
+    const res = checkTicket(raw, orders, current?.name ?? 'Console');
+    if (!res) return;
+    if (res.updatedOrder) {
+      onUpdateOrder(res.updatedOrder);
+      log(`A scanné le billet ${res.outcome.kind === 'valid' ? res.outcome.ticket.ticketNumber : ''}`);
     }
-    const { ticket, order } = found;
-    if (order.status !== 'validated') {
-      setOutcome({ kind: 'not_validated', ticket, order });
-      return;
-    }
-    if (ticket.scanned) {
-      setOutcome({ kind: 'already_used', ticket, order });
-      return;
-    }
-
-    const time = nowTime();
-    onUpdateOrder({
-      ...order,
-      tickets: order.tickets.map((t) =>
-        t.ticketNumber === ticket.ticketNumber ? { ...t, scanned: true, scannedAt: time, scannedBy: 'Contrôleur (console)' } : t
-      ),
-    });
-    setOutcome({ kind: 'valid', ticket, order, time });
+    setOutcome(res.outcome);
   };
 
   const testable = allTickets.filter(({ order }) => order.status === 'validated').slice(0, 4);
@@ -125,15 +94,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
           </div>
         )}
 
-        {/* Zone de caméra (simulation visuelle) */}
-        <div className="mt-8 relative aspect-[16/9] max-h-64 rounded-2xl border border-white/10 bg-black/40 overflow-hidden flex items-center justify-center">
-          <div className="absolute inset-6 border-2 border-dashed border-[#E8C98A]/40 rounded-xl" />
-          <div className="text-center text-stone-400">
-            <Camera className="w-9 h-9 mx-auto mb-2 text-[#E8C98A]/80" />
-            <p className="text-sm">Le scan par caméra sera branché avec le backend.</p>
-            <p className="text-xs">En attendant, la saisie du code fonctionne.</p>
-          </div>
-        </div>
+        <QrCamera onDetected={runScan} paused={!!outcome} className="mt-8 aspect-[4/3] sm:aspect-[16/9]" />
       </div>
 
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -169,7 +130,7 @@ const THEMES = {
   unknown: { bg: 'bg-rose-950/95', border: 'border-rose-400', icon: 'bg-rose-500 text-white', label: 'Entrée refusée', title: 'Billet inconnu', Icon: XCircle, btn: 'bg-rose-500 text-white hover:bg-rose-400' },
 } as const;
 
-const ResultOverlay: React.FC<{ outcome: ScanOutcome; onClose: () => void }> = ({ outcome, onClose }) => {
+export const ResultOverlay: React.FC<{ outcome: ScanOutcome; onClose: () => void }> = ({ outcome, onClose }) => {
   const theme = THEMES[outcome.kind];
   const Icon = theme.Icon;
 

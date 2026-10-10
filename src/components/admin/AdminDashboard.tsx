@@ -19,6 +19,7 @@ import {
   Settings,
   Trash2,
   Lock,
+  Users,
   BellRing,
   ScanLine,
   Search,
@@ -31,7 +32,9 @@ import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { ContentEditor } from './ContentEditor';
 import { SettingsPanel } from './SettingsPanel';
-import { AdminRole, lockAdmin } from '../../lib/adminLock';
+import { TeamPanel } from './TeamPanel';
+import { ROLE_LABELS, useTeam } from '../../team/TeamContext';
+import { AdminPermission } from '../../types';
 import { AdminAuthProvider, useAdminAuth } from './AdminAuth';
 import { Modal } from './Modal';
 import { AddOrderModal } from './AddOrderModal';
@@ -47,18 +50,18 @@ interface AdminDashboardProps {
   onImportOrders: (orders: Order[]) => void;
   onBackToHome: () => void;
   onOpenOrderTickets: (orderId: string) => void;
-  onLock: () => void;
-  role: AdminRole;
 }
 
-type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings';
+type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings' | 'team';
 
-const NAV: { id: Tab; label: string; icon: React.ReactNode }[] = [
+// perm : droit nécessaire ; 'manager' = admin n°1 et super admin uniquement
+const NAV: { id: Tab; label: string; icon: React.ReactNode; perm?: AdminPermission | 'manager' }[] = [
   { id: 'overview', label: 'Vue d\'ensemble', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { id: 'orders', label: 'Commandes', icon: <ListOrdered className="w-5 h-5" /> },
-  { id: 'scanner', label: 'Contrôle d\'entrée', icon: <ScanLine className="w-5 h-5" /> },
-  { id: 'content', label: 'Contenu du site', icon: <FileEdit className="w-5 h-5" /> },
-  { id: 'settings', label: 'Réglages', icon: <Settings className="w-5 h-5" /> },
+  { id: 'orders', label: 'Commandes', icon: <ListOrdered className="w-5 h-5" />, perm: 'orders' },
+  { id: 'scanner', label: 'Contrôle d\'entrée', icon: <ScanLine className="w-5 h-5" />, perm: 'scanner' },
+  { id: 'content', label: 'Contenu du site', icon: <FileEdit className="w-5 h-5" />, perm: 'content' },
+  { id: 'settings', label: 'Réglages', icon: <Settings className="w-5 h-5" />, perm: 'settings' },
+  { id: 'team', label: 'Équipe & accès', icon: <Users className="w-5 h-5" />, perm: 'manager' },
 ];
 
 const STATUS_STYLES: Record<OrderStatus, { label: string; cls: string; icon: React.ReactNode }> = {
@@ -87,12 +90,16 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   onImportOrders,
   onBackToHome,
   onOpenOrderTickets,
-  onLock,
-  role,
 }) => {
   const { content } = useContent();
   const { authorize } = useAdminAuth();
-  const [tab, setTab] = useState<Tab>('overview');
+  const { current, can, isManager, logout, log } = useTeam();
+  const [rawTab, setTab] = useState<Tab>('overview');
+  const allowed = (perm?: AdminPermission | 'manager') => !perm || (perm === 'manager' ? isManager : can(perm));
+  const nav = NAV.filter((n) => allowed(n.perm));
+  const canValidate = can('validate');
+  // Un onglet non autorisé (droits retirés entre-temps) renvoie à la vue d'ensemble
+  const tab: Tab = nav.some((n) => n.id === rawTab) ? rawTab : 'overview';
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -162,6 +169,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
       validatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
     };
     onUpdateOrder(updated);
+    log(`A validé le paiement de la commande ${updated.id} (${updated.totalAmount} $)`);
     setValidatingOrder(updated);
     setIsValidationSuccess(true);
   };
@@ -169,6 +177,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   const confirmReject = () => {
     if (!rejectingOrder) return;
     onUpdateOrder({ ...rejectingOrder, status: 'rejected', notes: 'Refusé par le gestionnaire - Transfert non confirmé' });
+    log(`A refusé la commande ${rejectingOrder.id}`);
     notify(`Commande ${rejectingOrder.id} refusée`);
     setRejectingOrder(null);
   };
@@ -185,6 +194,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
 
   const restoreOrder = (order: Order) => {
     onUpdateOrder({ ...order, status: 'pending', notes: undefined });
+    log(`A remis en attente la commande ${order.id}`);
     notify(`Commande ${order.id} remise en attente`);
   };
 
@@ -192,13 +202,13 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     if (!deletingOrder) return;
     if (!(await authorize(`la commande ${deletingOrder.id}`))) return;
     onDeleteOrder(deletingOrder.id);
+    log(`A supprimé la commande ${deletingOrder.id} (${deletingOrder.customerName})`);
     notify(`Commande ${deletingOrder.id} supprimée`);
     setDeletingOrder(null);
   };
 
   const lock = () => {
-    lockAdmin();
-    onLock();
+    logout();
     onBackToHome();
   };
 
@@ -239,12 +249,12 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
         <EmpireLogo size={44} />
         <div className="min-w-0">
           <p className="font-serif text-lg text-[#F9F5EC] leading-tight truncate">Console équipe</p>
-          <p className="text-xs text-stone-400 truncate">{role === 'owner' ? 'Admin n°1' : 'Membre de l\'équipe'}</p>
+          <p className="text-xs text-stone-400 truncate">{current ? `${current.name} · ${ROLE_LABELS[current.role]}` : ''}</p>
         </div>
       </div>
 
       <nav className="flex-1 p-3 space-y-1" aria-label="Navigation de la console">
-        {NAV.map((item) => (
+        {nav.map((item) => (
           <button
             key={item.id}
             onClick={() => goTab(item.id)}
@@ -283,7 +293,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     </div>
   );
 
-  const currentLabel = NAV.find((n) => n.id === tab)?.label;
+  const currentLabel = nav.find((n) => n.id === tab)?.label;
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] text-[#F9F5EC] bg-[#12070A] relative z-[5]">
@@ -367,9 +377,9 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                 <section className={`${panel} p-6`}>
                   <div className="flex items-center justify-between mb-5">
                     <h2 className="font-semibold text-[#F3E5AB]">Commandes à traiter</h2>
-                    <button onClick={() => { setStatusFilter('pending'); goTab('orders'); }} className="text-xs text-[#E8C98A] underline underline-offset-4 cursor-pointer">
+                    {can('orders') && <button onClick={() => { setStatusFilter('pending'); goTab('orders'); }} className="text-xs text-[#E8C98A] underline underline-offset-4 cursor-pointer">
                       Tout voir
-                    </button>
+                    </button>}
                   </div>
                   {pending.length === 0 ? (
                     <p className="text-sm text-stone-400 py-6 text-center">Tout est à jour. Aucune commande en attente.</p>
@@ -383,12 +393,12 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                               {o.id} · {o.quantity} × {tierName(o.tierId)} · {o.totalAmount} USD
                             </p>
                           </div>
-                          <button
+                          {canValidate && <button
                             onClick={() => openValidate(o)}
                             className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold cursor-pointer hover:brightness-110"
                           >
                             Valider
-                          </button>
+                          </button>}
                         </li>
                       ))}
                     </ul>
@@ -507,6 +517,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                             >
                               <BellRing className="w-4 h-4" />
                             </a>
+                            {canValidate && <>
                             <button
                               onClick={() => openValidate(order)}
                               className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-sm font-bold hover:brightness-110 cursor-pointer"
@@ -519,9 +530,10 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                             >
                               Refuser
                             </button>
+                            </>}
                           </>
                         )}
-                        {order.status === 'rejected' && (
+                        {order.status === 'rejected' && canValidate && (
                           <button
                             onClick={() => restoreOrder(order)}
                             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer"
@@ -568,7 +580,9 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
 
           {tab === 'content' && <ContentEditor onViewSite={onBackToHome} notify={notify} />}
 
-          {tab === 'settings' && <SettingsPanel role={role} orders={orders} onImportOrders={onImportOrders} onLock={lock} notify={notify} />}
+          {tab === 'settings' && <SettingsPanel orders={orders} onImportOrders={onImportOrders} notify={notify} />}
+
+          {tab === 'team' && isManager && <TeamPanel notify={notify} />}
         </motion.main>
       </div>
 
@@ -665,6 +679,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
           onClose={() => setShowAdd(false)}
           onAdd={(order) => {
             onAddOrder(order);
+            log(`A ajouté la commande ${order.id} (${order.customerName})`);
             setShowAdd(false);
             setStatusFilter('all');
             setTab('orders');
@@ -750,7 +765,7 @@ const Row: React.FC<{ k: string; v: string; strong?: boolean; mono?: boolean }> 
 );
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = (props) => (
-  <AdminAuthProvider role={props.role}>
+  <AdminAuthProvider>
     <AdminDashboardInner {...props} />
   </AdminAuthProvider>
 );

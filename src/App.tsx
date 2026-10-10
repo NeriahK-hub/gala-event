@@ -21,7 +21,8 @@ import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { useContent } from './content/ContentContext';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminGate } from './components/admin/AdminGate';
-import { AdminRole, getAdminRole } from './lib/adminLock';
+import { ScanStation } from './components/admin/ScanStation';
+import { useTeam } from './team/TeamContext';
 import { FloatingActions } from './components/common/FloatingActions';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 import { decodeTicketToken, loadMyTickets, saveMyTicket } from './lib/ticketLink';
@@ -31,6 +32,8 @@ const SHOW_DEMO_NAV = new URLSearchParams(window.location.search).has('demo');
 
 // Lien d'invitations reçu du client : ?billet=…
 const TICKET_TOKEN = new URLSearchParams(window.location.search).get('billet');
+// Lien de contrôle d'entrée attribué à une personne : ?scan=…
+const SCAN_TOKEN = new URLSearchParams(window.location.search).get('scan');
 
 const ORDERS_KEY = 'gala-orders-v1';
 const MY_ORDERS_KEY = 'gala-my-orders-v1';
@@ -64,8 +67,8 @@ export default function App() {
   // Commandes (enregistrées dans ce navigateur, sauf en mode démo)
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [myOrderIds, setMyOrderIds] = useState<string[]>(loadMyOrderIds);
-  // Code d'accès de l'espace équipe (ignoré en mode démo)
-  const [adminRole, setAdminRole] = useState<AdminRole | null>(() => (SHOW_DEMO_NAV ? 'owner' : getAdminRole()));
+  // Compte connecté à la console (null = verrouillée)
+  const { current: adminAccount } = useTeam();
 
   // Invitations débloquées par un lien sur cet appareil
   const [unlockedTokens, setUnlockedTokens] = useState<string[]>(() => {
@@ -86,6 +89,16 @@ export default function App() {
       // stockage indisponible
     }
   }, [orders]);
+
+  // Un autre onglet (ex. un lien de scan ouvert sur ce même appareil) a modifié les commandes : on les recharge
+  useEffect(() => {
+    if (SHOW_DEMO_NAV) return;
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === ORDERS_KEY) setOrders(loadOrders());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   useEffect(() => {
     if (SHOW_DEMO_NAV) return;
@@ -184,6 +197,12 @@ export default function App() {
     ...unlocked,
     ...orders.filter((o) => myOrderIds.includes(o.id) && !unlocked.some((u) => u.id === o.id)),
   ];
+
+
+  // Lien de scan : page dédiée, sans le site autour
+  if (SCAN_TOKEN) {
+    return <ScanStation token={SCAN_TOKEN} orders={orders} onUpdateOrder={handleUpdateOrder} />;
+  }
 
   return (
     <div className="relative min-h-screen text-[#F9F5EC]">
@@ -288,10 +307,10 @@ export default function App() {
         )}
 
         {/* ================= 4. ESPACE ÉQUIPE (ADMIN & SCANNER) ================= */}
-        {activeView === 'admin' && !adminRole && (
-          <AdminGate onUnlock={setAdminRole} onBackToHome={() => setActiveView('vitrine')} />
+        {activeView === 'admin' && !adminAccount && (
+          <AdminGate onBackToHome={() => setActiveView('vitrine')} />
         )}
-        {activeView === 'admin' && adminRole && (
+        {activeView === 'admin' && adminAccount && (
           <AdminDashboard
             orders={orders}
             onUpdateOrder={handleUpdateOrder}
@@ -302,8 +321,6 @@ export default function App() {
               setActiveView('vitrine');
             }}
             onOpenOrderTickets={handleViewTicket}
-            role={adminRole}
-            onLock={() => setAdminRole(null)}
           />
         )}
         </motion.div>

@@ -150,3 +150,41 @@ export interface SiteContent {
   faq: FaqItem[];
   sponsors: PartnerSponsor[];
 }
+
+// ===== Équipe : comptes admin, liens de scan, historique =====
+
+/** super = concepteur du site, owner = admin n°1 (organisateur), admin = admins 2, 3… */
+export type AdminRole = 'super' | 'owner' | 'admin';
+
+/** Droits qu'un admin n°1 peut cocher pour un admin de son équipe */
+export type AdminPermission = 'orders' | 'validate' | 'scanner' | 'content' | 'settings';
+
+export interface AdminAccount {
+  id: string;
+  name: string;
+  role: AdminRole;
+  permissions: AdminPermission[];
+  codeHash: string;
+  active: boolean;
+  createdAt: string;
+  createdBy?: string;
+}
+
+/** Lien de contrôle d'entrée (?scan=…) attribué à une personne : il ne permet que de scanner */
+export interface ScanLink {
+  id: string;
+  label: string;
+  token: string;
+  active: boolean;
+  createdAt: string;
+  createdBy: string;
+  scanCount: number;
+  lastUsedAt?: string;
+}
+
+export interface ActivityEntry {
+  id: string;
+  at: string;
+  actor: string;
+  action: string;
+}

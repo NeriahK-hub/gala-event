@@ -6,7 +6,8 @@ const DAY = 86_400_000;
 
 export const CountdownSection: React.FC = () => {
   const { content, t } = useContent();
-  const target = new Date(content.galaInfo.isoDate).getTime();
+  const rawTarget = new Date(content.settings.salesDeadline).getTime();
+  const target = Number.isNaN(rawTarget) ? new Date(content.galaInfo.isoDate).getTime() : rawTarget;
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -15,6 +16,7 @@ export const CountdownSection: React.FC = () => {
   }, []);
 
   const diff = Math.max(0, target - now);
+  const ended = target - now <= 0;
   const units = [
     { label: t('countdown.days'), value: Math.floor(diff / DAY) },
     { label: t('countdown.hours'), value: Math.floor((diff % DAY) / 3_600_000) },
@@ -25,7 +27,7 @@ export const CountdownSection: React.FC = () => {
   return (
     <section className="relative py-20 sm:py-28 px-4" aria-label="Compte à rebours">
       <Reveal className="max-w-4xl mx-auto text-center">
-        <p className="text-sm font-semibold text-[#FFB43A] mb-8 sm:mb-10">{t('countdown.kicker')}</p>
+        <p className="text-sm font-semibold text-[#FFB43A] mb-8 sm:mb-10">{ended ? t('countdown.endedTitle') : t('countdown.kicker')}</p>
 
         <div role="timer" className="grid grid-cols-4 divide-x divide-white/15">
           {units.map((unit) => (
@@ -39,7 +41,7 @@ export const CountdownSection: React.FC = () => {
           ))}
         </div>
 
-        <p className="mt-10 sm:mt-12 text-base sm:text-lg text-white/80 max-w-md mx-auto text-balance">{t('countdown.note')}</p>
+        {!ended && <p className="mt-10 sm:mt-12 text-base sm:text-lg text-white/80 max-w-md mx-auto text-balance">{t('countdown.note')}</p>}
       </Reveal>
     </section>
   );

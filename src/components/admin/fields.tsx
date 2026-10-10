@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAdminAuth } from './AdminAuth';
 import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2 } from 'lucide-react';
 
 const inputCls =
@@ -72,6 +73,7 @@ const fileToDataUrl = (file: File): Promise<string> =>
   });
 
 const ImageField: React.FC<{ label: string; value: string; onChange: (v: string) => void }> = ({ label, value, onChange }) => {
+  const { authorize } = useAdminAuth();
   const [error, setError] = React.useState('');
   return (
     <Field label={label} hint="Colle un lien, ou importe une image depuis ton appareil.">
@@ -107,7 +109,7 @@ const ImageField: React.FC<{ label: string; value: string; onChange: (v: string)
               />
             </label>
             {value && (
-              <button type="button" onClick={() => onChange('')} className="text-xs text-stone-400 hover:text-red-300 underline underline-offset-4 cursor-pointer">
+              <button type="button" onClick={async () => { if (await authorize('cette image')) onChange(''); }} className="text-xs text-stone-400 hover:text-red-300 underline underline-offset-4 cursor-pointer">
                 Retirer l'image
               </button>
             )}
@@ -213,6 +215,7 @@ export function ListEditor<T extends object>({
   addLabel = 'Ajouter',
   canRemove = true,
 }: ListEditorProps<T>) {
+  const { authorize } = useAdminAuth();
   const move = (from: number, to: number) => {
     if (to < 0 || to >= items.length) return;
     const next = [...items];
@@ -260,8 +263,9 @@ export function ListEditor<T extends object>({
               {canRemove && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (confirm(`Supprimer « ${title(item, index) || 'cet élément'} » ?`)) {
+                  onClick={async () => {
+                    const name = title(item, index) || 'cet élément';
+                    if (confirm(`Supprimer « ${name} » ?`) && (await authorize(`« ${name} »`))) {
                       onChange(items.filter((_, i) => i !== index));
                     }
                   }}

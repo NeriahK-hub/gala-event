@@ -36,7 +36,7 @@ export const ReservationFlow: React.FC<ReservationFlowProps> = ({
   onOrderCreated,
   onViewTicket,
 }) => {
-  const { content, t } = useContent();
+  const { content, t, isSalesOpen } = useContent();
   const TICKET_TIERS = content.tiers;
   const GALA_INFO = content.galaInfo;
 
@@ -123,7 +123,7 @@ Code commande :
   const stepLabels = ['Billet', 'Coordonnées', 'Confirmation'];
 
   // Ventes fermées depuis l'admin (une commande déjà passée reste consultable à l'étape 3)
-  if (!content.settings.salesOpen && step !== 3) {
+  if (!isSalesOpen() && step !== 3) {
     return (
       <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 max-w-xl mx-auto text-center">
         <h1 className="font-serif text-3xl sm:text-4xl text-white mb-4">{t('tickets.closedTitle')}</h1>

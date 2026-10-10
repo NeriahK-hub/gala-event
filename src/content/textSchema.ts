@@ -54,7 +54,8 @@ export const TEXT_FIELDS: TextField[] = [
   f('hero.scroll', 'hero', 'Lien « Découvrir »', 'Découvrir la soirée'),
 
   // Compte à rebours
-  f('countdown.kicker', 'countdown', 'Titre', 'Le compte à rebours est lancé'),
+  f('countdown.kicker', 'countdown', 'Titre', 'La billetterie ferme dans'),
+  f('countdown.endedTitle', 'countdown', 'Titre quand le compte à rebours est terminé', 'La billetterie est terminée'),
   f('countdown.note', 'countdown', 'Phrase sous le compte à rebours', 'Billet à 10 $ seulement. Réserve le tien dès maintenant.'),
   f('countdown.days', 'countdown', 'Libellé « Jours »', 'Jours'),
   f('countdown.hours', 'countdown', 'Libellé « Heures »', 'Heures'),

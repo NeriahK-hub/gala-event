@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { EmpireLogo } from '../common/EmpireLogo';
-import { checkAdminCode, hasAdminCode, setAdminCode } from '../../lib/adminLock';
+import { AdminRole, hasAdminCode, loginWithCode, setOwnerCode } from '../../lib/adminLock';
 
 interface AdminGateProps {
-  onUnlock: () => void;
+  onUnlock: (role: AdminRole) => void;
   onBackToHome: () => void;
 }
 
@@ -22,11 +22,11 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onUnlock, onBackToHome }) 
     if (creating) {
       if (code.length < 4) return setError('Choisis un code d\'au moins 4 caractères.');
       if (code !== confirm) return setError('Les deux codes ne sont pas identiques.');
-      setAdminCode(code);
-      onUnlock();
-    } else if (checkAdminCode(code)) {
-      onUnlock();
+      setOwnerCode(code);
+      onUnlock('owner');
     } else {
+      const role = loginWithCode(code);
+      if (role) return onUnlock(role);
       setError('Code incorrect. Réessaie.');
       setCode('');
     }
@@ -41,10 +41,10 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onUnlock, onBackToHome }) 
         <span className="mx-auto mb-3 w-10 h-10 rounded-full bg-[#E8C98A]/15 text-[#E8C98A] flex items-center justify-center">
           <Lock className="w-5 h-5" />
         </span>
-        <h1 className="font-serif text-2xl mb-1">{creating ? 'Crée ton code d\'accès' : 'Console équipe'}</h1>
+        <h1 className="font-serif text-2xl mb-1">{creating ? 'Crée le code de l\'admin n°1' : 'Console équipe'}</h1>
         <p className="text-sm text-stone-400 mb-6">
           {creating
-            ? 'Ce code protège la console sur cet appareil. Tu en auras besoin à chaque nouvelle ouverture.'
+            ? 'Tu es l\'admin n°1 : ce code protège la console sur cet appareil et autorise les suppressions. Garde-le pour toi.'
             : 'Saisis ton code pour continuer.'}
         </p>
 

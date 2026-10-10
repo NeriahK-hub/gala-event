@@ -34,7 +34,7 @@ const normalizeDeep = <T,>(value: T): T => {
 const STORAGE_KEY = 'gala-site-content-v2';
 
 export const createDefaultContent = (): SiteContent => ({
-  settings: { salesOpen: true, hiddenSections: [] },
+  settings: { salesOpen: true, hiddenSections: ['dresscode'], salesDeadline: '2026-12-11T23:59', autoCloseSales: true },
   galaInfo: structuredClone(GALA_INFO),
   texts: { ...DEFAULT_TEXTS },
   tiers: structuredClone(TICKET_TIERS),
@@ -75,6 +75,8 @@ interface ContentContextValue {
   content: SiteContent;
   /** true si la section de la vitrine est affichée */
   isSectionVisible: (id: string) => boolean;
+  /** true si les clients peuvent commander (ventes ouvertes et échéance non dépassée) */
+  isSalesOpen: () => boolean;
   /** Renvoie le texte modifiable associé à la clef */
   t: (key: string) => string;
   setContent: (updater: (prev: SiteContent) => SiteContent) => void;
@@ -131,6 +133,11 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     () => ({
       content: display,
       isSectionVisible: (id: string) => !display.settings.hiddenSections.includes(id),
+      isSalesOpen: () => {
+        const { salesOpen, autoCloseSales, salesDeadline } = display.settings;
+        const end = new Date(salesDeadline).getTime();
+        return salesOpen && !(autoCloseSales && !Number.isNaN(end) && Date.now() > end);
+      },
       t: (key: string) => display.texts[key] ?? frTypo(DEFAULT_TEXTS[key] ?? ''),
       setContent,
       replaceContent,

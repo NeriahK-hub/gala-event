@@ -12,6 +12,7 @@ import {
   SiteContent,
   TicketTier,
 } from '../../types';
+import { useAdminAuth } from './AdminAuth';
 import { FieldDef, ListEditor, ObjectFields, TextInput } from './fields';
 
 type SectionId = 'infos' | (typeof TEXT_SECTIONS)[number]['id'];
@@ -28,7 +29,7 @@ const galaFields: FieldDef<GalaInfo>[] = [
   { key: 'slogan', label: 'Slogan', type: 'textarea' },
   { key: 'dateText', label: 'Date affichée' },
   { key: 'timeText', label: 'Horaires affichés' },
-  { key: 'isoDate', label: 'Date du compte à rebours', hint: 'Format AAAA-MM-JJTHH:MM:SS, ex. 2026-12-19T19:30:00' },
+  { key: 'isoDate', label: 'Date de l\'événement', hint: 'Format AAAA-MM-JJTHH:MM:SS, ex. 2026-12-12T18:00:00. Le compte à rebours de la billetterie se règle dans Réglages.' },
   { key: 'city', label: 'Ville' },
   { key: 'venueName', label: 'Nom du lieu' },
   { key: 'venueRoom', label: 'Salle' },
@@ -117,6 +118,7 @@ interface ContentEditorProps {
 
 export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify }) => {
   const { content, setContent, replaceContent, resetAll, isCustomized } = useContent();
+  const { authorize } = useAdminAuth();
   const [section, setSection] = useState<SectionId>('infos');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -125,8 +127,9 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
   const setText = (key: string, value: string) =>
     setContent((prev) => ({ ...prev, texts: { ...prev.texts, [key]: value } }));
 
-  const resetSectionTexts = (id: string) => {
+  const resetSectionTexts = async (id: string) => {
     if (!confirm('Remettre les textes de cette section à leur valeur d\'origine ?')) return;
+    if (!(await authorize('les modifications de cette section'))) return;
     setContent((prev) => {
       const texts = { ...prev.texts };
       TEXT_FIELDS.filter((f) => f.section === id).forEach((f) => (texts[f.key] = f.value));
@@ -195,8 +198,8 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({ onViewSite, notify
         />
         <button
           disabled={!isCustomized}
-          onClick={() => {
-            if (confirm('Effacer toutes tes modifications et revenir au contenu d\'origine ?')) {
+          onClick={async () => {
+            if (confirm('Effacer toutes tes modifications et revenir au contenu d\'origine ?') && (await authorize('toutes les modifications du site'))) {
               resetAll();
               notify('Contenu d\'origine rétabli');
             }

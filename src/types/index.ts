@@ -133,6 +133,10 @@ export interface SiteSettings {
   salesOpen: boolean;
   /** Identifiants des sections de la vitrine masquées */
   hiddenSections: string[];
+  /** Fin de la billetterie (compte à rebours), format AAAA-MM-JJTHH:MM */
+  salesDeadline: string;
+  /** Ferme automatiquement les ventes quand le compte à rebours arrive à zéro */
+  autoCloseSales: boolean;
 }
 
 export interface SiteContent {

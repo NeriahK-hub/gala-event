@@ -21,7 +21,7 @@ import { TicketViewPage } from './components/tickets/TicketViewPage';
 import { useContent } from './content/ContentContext';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminGate } from './components/admin/AdminGate';
-import { isAdminUnlocked } from './lib/adminLock';
+import { AdminRole, getAdminRole } from './lib/adminLock';
 import { FloatingActions } from './components/common/FloatingActions';
 import { DevNavSwitcher, ActiveView } from './components/common/DevNavSwitcher';
 import { decodeTicketToken, loadMyTickets, saveMyTicket } from './lib/ticketLink';
@@ -65,7 +65,7 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>(loadOrders);
   const [myOrderIds, setMyOrderIds] = useState<string[]>(loadMyOrderIds);
   // Code d'accès de l'espace équipe (ignoré en mode démo)
-  const [adminOpen, setAdminOpen] = useState<boolean>(() => SHOW_DEMO_NAV || isAdminUnlocked());
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(() => (SHOW_DEMO_NAV ? 'owner' : getAdminRole()));
 
   // Invitations débloquées par un lien sur cet appareil
   const [unlockedTokens, setUnlockedTokens] = useState<string[]>(() => {
@@ -288,10 +288,10 @@ export default function App() {
         )}
 
         {/* ================= 4. ESPACE ÉQUIPE (ADMIN & SCANNER) ================= */}
-        {activeView === 'admin' && !adminOpen && (
-          <AdminGate onUnlock={() => setAdminOpen(true)} onBackToHome={() => setActiveView('vitrine')} />
+        {activeView === 'admin' && !adminRole && (
+          <AdminGate onUnlock={setAdminRole} onBackToHome={() => setActiveView('vitrine')} />
         )}
-        {activeView === 'admin' && adminOpen && (
+        {activeView === 'admin' && adminRole && (
           <AdminDashboard
             orders={orders}
             onUpdateOrder={handleUpdateOrder}
@@ -302,7 +302,8 @@ export default function App() {
               setActiveView('vitrine');
             }}
             onOpenOrderTickets={handleViewTicket}
-            onLock={() => setAdminOpen(false)}
+            role={adminRole}
+            onLock={() => setAdminRole(null)}
           />
         )}
         </motion.div>

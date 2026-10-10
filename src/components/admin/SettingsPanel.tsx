@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { Download, KeyRound, Lock, Upload } from 'lucide-react';
+import { Download, KeyRound, Lock, Timer, Upload, Users } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
 import { Order } from '../../types';
-import { checkAdminCode, setAdminCode } from '../../lib/adminLock';
+import { AdminRole, hasTeamCode, setOwnerCode, setTeamCode, verifyOwnerCode } from '../../lib/adminLock';
 
 const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
 
@@ -45,6 +45,7 @@ const Row: React.FC<{ title: string; hint?: string; checked: boolean; onChange: 
 );
 
 interface SettingsPanelProps {
+  role: AdminRole;
   orders: Order[];
   onImportOrders: (orders: Order[]) => void;
   onLock: () => void;
@@ -54,9 +55,12 @@ interface SettingsPanelProps {
 const field =
   'w-full px-3.5 py-3 rounded-lg border border-white/15 bg-black/30 text-sm text-[#F9F5EC] focus:border-[#E8C98A] focus:outline-none focus:ring-2 focus:ring-[#E8C98A]/20';
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOrders, onLock, notify }) => {
+export const SettingsPanel: React.FC<SettingsPanelProps> = ({ role, orders, onImportOrders, onLock, notify }) => {
   const { content, setContent } = useContent();
-  const { salesOpen, hiddenSections } = content.settings;
+  const { salesOpen, hiddenSections, salesDeadline, autoCloseSales } = content.settings;
+  const isOwner = role === 'owner';
+  const [teamCode, setTeamCodeInput] = useState('');
+  const [teamSet, setTeamSet] = useState(hasTeamCode);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [oldCode, setOldCode] = useState('');
@@ -71,13 +75,28 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
 
   const changeCode = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!checkAdminCode(oldCode)) return setCodeError('Le code actuel est incorrect.');
+    if (!verifyOwnerCode(oldCode)) return setCodeError('Le code actuel est incorrect.');
     if (newCode.length < 4) return setCodeError('Le nouveau code doit faire au moins 4 caractères.');
-    setAdminCode(newCode);
+    setOwnerCode(newCode);
     setOldCode('');
     setNewCode('');
     setCodeError('');
     notify('Code d\'accès modifié');
+  };
+
+  const saveTeamCode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (teamCode.length < 4) return notify('Le code équipe doit faire au moins 4 caractères');
+    setTeamCode(teamCode);
+    setTeamSet(true);
+    setTeamCodeInput('');
+    notify('Code équipe enregistré');
+  };
+
+  const removeTeamCode = () => {
+    setTeamCode(null);
+    setTeamSet(false);
+    notify('Accès équipe retiré');
   };
 
   const exportBackup = () => {
@@ -121,6 +140,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
       </section>
 
       <section className={`${panel} p-5 sm:p-6`}>
+        <h2 className="font-semibold text-[#F3E5AB] mb-1 flex items-center gap-2">
+          <Timer className="w-4 h-4" /> Compte à rebours de la billetterie
+        </h2>
+        <p className="text-sm text-stone-400 mb-4">Le compte à rebours du site affiche le temps qu'il reste avant la fin des ventes. Les textes se modifient dans « Contenu du site » → Compte à rebours.</p>
+        <label className="block max-w-xs">
+          <span className="block text-xs font-semibold text-[#E8C98A] mb-1.5">Fin de la billetterie</span>
+          <input
+            type="datetime-local"
+            value={salesDeadline.slice(0, 16)}
+            onChange={(e) => e.target.value && setSettings({ salesDeadline: e.target.value })}
+            className={field}
+          />
+        </label>
+        <div className="divide-y divide-white/10 mt-2">
+          <Row
+            title="Fermer les ventes automatiquement"
+            hint="Quand le compte à rebours arrive à zéro, la réservation affiche « Les ventes sont fermées »."
+            checked={autoCloseSales}
+            onChange={(v) => setSettings({ autoCloseSales: v })}
+          />
+        </div>
+      </section>
+
+      <section className={`${panel} p-5 sm:p-6`}>
         <h2 className="font-semibold text-[#F3E5AB] mb-1">Sections du site</h2>
         <p className="text-sm text-stone-400 mb-2">Désactive une section pour la cacher de la page d'accueil et du menu. Rien n'est supprimé : tu peux la réactiver à tout moment.</p>
         <div className="divide-y divide-white/10">
@@ -146,9 +189,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
         </div>
       </section>
 
+      {isOwner && (
+        <section className={`${panel} p-5 sm:p-6`}>
+          <h2 className="font-semibold text-[#F3E5AB] mb-1 flex items-center gap-2">
+            <Users className="w-4 h-4" /> Accès de l'équipe
+          </h2>
+          <p className="text-sm text-stone-400 mb-4">
+            Donne ce code aux autres admins. Ils peuvent gérer les commandes et le contenu, mais pour tout supprimer (commande, élément, image, réinitialisation) ils doivent saisir ton code d'admin n°1.
+          </p>
+          <form onSubmit={saveTeamCode} className="flex flex-col sm:flex-row gap-3">
+            <input type="password" autoComplete="new-password" value={teamCode} onChange={(e) => setTeamCodeInput(e.target.value)} placeholder={teamSet ? 'Nouveau code équipe' : 'Code équipe'} aria-label="Code équipe" className={field} />
+            <button type="submit" className="shrink-0 px-4 py-2.5 rounded-lg border border-white/20 text-sm text-stone-100 hover:bg-white/10 cursor-pointer">
+              {teamSet ? 'Changer le code équipe' : 'Activer l\'accès équipe'}
+            </button>
+            {teamSet && (
+              <button type="button" onClick={removeTeamCode} className="shrink-0 px-4 py-2.5 rounded-lg text-sm text-red-300 hover:bg-red-500/10 cursor-pointer">
+                Retirer l'accès
+              </button>
+            )}
+          </form>
+        </section>
+      )}
+
+      {isOwner ? (
       <section className={`${panel} p-5 sm:p-6`}>
         <h2 className="font-semibold text-[#F3E5AB] mb-1 flex items-center gap-2">
-          <KeyRound className="w-4 h-4" /> Code d'accès
+          <KeyRound className="w-4 h-4" /> Code de l'admin n°1
         </h2>
         <p className="text-sm text-stone-400 mb-4">Ce code protège la console sur cet appareil.</p>
         <form onSubmit={changeCode} className="grid sm:grid-cols-2 gap-3">
@@ -163,6 +229,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
           </div>
         </form>
       </section>
+      ) : (
+        <section className={`${panel} p-5 sm:p-6`}>
+          <p className="text-sm text-stone-400">Tu es connecté comme membre de l'équipe. Les codes d'accès sont gérés par l'admin n°1.</p>
+          <button type="button" onClick={onLock} className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-stone-300 hover:bg-white/10 cursor-pointer">
+            <Lock className="w-4 h-4" /> Verrouiller maintenant
+          </button>
+        </section>
+      )}
     </div>
   );
 };

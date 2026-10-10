@@ -31,7 +31,8 @@ import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { ContentEditor } from './ContentEditor';
 import { SettingsPanel } from './SettingsPanel';
-import { lockAdmin } from '../../lib/adminLock';
+import { AdminRole, lockAdmin } from '../../lib/adminLock';
+import { AdminAuthProvider, useAdminAuth } from './AdminAuth';
 import { Modal } from './Modal';
 import { AddOrderModal } from './AddOrderModal';
 import { buildTicketLink } from '../../lib/ticketLink';
@@ -47,6 +48,7 @@ interface AdminDashboardProps {
   onBackToHome: () => void;
   onOpenOrderTickets: (orderId: string) => void;
   onLock: () => void;
+  role: AdminRole;
 }
 
 type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings';
@@ -77,7 +79,7 @@ const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
 
 const panel = 'rounded-2xl border border-white/10 bg-white/[0.03]';
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({
+const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   orders,
   onUpdateOrder,
   onAddOrder,
@@ -86,8 +88,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onBackToHome,
   onOpenOrderTickets,
   onLock,
+  role,
 }) => {
   const { content } = useContent();
+  const { authorize } = useAdminAuth();
   const [tab, setTab] = useState<Tab>('overview');
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -184,8 +188,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     notify(`Commande ${order.id} remise en attente`);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deletingOrder) return;
+    if (!(await authorize(`la commande ${deletingOrder.id}`))) return;
     onDeleteOrder(deletingOrder.id);
     notify(`Commande ${deletingOrder.id} supprimée`);
     setDeletingOrder(null);
@@ -234,7 +239,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <EmpireLogo size={44} />
         <div className="min-w-0">
           <p className="font-serif text-lg text-[#F9F5EC] leading-tight truncate">Console équipe</p>
-          <p className="text-xs text-stone-400 truncate">{content.galaInfo.name}</p>
+          <p className="text-xs text-stone-400 truncate">{role === 'owner' ? 'Admin n°1' : 'Membre de l\'équipe'}</p>
         </div>
       </div>
 
@@ -563,7 +568,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           {tab === 'content' && <ContentEditor onViewSite={onBackToHome} notify={notify} />}
 
-          {tab === 'settings' && <SettingsPanel orders={orders} onImportOrders={onImportOrders} onLock={lock} notify={notify} />}
+          {tab === 'settings' && <SettingsPanel role={role} orders={orders} onImportOrders={onImportOrders} onLock={lock} notify={notify} />}
         </motion.main>
       </div>
 
@@ -742,4 +747,10 @@ const Row: React.FC<{ k: string; v: string; strong?: boolean; mono?: boolean }> 
     <dt className="text-stone-400">{k}</dt>
     <dd className={`text-right ${strong ? 'font-bold text-[#F3E5AB]' : 'text-stone-100'} ${mono ? 'font-mono' : ''}`}>{v}</dd>
   </div>
+);
+
+export const AdminDashboard: React.FC<AdminDashboardProps> = (props) => (
+  <AdminAuthProvider role={props.role}>
+    <AdminDashboardInner {...props} />
+  </AdminAuthProvider>
 );

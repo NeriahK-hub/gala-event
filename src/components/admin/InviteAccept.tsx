@@ -8,7 +8,7 @@ const input =
 
 // Page ouverte par un lien personnel (?invitation=…) : la personne choisit elle-même son code
 export const InviteAccept: React.FC<{ token: string; onDone: () => void; onBackToHome: () => void }> = ({ token, onDone, onBackToHome }) => {
-  const { findInvite, acceptInvite } = useTeam();
+  const { findInvite, acceptInvite, previewLogin, accounts } = useTeam();
   const invite = findInvite(token);
   const [code, setCode] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -44,10 +44,16 @@ export const InviteAccept: React.FC<{ token: string; onDone: () => void; onBackT
     if (code !== confirm) return setError('Les deux codes ne sont pas identiques.');
     const res = acceptInvite(token, code);
     if (!res.ok) return setError(res.error);
+    try {
+      localStorage.setItem('gala-admin-last-login-v1', loginId);
+    } catch {
+      // ignore
+    }
     onDone();
   };
 
   const isReset = invite.kind === 'reset';
+  const loginId = isReset ? accounts.find((a) => a.id === invite.accountId)?.login ?? '' : previewLogin(invite.name);
 
   return (
     <Shell>
@@ -62,6 +68,12 @@ export const InviteAccept: React.FC<{ token: string; onDone: () => void; onBackT
             ? 'Ton ancien code ne marchera plus. Choisis-en un que toi seul connais.'
             : `${invite.createdBy} t'a invité comme « ${ROLE_LABELS[invite.role]} ». Choisis ton code personnel : personne d'autre ne le connaîtra.`}
         </p>
+        {loginId && (
+          <div className="mb-4 rounded-xl border border-white/[0.07] bg-black/20 px-4 py-3">
+            <p className="text-xs text-stone-500">Ton identifiant (à retenir)</p>
+            <p className="font-mono text-lg text-stone-50">{loginId}</p>
+          </div>
+        )}
         <div className="space-y-3">
           <input
             type="password"

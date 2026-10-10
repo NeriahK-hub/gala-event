@@ -30,6 +30,9 @@ const inviteMessage = (inv: AdminInvite) =>
     ? `Bonjour ${inv.name},\n\nVoici ton lien pour choisir un nouveau code d'accès à la console du gala (valable 24 h, une seule fois) :\n\n${inviteUrl(inv.token)}\n\n_Ne partage pas ce lien._`
     : `Bonjour ${inv.name},\n\nTu es invité dans l'équipe du gala (${ROLE_LABELS[inv.role]}). Ouvre ce lien pour choisir ton code personnel (valable 24 h, une seule fois) :\n\n${inviteUrl(inv.token)}\n\nEnsuite, la console sera ici : ${consoleUrl()}\n\n_Ne partage pas ce lien._`;
 
+const accessMessage = (a: AdminAccount) =>
+  `Bonjour ${a.name},\n\nVoici ton accès à la console du gala :\n\nAdresse : ${consoleUrl()}\nIdentifiant : *${a.login}*\n\nConnecte-toi avec ton code personnel. Si tu l'as oublié, demande-moi un lien pour en choisir un nouveau.\n\n_Ne partage jamais ton code._`;
+
 const hoursLeft = (ms: number) => {
   const h = Math.max(0, Math.round((ms - Date.now()) / 3_600_000));
   return h < 1 ? 'moins d\'1 h' : `${h} h`;
@@ -130,6 +133,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <p className={`font-semibold ${a.active ? 'text-stone-100' : 'text-stone-500 line-through'}`}>{a.name}</p>
                 <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${ROLE_BADGE[a.role]}`}>{ROLE_LABELS[a.role]}</span>
+                <span className="text-xs font-mono text-stone-500">@{a.login}</span>
                 {a.id === current?.id && <span className="text-xs text-emerald-300">C'est toi</span>}
                 {!a.active && <span className="text-xs text-red-300">Suspendu</span>}
                 <div className="ml-auto flex flex-wrap items-center gap-1.5">
@@ -137,6 +141,18 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
                     <button onClick={() => setEditingCode(a)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-stone-200 hover:bg-white/10 cursor-pointer">
                       <KeyRound className="w-3.5 h-3.5" /> Mon code
                     </button>
+                  )}
+                  {canManage(a) && a.active && (
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(accessMessage(a))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => team.log(`A renvoyé son accès à « ${a.name} »`, undefined, [`Identifiant envoyé : ${a.login}`, 'Adresse de la console envoyée (le code n\'est jamais envoyé)'])}
+                      title="Renvoie-lui l'adresse de la console et son identifiant sur WhatsApp"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-[#4ade80] hover:bg-[#25D366]/10"
+                    >
+                      <WhatsAppIcon className="w-3.5 h-3.5" /> Envoyer l'accès
+                    </a>
                   )}
                   {canManage(a) && (
                     <button
@@ -308,20 +324,7 @@ export const TeamPanel: React.FC<{ notify: (message: string) => void }> = ({ not
         <h2 className="font-semibold text-stone-100 flex items-center gap-2 mb-4">
           <History className="w-4 h-4" /> Historique des actions
         </h2>
-        {activity.length === 0 ? (
-          <p className="text-sm text-stone-500">Rien pour le moment.</p>
-        ) : (
-          <ul className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-            {activity.slice(0, 100).map((e) => (
-              <li key={e.id} className="flex gap-3 text-sm">
-                <span className="shrink-0 w-32 text-xs text-stone-500 tabular-nums pt-0.5">{e.at}</span>
-                <p className="text-stone-300">
-                  <strong className="text-stone-100 font-semibold">{e.actor}</strong> {e.action.charAt(0).toLowerCase() + e.action.slice(1)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ActivityLog />
       </section>
 
       {creating && (
@@ -476,5 +479,58 @@ const ConsoleAddress: React.FC<{ notify: (m: string) => void }> = ({ notify }) =
         {copied ? 'Copié' : 'Copier'}
       </button>
     </div>
+  );
+};
+
+const ActivityLog: React.FC = () => {
+  const { activity } = useTeam();
+  const [who, setWho] = useState('');
+  const [query, setQuery] = useState('');
+  const people = [...new Set(activity.map((e) => e.actor))].sort();
+  const q = query.trim().toLowerCase();
+  const list = activity.filter(
+    (e) => (!who || e.actor === who) && (!q || `${e.action} ${(e.details ?? []).join(' ')}`.toLowerCase().includes(q))
+  );
+
+  if (activity.length === 0) return <p className="text-sm text-stone-500">Rien pour le moment.</p>;
+
+  return (
+    <>
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <select value={who} onChange={(e) => setWho(e.target.value)} aria-label="Filtrer par personne" className={`${field} sm:max-w-56`}>
+          <option value="">Tout le monde</option>
+          {people.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher (ex. GALA-0002, droits, scan…)" aria-label="Rechercher dans l'historique" className={field} />
+      </div>
+      {list.length === 0 ? (
+        <p className="text-sm text-stone-500 py-4 text-center">Aucune action ne correspond.</p>
+      ) : (
+        <ol className="relative space-y-4 pl-5 max-h-[32rem] overflow-y-auto pr-1 before:absolute before:left-[5px] before:top-1.5 before:bottom-1.5 before:w-px before:bg-white/10">
+          {list.slice(0, 200).map((e) => (
+            <li key={e.id} className="relative text-sm">
+              <span className="absolute -left-5 top-1.5 w-[11px] h-[11px] rounded-full border-2 border-[#E6C78A]/60 bg-[#1F1916]" />
+              <p className="text-stone-300 leading-snug">
+                <strong className="text-stone-100 font-semibold">{e.actor}</strong> {e.action.charAt(0).toLowerCase() + e.action.slice(1)}
+              </p>
+              {e.details && e.details.length > 0 && (
+                <ul className="mt-1.5 space-y-0.5 rounded-lg bg-black/20 px-3 py-2">
+                  {e.details.map((d, i) => (
+                    <li key={i} className={`text-xs ${d.startsWith('Ajouté') ? 'text-emerald-300/90' : d.startsWith('Retiré') ? 'text-red-300/90' : 'text-stone-400'}`}>
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="text-xs text-stone-500 mt-1 tabular-nums">{e.at}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+    </>
   );
 };

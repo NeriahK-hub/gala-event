@@ -7,11 +7,20 @@ interface AdminGateProps {
   onBackToHome: () => void;
 }
 
+const LAST_LOGIN_KEY = 'gala-admin-last-login-v1';
+
 const input =
   'w-full px-4 py-3.5 rounded-xl border border-white/10 bg-black/20 text-center text-lg text-stone-100 placeholder:text-sm placeholder-stone-500 focus:border-[#E6C78A]/60 focus:outline-none focus:ring-2 focus:ring-[#E6C78A]/10';
 
 export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
-  const { needsSetup, setupSuper, login } = useTeam();
+  const { needsSetup, setupSuper, login, previewLogin } = useTeam();
+  const [identifier, setIdentifier] = useState(() => {
+    try {
+      return localStorage.getItem(LAST_LOGIN_KEY) ?? '';
+    } catch {
+      return '';
+    }
+  });
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -24,8 +33,14 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
       const res = setupSuper(name, code);
       if (!res.ok) setError(res.error);
     } else {
-      const res = login(code);
-      if (!res.ok) {
+      const res = login(identifier, code);
+      if (res.ok) {
+        try {
+          localStorage.setItem(LAST_LOGIN_KEY, identifier.trim().toLowerCase());
+        } catch {
+          // ignore
+        }
+      } else {
         setError(res.error);
         setCode('');
       }
@@ -45,10 +60,23 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
         <p className="text-sm text-stone-400 mb-6">
           {needsSetup
             ? 'Crée le compte super admin (le concepteur du site). Il créera ensuite l\'admin n°1, qui donnera les accès à son équipe.'
-            : 'Saisis ton code personnel pour continuer.'}
+            : 'Saisis ton identifiant et ton code personnel.'}
         </p>
 
         <div className="space-y-3">
+          {!needsSetup && (
+            <input
+              value={identifier}
+              onChange={(e) => { setIdentifier(e.target.value); setError(''); }}
+              placeholder="Ton identifiant (ex. christelle)"
+              aria-label="Identifiant"
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="username"
+              autoFocus={!identifier}
+              className={input}
+            />
+          )}
           {needsSetup && (
             <input
               value={name}
@@ -62,7 +90,7 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
           <input
             type="password"
             autoComplete={needsSetup ? 'new-password' : 'current-password'}
-            autoFocus={!needsSetup}
+            autoFocus={!needsSetup && !!identifier}
             value={code}
             onChange={(e) => { setCode(e.target.value); setError(''); }}
             placeholder={needsSetup ? 'Choisis un code' : 'Ton code d\'accès'}
@@ -81,6 +109,11 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
             />
           )}
         </div>
+        {needsSetup && name.trim() && (
+          <p className="mt-3 text-xs text-stone-400">
+            Ton identifiant sera <strong className="text-stone-200 font-mono">{previewLogin(name)}</strong>
+          </p>
+        )}
         {error && <p role="alert" className="mt-3 text-sm text-red-300">{error}</p>}
 
         <button
@@ -89,7 +122,7 @@ export const AdminGate: React.FC<AdminGateProps> = ({ onBackToHome }) => {
         >
           {needsSetup ? 'Créer le super admin' : 'Ouvrir la console'}
         </button>
-        {!needsSetup && <p className="mt-3 text-xs text-stone-500">Code oublié ? Demande à l'admin n°1 un lien pour en choisir un nouveau.</p>}
+        {!needsSetup && <p className="mt-3 text-xs text-stone-500">Identifiant ou code oublié ? Demande à l'admin n°1 de te renvoyer ton accès.</p>}
         <button type="button" onClick={onBackToHome} className="mt-3 inline-flex items-center gap-1.5 text-sm text-stone-400 hover:text-white cursor-pointer">
           <ArrowLeft className="w-4 h-4" /> Retour au site
         </button>

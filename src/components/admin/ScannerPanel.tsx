@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, QrCode, ScanLine, XCircle } from 'lucide-react';
 import { Order } from '../../types';
-import { checkTicket, ScanOutcome } from '../../lib/scan';
+import { checkTicket, ScanOutcome, scanLog } from '../../lib/scan';
 import { QrCamera } from './QrCamera';
 import { useTeam } from '../../team/TeamContext';
 
@@ -34,10 +34,8 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ orders, onUpdateOrde
   const runScan = (raw: string) => {
     const res = checkTicket(raw, orders, current?.name ?? 'Console');
     if (!res) return;
-    if (res.updatedOrder) {
-      onUpdateOrder(res.updatedOrder);
-      log(`A scanné le billet ${res.outcome.kind === 'valid' ? res.outcome.ticket.ticketNumber : ''}`);
-    }
+    if (res.updatedOrder) onUpdateOrder(res.updatedOrder);
+    log(...scanLog(res.outcome));
     setOutcome(res.outcome);
   };
 

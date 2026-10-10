@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QrCode, ScanLine, ShieldOff } from 'lucide-react';
 import { Order } from '../../types';
-import { checkTicket, ScanOutcome } from '../../lib/scan';
+import { checkTicket, ScanOutcome, scanLog } from '../../lib/scan';
 import { scanLinkState, useTeam } from '../../team/TeamContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { QrCamera } from './QrCamera';
@@ -49,8 +49,9 @@ export const ScanStation: React.FC<ScanStationProps> = ({ token, orders, onUpdat
       onUpdateOrder(res.updatedOrder);
       recordScan(link.id);
       setCount((c) => c + 1);
-      log(`A scanné le billet ${res.outcome.ticket.ticketNumber}`, `Scan · ${link.label}`);
     }
+    const [action, , details] = scanLog(res.outcome);
+    log(action, `Scan · ${link.label}`, details);
     setOutcome(res.outcome);
   };
 

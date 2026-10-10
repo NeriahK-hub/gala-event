@@ -162,6 +162,8 @@ export type AdminPermission = 'orders' | 'validate' | 'scanner' | 'content' | 's
 export interface AdminAccount {
   id: string;
   name: string;
+  /** Identifiant de connexion (ex. « christelle ») : on se connecte avec identifiant + code */
+  login: string;
   role: AdminRole;
   permissions: AdminPermission[];
   codeHash: string;
@@ -205,5 +207,9 @@ export interface ActivityEntry {
   id: string;
   at: string;
   actor: string;
+  /** Compte qui a fait l'action (sert à masquer les actions du super admin aux autres) */
+  actorId?: string;
   action: string;
+  /** Détails : ce qui a changé exactement (avant → après, droits ajoutés/retirés…) */
+  details?: string[];
 }

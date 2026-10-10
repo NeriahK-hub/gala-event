@@ -43,3 +43,13 @@ export const checkTicket = (
   };
   return { outcome: { kind: 'valid', ticket, order: updatedOrder, time }, updatedOrder };
 };
+
+/** Ligne d'historique d'un scan : [action, acteur (non défini = compte connecté), détails] */
+export const scanLog = (o: ScanOutcome): [string, undefined, string[]] => {
+  if (o.kind === 'unknown') return ['Scan refusé : billet inconnu', undefined, [`Code présenté : ${o.code}`]];
+  const base = [`Billet ${o.ticket.ticketNumber} · ${o.ticket.attendeeName}`, `Commande ${o.order.id}`];
+  if (o.kind === 'valid') return [`A fait entrer ${o.ticket.attendeeName}`, undefined, [...base, `Heure : ${o.time}`]];
+  if (o.kind === 'already_used')
+    return ['Scan refusé : billet déjà utilisé', undefined, [...base, `Premier passage : ${o.ticket.scannedAt ?? '?'} (${o.ticket.scannedBy ?? '?'})`]];
+  return ['Scan refusé : paiement non validé', undefined, base];
+};

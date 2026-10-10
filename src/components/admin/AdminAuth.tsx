@@ -17,7 +17,7 @@ export const useAdminAuth = (): AdminAuthValue => {
 };
 
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { current, isManager, verifyApprover } = useTeam();
+  const { current, isManager, verifyApprover, log } = useTeam();
   const [request, setRequest] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -44,8 +44,11 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (verifyApprover(code)) close(true);
-    else {
+    if (verifyApprover(code)) {
+      log(`A obtenu l'autorisation de l'admin n°1 pour supprimer ${request}`);
+      close(true);
+    } else {
+      log(`Code de l'admin n°1 refusé (suppression de ${request})`);
       setError('Code incorrect : seul l\'admin n°1 peut autoriser.');
       setCode('');
     }

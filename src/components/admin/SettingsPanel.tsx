@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Download, Timer, Upload } from 'lucide-react';
 import { useContent } from '../../content/ContentContext';
+import { fmtDateTime, useTeam } from '../../team/TeamContext';
 import { Order } from '../../types';
 
 const panel = 'rounded-2xl border border-white/[0.07] bg-white/[0.025]';
@@ -57,12 +58,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
   const { salesOpen, hiddenSections, salesDeadline, autoCloseSales } = content.settings;
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const { log } = useTeam();
+  const deadlineAtFocus = useRef(salesDeadline);
 
   const setSettings = (patch: Partial<typeof content.settings>) =>
     setContent((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
 
-  const toggleSection = (id: string, visible: boolean) =>
+  const toggleSection = (id: string, visible: boolean) => {
     setSettings({ hiddenSections: visible ? hiddenSections.filter((s) => s !== id) : [...new Set([...hiddenSections, id])] });
+    const label = SECTION_TOGGLES.find((t) => t.id === id)?.label ?? id;
+    log(`A ${visible ? 'affiché' : 'masqué'} la section « ${label} » du site`, undefined, [`${visible ? 'Désactivée → activée' : 'Activée → désactivée'}`]);
+  };
 
   const exportBackup = () => {
     const blob = new Blob([JSON.stringify({ app: 'gala-empire', version: 1, exportedAt: new Date().toISOString(), orders }, null, 2)], { type: 'application/json' });
@@ -72,6 +78,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
     a.download = `sauvegarde-commandes-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    log('A téléchargé une sauvegarde des commandes', undefined, [`${orders.length} commande${orders.length > 1 ? 's' : ''}`]);
     notify('Sauvegarde téléchargée');
   };
 
@@ -82,6 +89,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
       const list: Order[] = Array.isArray(data) ? data : data?.orders;
       if (!Array.isArray(list) || list.some((o) => !o || typeof o.id !== 'string' || !Array.isArray(o.tickets))) throw new Error('format');
       onImportOrders(list);
+      log('A importé une sauvegarde de commandes', undefined, [`Fichier : ${file.name}`, `${list.length} commande${list.length > 1 ? 's' : ''} importée${list.length > 1 ? 's' : ''} (les commandes au même numéro sont remplacées)`]);
       notify(`${list.length} commande${list.length > 1 ? 's' : ''} importée${list.length > 1 ? 's' : ''}`);
     } catch {
       notify('Fichier non reconnu : choisis une sauvegarde exportée ici');
@@ -99,7 +107,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
             title="Ventes ouvertes"
             hint={salesOpen ? 'Les clients peuvent commander.' : 'Les commandes sont bloquées. Le texte du message se modifie dans « Contenu du site » → Billets.'}
             checked={salesOpen}
-            onChange={(v) => setSettings({ salesOpen: v })}
+            onChange={(v) => {
+              setSettings({ salesOpen: v });
+              log(v ? 'A ouvert les ventes de billets' : 'A fermé les ventes de billets', undefined, [v ? 'Fermées → ouvertes' : 'Ouvertes → fermées']);
+            }}
           />
         </div>
       </section>
@@ -114,7 +125,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
           <input
             type="datetime-local"
             value={salesDeadline.slice(0, 16)}
+            onFocus={() => (deadlineAtFocus.current = salesDeadline)}
             onChange={(e) => e.target.value && setSettings({ salesDeadline: e.target.value })}
+            onBlur={() => {
+              if (deadlineAtFocus.current !== salesDeadline)
+                log('A changé la fin de la billetterie', undefined, [`${fmtDateTime(deadlineAtFocus.current)} → ${fmtDateTime(salesDeadline)}`]);
+            }}
             className={field}
           />
         </label>
@@ -123,7 +139,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ orders, onImportOr
             title="Fermer les ventes automatiquement"
             hint="Quand le compte à rebours arrive à zéro, la réservation affiche « Les ventes sont fermées »."
             checked={autoCloseSales}
-            onChange={(v) => setSettings({ autoCloseSales: v })}
+            onChange={(v) => {
+              setSettings({ autoCloseSales: v });
+              log(`A ${v ? 'activé' : 'désactivé'} la fermeture automatique des ventes`, undefined, [v ? 'Les ventes se ferment à la fin du compte à rebours' : 'Les ventes restent ouvertes même après le compte à rebours']);
+            }}
           />
         </div>
       </section>

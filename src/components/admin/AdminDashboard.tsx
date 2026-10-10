@@ -32,6 +32,7 @@ import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { OverviewPanel, Avatar } from './OverviewPanel';
 import { panel } from './ui';
+import { useContentChangeLog } from './useContentChangeLog';
 import { ContentEditor } from './ContentEditor';
 import { SettingsPanel } from './SettingsPanel';
 import { TeamPanel } from './TeamPanel';
@@ -92,6 +93,14 @@ const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
 };
 
 
+// Détails d'une commande pour l'historique
+const orderDetails = (o: Order, extra: string[] = []) => [
+  `Client : ${o.customerName} (${o.customerPhone})`,
+  `${o.quantity} billet${o.quantity > 1 ? 's' : ''} · ${o.totalAmount} $`,
+  ...(o.payerPhone && o.payerPhone !== o.customerPhone ? [`Payé depuis : ${o.payerPhone}`] : []),
+  ...extra,
+];
+
 const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   orders,
   onUpdateOrder,
@@ -104,6 +113,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   const { content } = useContent();
   const { authorize } = useAdminAuth();
   const { current, can, isManager, logout, log } = useTeam();
+  useContentChangeLog();
   const [rawTab, setTab] = useState<Tab>('overview');
   const allowed = (perm?: AdminPermission | 'manager') => !perm || (perm === 'manager' ? isManager : can(perm));
   const nav = NAV.filter((n) => allowed(n.perm));
@@ -179,7 +189,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
       validatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
     };
     onUpdateOrder(updated);
-    log(`A validé le paiement de la commande ${updated.id} (${updated.totalAmount} $)`);
+    log(`A validé le paiement de la commande ${updated.id}`, undefined, orderDetails(updated, [`Référence du paiement : ${updated.paymentReference ?? 'non renseignée'}`, 'Lien d\'invitations créé']));
     setValidatingOrder(updated);
     setIsValidationSuccess(true);
   };
@@ -187,7 +197,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   const confirmReject = () => {
     if (!rejectingOrder) return;
     onUpdateOrder({ ...rejectingOrder, status: 'rejected', notes: 'Refusé par le gestionnaire - Transfert non confirmé' });
-    log(`A refusé la commande ${rejectingOrder.id}`);
+    log(`A refusé la commande ${rejectingOrder.id}`, undefined, orderDetails(rejectingOrder, ['Statut : en attente → refusée']));
     notify(`Commande ${rejectingOrder.id} refusée`);
     setRejectingOrder(null);
   };
@@ -204,7 +214,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
 
   const restoreOrder = (order: Order) => {
     onUpdateOrder({ ...order, status: 'pending', notes: undefined });
-    log(`A remis en attente la commande ${order.id}`);
+    log(`A remis en attente la commande ${order.id}`, undefined, orderDetails(order, ['Statut : refusée → en attente']));
     notify(`Commande ${order.id} remise en attente`);
   };
 
@@ -212,7 +222,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     if (!deletingOrder) return;
     if (!(await authorize(`la commande ${deletingOrder.id}`))) return;
     onDeleteOrder(deletingOrder.id);
-    log(`A supprimé la commande ${deletingOrder.id} (${deletingOrder.customerName})`);
+    log(`A supprimé la commande ${deletingOrder.id}`, undefined, orderDetails(deletingOrder, [`Statut au moment de la suppression : ${STATUS_STYLES[deletingOrder.status].label.toLowerCase()}`]));
     notify(`Commande ${deletingOrder.id} supprimée`);
     setDeletingOrder(null);
   };
@@ -224,6 +234,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
 
   const copyLink = async (order: Order) => {
     if (await copyText(buildTicketLink(order))) {
+      log(`A copié le lien d'invitations de ${order.customerName}`, undefined, [`Commande ${order.id}`]);
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } else {
@@ -244,6 +255,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     a.download = `commandes-gala-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    log('A exporté les commandes (CSV)', undefined, [`${orders.length} commande${orders.length > 1 ? 's' : ''}`]);
     notify('Commandes exportées');
   };
 
@@ -517,6 +529,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                           <>
                             <a
                               href={reminderUrl(order)}
+                              onClick={() => log(`A relancé ${order.customerName} sur WhatsApp`, undefined, [`Commande ${order.id} · ${order.totalAmount} $`])}
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Relancer le client sur WhatsApp"
@@ -662,6 +675,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
 
               <a
                 href={whatsAppUrl(validatingOrder)}
+                onClick={() => log(`A envoyé le lien d'invitations de ${validatingOrder.customerName} sur WhatsApp`, undefined, [`Commande ${validatingOrder.id} · ${validatingOrder.quantity} billet${validatingOrder.quantity > 1 ? 's' : ''}`, `Numéro : ${validatingOrder.customerPhone}`])}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] text-[#052e16] font-bold text-sm hover:bg-[#20ba59]"
@@ -688,7 +702,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
           onClose={() => setShowAdd(false)}
           onAdd={(order) => {
             onAddOrder(order);
-            log(`A ajouté la commande ${order.id} (${order.customerName})`);
+            log(`A ajouté la commande ${order.id}`, undefined, orderDetails(order));
             setShowAdd(false);
             setStatusFilter('all');
             setTab('orders');

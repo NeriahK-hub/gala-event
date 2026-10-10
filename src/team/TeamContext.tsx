@@ -424,7 +424,7 @@ export const TeamProvider: React.FC<{ demo?: boolean; children: React.ReactNode 
         accountId = acc.id;
         setData((d) => ({ ...d, accounts: [...d.accounts, acc] }));
       }
-      setData((d) => ({ ...d, invites: d.invites.map((i) => (i.id === inv.id ? { ...i, usedAt: nowLabel() } : i)) }));
+      setData((d) => ({ ...d, invites: d.invites.map((i) => (i.id === inv.id ? { ...i, usedAt: nowLabel(), accountId } : i)) }));
       setSessionId(accountId ?? null);
       log(inv.kind === 'reset' ? 'A choisi un nouveau code' : 'A rejoint la console avec son invitation', { name: inv.name, id: accountId }, inv.kind === 'invite' ? [`Rôle : ${ROLE_LABELS[inv.role]}`] : undefined);
       return { ok: true };

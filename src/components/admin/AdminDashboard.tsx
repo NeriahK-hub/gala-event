@@ -19,6 +19,7 @@ import {
   Settings,
   Trash2,
   Lock,
+  LogOut,
   Users,
   BellRing,
   ScanLine,
@@ -298,8 +299,8 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
         <p className="text-sm font-semibold text-stone-100 truncate">{current.name}</p>
         <p className="text-xs text-stone-500 truncate">{ROLE_LABELS[current.role]}</p>
       </div>
-      <button onClick={lock} title="Verrouiller la console" aria-label="Verrouiller la console" className="p-2 rounded-lg text-stone-400 hover:text-stone-100 hover:bg-white/10 cursor-pointer">
-        <Lock className="w-4 h-4" />
+      <button onClick={lock} title="Se déconnecter" aria-label="Se déconnecter" className="p-2 rounded-lg text-stone-400 hover:text-stone-100 hover:bg-white/10 cursor-pointer">
+        <LogOut className="w-4 h-4" />
       </button>
     </div>
   );
@@ -366,7 +367,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                         <ArrowLeft className="w-4 h-4" /> Retour au site
                       </button>
                       <button onClick={lock} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-300 hover:bg-white/[0.06] cursor-pointer">
-                        <Lock className="w-4 h-4" /> Verrouiller
+                        <LogOut className="w-4 h-4" /> Se déconnecter
                       </button>
                     </div>
                   </>

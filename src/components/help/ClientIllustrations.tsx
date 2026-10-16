@@ -1,4 +1,5 @@
 import React, { useId } from 'react';
+import { Link2 } from 'lucide-react';
 
 // Illustrations dessinées pour expliquer le parcours client (section « Comment ça marche »).
 // Pas d'images externes : tout est en SVG, aux couleurs du gala (velours, orange, or).
@@ -80,12 +81,24 @@ export const IllustrationChoose: React.FC = () => {
   return (
     <Svg title="Un téléphone affiche le billet à 10 $ et le choix du nombre de places">
       <Glow id={`${id}-g`} cx={140} cy={118} r={120} color="#F2761B" />
-      {/* billet flottant derrière */}
-      <g transform="rotate(-14 52 92)" opacity="0.9">
-        <rect x={18} y={70} width={76} height={42} rx={9} fill="#E8C98A" />
-        <circle cx={56} cy={70} r={6} fill="#4A1016" />
-        <circle cx={56} cy={112} r={6} fill="#4A1016" />
-        <line x1={56} y1={78} x2={56} y2={104} stroke="#4A1016" strokeWidth="1.5" strokeDasharray="3 3" />
+      {/* billet papier posé derrière le téléphone */}
+      <defs>
+        <mask id={`${id}-cut`}>
+          <rect x={14} y={66} width={86} height={50} rx={6} fill="#fff" />
+          <circle cx={14} cy={91} r={6} fill="#000" />
+          <circle cx={100} cy={91} r={6} fill="#000" />
+        </mask>
+      </defs>
+      <g transform="rotate(-12 57 91)">
+        <g mask={`url(#${id}-cut)`}>
+          <rect x={14} y={66} width={86} height={50} rx={6} fill="#F6EEDC" />
+          <rect x={14} y={66} width={86} height={13} fill="#8E1B26" />
+          <text x={57} y={75.5} textAnchor="middle" fontSize="6" fontWeight="800" fill="#FFD27A" letterSpacing="1.2">ENTRÉE</text>
+          <text x={22} y={97} fontSize="9" fontWeight="800" fill="#3D0A04">GALA</text>
+          <text x={22} y={108} fontSize="6" fill="#7A4A2A">12 déc. 2026</text>
+          <line x1={74} y1={82} x2={74} y2={113} stroke="#C9B48E" strokeWidth="1" strokeDasharray="1.5 2.5" />
+          <text x={88} y={104} textAnchor="middle" fontSize="9" fontWeight="800" fill="#8E1B26">10$</text>
+        </g>
       </g>
       <Phone id={id}>
         <text x={140} y={48} textAnchor="middle" fontSize="9" fontWeight="600" fill="rgba(255,255,255,0.6)">Choisis ton billet</text>
@@ -167,17 +180,16 @@ export const IllustrationLink: React.FC = () => {
   return (
     <Svg title="Le lien reçu ouvre l'invitation avec son QR code">
       <Glow id={`${id}-g`} cx={140} cy={118} r={120} color="#E8C98A" />
-      {/* bulle avec le lien */}
+      {/* bulle avec l'aperçu du lien (comme dans WhatsApp) */}
       <g>
-        <rect x={20} y={40} width={110} height={52} rx={14} fill="#0E5C47" />
-        <path d="M34 92 l-6 12 l16 -12 z" fill="#0E5C47" />
-        <rect x={30} y={52} width={56} height={5} rx={2.5} fill="rgba(255,255,255,0.75)" />
-        <rect x={30} y={64} width={90} height={18} rx={9} fill="rgba(0,0,0,0.28)" />
-        <g transform="translate(40 73)" stroke="#9AF0C4" strokeWidth="1.8" fill="none" strokeLinecap="round">
-          <path d="M-3 1.5 a3 3 0 0 1 0-4.2 l2-2 a3 3 0 0 1 4.2 4.2 l-1 1" />
-          <path d="M3 -1.5 a3 3 0 0 1 0 4.2 l-2 2 a3 3 0 0 1 -4.2 -4.2 l1 -1" />
-        </g>
-        <text x={50} y={76.5} fontSize="7.5" fill="#9AF0C4" fontFamily="ui-monospace, monospace">?billet=…</text>
+        <rect x={16} y={38} width={120} height={60} rx={12} fill="#0E5C47" />
+        <path d="M30 98 l-5 10 l14 -10 z" fill="#0E5C47" />
+        <rect x={22} y={44} width={108} height={30} rx={8} fill="rgba(0,0,0,0.25)" />
+        <rect x={28} y={50} width={18} height={18} rx={5} fill="#E8C98A" />
+        <Link2 x={31} y={53} width={12} height={12} color="#3D0A04" strokeWidth={2.4} />
+        <text x={52} y={58} fontSize="7.5" fontWeight="700" fill="#fff">Tes invitations</text>
+        <text x={52} y={67} fontSize="6" fill="rgba(255,255,255,0.6)">Soirée gala · 2 billets</text>
+        <text x={24} y={88} fontSize="6.5" fill="#7DD3FC" textDecoration="underline">galaempire.cd/billet…</text>
       </g>
       {/* flèche */}
       <path d="M128 112 C150 112 150 132 168 134" fill="none" stroke="#E8C98A" strokeWidth="2" strokeDasharray="4 4" strokeLinecap="round" />

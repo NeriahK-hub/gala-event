@@ -19,6 +19,7 @@ import {
   Settings,
   Trash2,
   Lock,
+  LifeBuoy,
   LogOut,
   Users,
   BellRing,
@@ -32,6 +33,7 @@ import { useContent } from '../../content/ContentContext';
 import { EmpireLogo } from '../common/EmpireLogo';
 import { ScannerPanel } from './ScannerPanel';
 import { OverviewPanel, Avatar } from './OverviewPanel';
+import { HelpPanel } from './HelpPanel';
 import { panel } from './ui';
 import { useContentChangeLog } from './useContentChangeLog';
 import { ContentEditor } from './ContentEditor';
@@ -56,7 +58,7 @@ interface AdminDashboardProps {
   onOpenOrderTickets: (orderId: string) => void;
 }
 
-type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings' | 'team';
+type Tab = 'overview' | 'orders' | 'scanner' | 'content' | 'settings' | 'team' | 'help';
 
 // perm : droit nécessaire ; 'manager' = admin n°1 et super admin uniquement
 const NAV: { id: Tab; label: string; short: string; icon: React.ReactNode; perm?: AdminPermission | 'manager' }[] = [
@@ -65,6 +67,7 @@ const NAV: { id: Tab; label: string; short: string; icon: React.ReactNode; perm?
   { id: 'scanner', label: 'Contrôle d\'entrée', short: 'Scanner', icon: <ScanLine className="w-5 h-5" />, perm: 'scanner' },
   { id: 'content', label: 'Contenu du site', short: 'Site', icon: <FileEdit className="w-5 h-5" />, perm: 'content' },
   { id: 'settings', label: 'Réglages', short: 'Réglages', icon: <Settings className="w-5 h-5" />, perm: 'settings' },
+  { id: 'help', label: 'Aide & tutos', short: 'Aide', icon: <LifeBuoy className="w-5 h-5" /> },
   { id: 'team', label: 'Équipe & accès', short: 'Équipe', icon: <Users className="w-5 h-5" />, perm: 'manager' },
 ];
 
@@ -75,6 +78,7 @@ const TAB_HINTS: Record<Tab, string> = {
   content: 'Modifie les textes et les images du site',
   settings: 'Ventes, sections du site, compte à rebours et sauvegardes',
   team: 'Comptes, liens de scan et historique',
+  help: 'Tutos illustrés et listes à cocher pour le jour J',
 };
 
 const STATUS_STYLES: Record<OrderStatus, { label: string; cls: string; icon: React.ReactNode }> = {
@@ -270,6 +274,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
     { title: 'Billetterie', ids: ['overview', 'orders', 'scanner'] },
     { title: 'Site', ids: ['content', 'settings'] },
     { title: 'Administration', ids: ['team'] },
+    { title: 'Aide', ids: ['help'] },
   ];
 
   const navButton = (item: (typeof NAV)[number]) => (
@@ -306,6 +311,8 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
   );
 
   const current_ = nav.find((n) => n.id === tab);
+  // Téléphone : 6 onglets maximum en bas ; au-delà, « Aide » passe dans le menu du compte
+  const mobileNav = nav.length > 6 ? nav.filter((n) => n.id !== 'help') : nav;
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr] text-stone-200 bg-[#16110F] relative z-[5]">
@@ -363,6 +370,9 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
                     <div className="absolute right-0 top-11 z-50 w-60 rounded-2xl border border-white/10 bg-[#1F1916] p-2 shadow-2xl">
                       <p className="px-3 pt-2 text-sm font-semibold text-stone-100">{current?.name}</p>
                       <p className="px-3 pb-2 text-xs text-stone-500">{current ? ROLE_LABELS[current.role] : ''}</p>
+                      <button onClick={() => goTab('help')} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-300 hover:bg-white/[0.06] cursor-pointer">
+                        <LifeBuoy className="w-4 h-4" /> Aide & tutos
+                      </button>
                       <button onClick={onBackToHome} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-300 hover:bg-white/[0.06] cursor-pointer">
                         <ArrowLeft className="w-4 h-4" /> Retour au site
                       </button>
@@ -383,7 +393,7 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
           className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-[#16110F]/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
         >
           <div className="flex">
-            {nav.map((item) => (
+            {mobileNav.map((item) => (
               <button
                 key={item.id}
                 onClick={() => goTab(item.id)}
@@ -606,6 +616,8 @@ const AdminDashboardInner: React.FC<AdminDashboardProps> = ({
           {tab === 'settings' && <SettingsPanel orders={orders} onImportOrders={onImportOrders} notify={notify} />}
 
           {tab === 'team' && isManager && <TeamPanel notify={notify} />}
+
+          {tab === 'help' && <HelpPanel onGo={goTab} />}
         </motion.main>
       </div>
 

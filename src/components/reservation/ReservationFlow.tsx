@@ -373,7 +373,8 @@ Code commande :
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-4 pt-3 pb-4 bg-[#4A030C]/85 backdrop-blur-xl border-t border-white/15"
+              className="lg:hidden fixed inset-x-3 z-40 rounded-[1.75rem] pl-5 pr-2.5 py-2.5 bg-[#360710]/95 backdrop-blur-xl ring-1 ring-white/12 shadow-[0_12px_32px_rgba(0,0,0,0.4),0_0_60px_16px_rgba(30,4,7,0.4)]"
+              style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)' }}
             >
               <div className="max-w-5xl mx-auto flex items-center gap-4">
                 <div className="min-w-0">

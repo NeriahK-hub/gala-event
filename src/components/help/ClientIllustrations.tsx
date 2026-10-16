@@ -182,17 +182,16 @@ export const IllustrationLink: React.FC = () => {
       <Glow id={`${id}-g`} cx={140} cy={118} r={120} color="#E8C98A" />
       {/* bulle avec l'aperçu du lien (comme dans WhatsApp) */}
       <g>
-        <rect x={16} y={38} width={120} height={60} rx={12} fill="#0E5C47" />
-        <path d="M30 98 l-5 10 l14 -10 z" fill="#0E5C47" />
+        <rect x={16} y={38} width={120} height={42} rx={12} fill="#0E5C47" />
+        <path d="M30 80 l-5 10 l14 -10 z" fill="#0E5C47" />
         <rect x={22} y={44} width={108} height={30} rx={8} fill="rgba(0,0,0,0.25)" />
         <rect x={28} y={50} width={18} height={18} rx={5} fill="#E8C98A" />
         <Link2 x={31} y={53} width={12} height={12} color="#3D0A04" strokeWidth={2.4} />
         <text x={52} y={58} fontSize="7.5" fontWeight="700" fill="#fff">Tes invitations</text>
         <text x={52} y={67} fontSize="6" fill="rgba(255,255,255,0.6)">Soirée gala · 2 billets</text>
-        <text x={24} y={88} fontSize="6.5" fill="#7DD3FC" textDecoration="underline">galaempire.cd/billet…</text>
       </g>
       {/* flèche */}
-      <path d="M128 112 C150 112 150 132 168 134" fill="none" stroke="#E8C98A" strokeWidth="2" strokeDasharray="4 4" strokeLinecap="round" />
+      <path d="M110 96 C140 100 150 128 168 134" fill="none" stroke="#E8C98A" strokeWidth="2" strokeDasharray="4 4" strokeLinecap="round" />
       <path d="M163 129 l6 5 l-7 3" fill="none" stroke="#E8C98A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       {/* invitation */}
       <g transform="rotate(6 205 150)">

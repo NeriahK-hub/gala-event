@@ -11,6 +11,7 @@ export const SECTION_TOGGLES: { id: string; label: string; hint?: string }[] = [
   { id: 'about', label: 'Le gala' },
   { id: 'programme', label: 'Programme' },
   { id: 'invites', label: 'Invités & artistes', hint: 'Visible seulement si tu as ajouté des invités' },
+  { id: 'comment', label: 'Comment ça marche' },
   { id: 'billets', label: 'Billets' },
   { id: 'dresscode', label: 'Dress code' },
   { id: 'galerie', label: 'Galerie', hint: 'Visible seulement si tu as ajouté des photos' },

@@ -211,3 +211,14 @@ h1, h2, h3 {
 .marquee:hover .marquee-track {
   animation-play-state: paused;
 }
+
+/* Illustrations d'aide : ligne de scan qui balaie le QR code */
+@media (prefers-reduced-motion: no-preference) {
+  .help-scanline {
+    animation: help-scan 2.6s ease-in-out infinite;
+  }
+}
+@keyframes help-scan {
+  0%, 100% { transform: translateY(-22px); opacity: 0.4; }
+  50% { transform: translateY(22px); opacity: 1; }
+}

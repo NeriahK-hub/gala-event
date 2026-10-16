@@ -9,6 +9,7 @@ import { AboutSection } from './components/vitrine/AboutSection';
 import { ProgramSection } from './components/vitrine/ProgramSection';
 import { GuestsSection } from './components/vitrine/GuestsSection';
 import { TicketsSection } from './components/vitrine/TicketsSection';
+import { HowItWorksSection } from './components/vitrine/HowItWorksSection';
 import { DressCodeSection } from './components/vitrine/DressCodeSection';
 import { GallerySection } from './components/vitrine/GallerySection';
 import { VenueSection } from './components/vitrine/VenueSection';
@@ -270,6 +271,9 @@ export default function App() {
             {show('invites') && <GuestsSection />}
 
             {/* 6. Les billets */}
+            {/* Comment ça marche : le parcours en 4 étapes */}
+            {show('comment') && <HowItWorksSection onReserve={() => handleOpenReservation('standard')} />}
+
             {show('billets') && <TicketsSection onSelectTier={handleOpenReservation} />}
 
             {/* 7. Dress code */}

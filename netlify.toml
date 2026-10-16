@@ -1,0 +1,13 @@
+# Réglages Netlify : le site est construit avec Vite, le résultat est dans dist/
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Toutes les adresses renvoient vers l'application (ex. /?console, /?billet=…)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

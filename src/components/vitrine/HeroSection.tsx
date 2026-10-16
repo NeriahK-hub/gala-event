@@ -66,7 +66,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserveClick, onExpl
         {/* Date + prix, comme les pastilles orange de l'affiche */}
         <Reveal immediate delay={0.4} className="flex flex-wrap items-stretch justify-center gap-3 mb-5">
           {date && (
-            <div className="px-5 py-3 rounded-xl bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#4A0A06] text-center shadow-[0_10px_24px_rgba(0,0,0,0.35)]">
+            <div className="px-5 py-3 rounded-xl bg-cta text-[#4A0A06] text-center shadow-[0_10px_24px_rgba(0,0,0,0.35)]">
               <span className="block font-sans font-black text-4xl sm:text-5xl leading-none">{date.day}</span>
               <span className="block font-sans font-extrabold text-sm sm:text-base leading-tight">{date.month}</span>
               <span className="block font-sans font-extrabold text-sm sm:text-base leading-tight">{date.year}</span>
@@ -104,7 +104,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onReserveClick, onExpl
         <Reveal immediate delay={0.56} className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
           <button
             onClick={onReserveClick}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-extrabold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full bg-cta text-[#3D0A04] font-extrabold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
           >
             <TicketIcon className="w-11 h-[1.15rem]" />
             {t('hero.cta')}

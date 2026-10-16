@@ -33,7 +33,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onReserve 
                 <Art />
               </div>
               <div className="relative flex-1 px-5 sm:px-6 pb-6 pt-5">
-                <span className="absolute -top-5 left-5 sm:left-6 w-10 h-10 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-extrabold text-lg flex items-center justify-center shadow-[0_8px_20px_rgba(242,118,27,0.35)] ring-4 ring-[#3A0C12]">
+                <span className="absolute -top-5 left-5 sm:left-6 w-10 h-10 rounded-full bg-cta text-[#3D0A04] font-extrabold text-lg flex items-center justify-center shadow-[0_8px_20px_rgba(242,118,27,0.35)] ring-4 ring-[#3A0C12]">
                   {i + 1}
                 </span>
                 <h3 className="mt-3 font-sans font-bold tracking-tight text-white text-xl leading-snug text-balance">{t(`howto.${key}Title`)}</h3>
@@ -48,7 +48,7 @@ export const HowItWorksSection: React.FC<HowItWorksSectionProps> = ({ onReserve 
       <Reveal className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 text-center">
         <button
           onClick={onReserve}
-          className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_12px_30px_rgba(242,118,27,0.35)] hover:brightness-105 cursor-pointer"
+          className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-cta text-[#3D0A04] font-bold text-base shadow-[0_12px_30px_rgba(242,118,27,0.35)] hover:brightness-105 cursor-pointer"
         >
           {t('howto.cta')} <ArrowRight className="w-5 h-5" />
         </button>

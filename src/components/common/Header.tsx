@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="hidden sm:block">
           <button
             onClick={onOpenReservation}
-            className="px-5 py-2.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm hover:brightness-110 transition cursor-pointer whitespace-nowrap"
+            className="px-5 py-2.5 rounded-full bg-cta text-[#3D0A04] font-bold text-sm hover:brightness-110 transition cursor-pointer whitespace-nowrap"
           >
             {t('nav.cta')}
           </button>
@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
         <div className="flex items-center gap-2 lg:hidden">
           <button
             onClick={onOpenReservation}
-            className="sm:hidden max-[339px]:hidden px-3 min-[380px]:px-3.5 py-2 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] text-xs font-bold uppercase tracking-wider cursor-pointer"
+            className="sm:hidden max-[339px]:hidden px-3 min-[380px]:px-3.5 py-2 rounded-full bg-cta text-[#3D0A04] text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             {t('nav.cta')}
           </button>
@@ -149,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateSection, onOpenReserva
                 setMobileMenuOpen(false);
                 onOpenReservation();
               }}
-              className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-sm tracking-wide cursor-pointer"
+              className="w-full py-3.5 rounded-full bg-cta text-[#3D0A04] font-bold text-sm tracking-wide cursor-pointer"
             >
               {t('nav.ctaMobile')}
             </button>

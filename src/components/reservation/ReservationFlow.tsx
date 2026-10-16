@@ -358,7 +358,7 @@ Code commande :
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="hidden lg:flex mt-5 w-full items-center justify-center gap-2 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
+                    className="hidden lg:flex mt-5 w-full items-center justify-center gap-2 py-4 rounded-full bg-cta text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.35)] hover:brightness-110 transition cursor-pointer"
                   >
                     Continuer
                     <ArrowRight className="w-5 h-5" />
@@ -383,7 +383,7 @@ Code commande :
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="ml-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold shadow-lg cursor-pointer"
+                  className="ml-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-cta text-[#3D0A04] font-bold shadow-lg cursor-pointer"
                 >
                   Continuer
                   <ArrowRight className="w-5 h-5" />
@@ -500,7 +500,7 @@ Code commande :
 
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-cta text-[#3D0A04] font-bold text-base shadow-lg hover:shadow-[0_0_25px_rgba(212,168,87,0.6)] cursor-pointer"
               >
                 <span>Continuer sur WhatsApp</span>
                 <WhatsAppIcon className="w-5 h-5" />

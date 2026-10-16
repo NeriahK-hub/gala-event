@@ -47,7 +47,7 @@ export const VenueSection: React.FC = () => {
           delay={0.1}
           className="rounded-[2rem] bg-gradient-to-b from-[#C21226]/60 to-[#4A030C]/60 ring-1 ring-white/15 p-7 sm:p-10 flex flex-col items-center justify-center text-center"
         >
-          <span className="w-16 h-16 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] flex items-center justify-center shadow-[0_12px_28px_rgba(242,118,27,0.35)]">
+          <span className="w-16 h-16 rounded-full bg-cta text-[#3D0A04] flex items-center justify-center shadow-[0_12px_28px_rgba(242,118,27,0.35)]">
             <MapPin className="w-8 h-8" />
           </span>
           <p className="mt-5 font-sans font-bold tracking-tight text-white text-2xl">{t('venue.mapName')}</p>

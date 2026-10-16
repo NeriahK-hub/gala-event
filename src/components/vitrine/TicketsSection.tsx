@@ -73,7 +73,7 @@ export const TicketsSection: React.FC<TicketsSectionProps> = ({ onSelectTier }) 
 
               <button
                 onClick={() => onSelectTier(tier.id)}
-                className="mt-8 w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.3)] hover:brightness-110 transition cursor-pointer"
+                className="mt-8 w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-cta text-[#3D0A04] font-bold text-base shadow-[0_12px_28px_rgba(242,118,27,0.3)] hover:brightness-110 transition cursor-pointer"
               >
                 {t('tickets.cta')}
                 <ArrowRight className="w-5 h-5" />

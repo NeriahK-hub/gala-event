@@ -392,7 +392,7 @@ const ReservationDetails: React.FC<{
               <button
                 onClick={() => save([raw!])}
                 disabled={saving}
-                className="w-full inline-flex items-center justify-center gap-3 py-[1.1rem] rounded-full bg-gradient-to-b from-[#FFB43A] to-[#F2761B] text-[#3D0A04] font-bold text-lg shadow-[0_14px_34px_rgba(242,118,27,0.35)] hover:brightness-110 disabled:opacity-60 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-3 py-[1.1rem] rounded-full bg-cta text-[#3D0A04] font-bold text-lg shadow-[0_14px_34px_rgba(242,118,27,0.35)] hover:brightness-110 disabled:opacity-60 cursor-pointer"
               >
                 <Download className="w-6 h-6" />
                 {saving ? 'Un instant…' : 'Enregistrer mon billet'}

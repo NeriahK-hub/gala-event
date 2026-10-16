@@ -222,3 +222,8 @@ h1, h2, h3 {
   0%, 100% { transform: translateY(-22px); opacity: 0.4; }
   50% { transform: translateY(22px); opacity: 1; }
 }
+
+/* Bouton d'action principal : dégradé orange lisse (3 tons) */
+@utility bg-cta {
+  background-image: linear-gradient(180deg, #ffc35c 0%, #fba53c 48%, #f3841f 100%);
+}
